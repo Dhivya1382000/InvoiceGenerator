@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/invoice_white" /> <!-- Fill color -->
+    <corners android:radius="5dp" />    <!-- No rounded corners -->
+    <stroke android:width="1dp" android:color="#DCDCDC" /> <!-- Border color and width -->
+    <padding
+        android:left="10dp"
+        android:top="10dp"
+        android:right="10dp"
+        android:bottom="10dp" /> <!-- Padding inside the box -->
+
+    <gradient
+        android:startColor="@color/invoice_white"
+        android:endColor="@color/invoice_white"
+        android:angle="45" />
+
+
+</shape>

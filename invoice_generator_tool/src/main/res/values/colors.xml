@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="invoice_black">#FF000000</color>
+    <color name="invoice_white">#FFFFFFFF</color>
+    <color name="invoice_gray">#00000029</color>
+    <color name="invoice_lite_gray">#E6E6E6</color>
+    <color name="invoice_green">#009933</color>
+    <color name="invoice_lite_blue">#F3F7FF</color>
+    <color name="invoice_navy_blue">#384853</color>
+    <color name="invoice_blue">#3871FF</color>
+    <color name="invoice_lite_gray1">#F4F4F4</color>
+    <color name="invoice_lite_gray2">#DFDFDF</color>
+    <color name="invoice_dark_black">#111111</color>
+    <color name="invoice_graynew">#CCCCCC</color>
+</resources>

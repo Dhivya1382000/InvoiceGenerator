@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_dash"
+        android:icon="@drawable/invoice_dashboard_navicon"
+        android:title="Dashboard" />
+    <item
+        android:id="@+id/nav_business_detail"
+        android:icon="@drawable/invoice_business_detail_navicon"
+        android:title="My Business Details" />
+    <item
+        android:id="@+id/nav_business_report"
+        android:icon="@drawable/invoice_business_report_navicon"
+        android:title="My Business Report" />
+
+    <item
+        android:id="@+id/nav_invoice"
+        android:icon="@drawable/invoice_amount_navicon"
+        android:title="Invoice" />
+
+    <item
+        android:id="@+id/nav_customer"
+        android:icon="@drawable/invoice_client_navicon"
+        android:title="Customer" />
+
+    <item
+        android:id="@+id/nav_expence"
+        android:icon="@drawable/invoice_expense_navicon"
+        android:title="Expence" />
+
+    <item
+        android:id="@+id/nav_item"
+        android:icon="@drawable/invoice_item_navicon"
+        android:title="Item" />
+
+    <item
+        android:id="@+id/nav_privacy"
+        android:icon="@drawable/invoice_privacy_navicon"
+        android:title="Privacy Policy" />
+
+    <item
+        android:id="@+id/nav_feedback"
+        android:icon="@drawable/invoice_feed_navicon"
+        android:title="Feedback" />
+
+    <item
+        android:id="@+id/nav_share"
+        android:icon="@drawable/invoice_share_navicon"
+        android:title="Share" />
+
+</menu>
