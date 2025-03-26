@@ -61,6 +61,7 @@ dependencies {
 
     //hilt dagger
     implementation(libs.hilt.android)
+    implementation(libs.androidx.swiperefreshlayout)
     kapt("com.google.dagger:hilt-compiler:2.55")
 
     implementation(libs.lottie)

@@ -12,8 +12,8 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,14 +30,19 @@ import dagger.hilt.android.AndroidEntryPoint
 class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClick {
     lateinit var binding: ActivityInvoiceBusinessDetailFormBinding
     private val viewModel: InvoiceViewModel by viewModels()
-    var listOfState: MutableList<InvoiceGetDataMasterArray. GetStateList>  = mutableListOf()
-    var listOfIndustrial: MutableList<InvoiceGetDataMasterArray. GetIndustrialList>  = mutableListOf()
-    var listOfCompanyDetails: MutableList<InvoiceGetDataMasterArray. GetCompanyDetailList>  = mutableListOf()
-    var listOfClientDetails: MutableList<InvoiceGetDataMasterArray. GetClientDetails>  = mutableListOf()
+    var listOfState: MutableList<InvoiceGetDataMasterArray.GetStateList> = mutableListOf()
+    var listOfIndustrial: MutableList<InvoiceGetDataMasterArray.GetIndustrialList> = mutableListOf()
+    var listOfCompanyDetails: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> =
+        mutableListOf()
+    var listOfClientDetails: MutableList<InvoiceGetDataMasterArray.GetClientDetails> =
+        mutableListOf()
     private lateinit var stateDialog: Dialog
-/*private lateinit var adapter: InvoiceMasterAdapter*/
+
+    /*private lateinit var adapter: InvoiceMasterAdapter*/
     var selectedStateId = 0
     var selectedBusinesTypeId = 0
+    var fromInvoicePage = ""
+    var invoiceClickId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +59,11 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
 
         binding.toolBarTitle.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+
+        if (intent != null) {
+            fromInvoicePage = "" + intent.getStringExtra("fromInvoicePage")
+            invoiceClickId = intent.getIntExtra("clickDataId", 0)
         }
 
         // Step 2: Set an OnCheckedChangeListener to handle checkbox state changes
@@ -81,58 +91,108 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         }
 
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
-            if (getMasterArray.status.equals("success")){
+            if (getMasterArray.status.equals("success")) {
                 listOfState.addAll(getMasterArray.state!!)
                 listOfIndustrial.addAll(getMasterArray.industrial!!)
                 listOfCompanyDetails.addAll(getMasterArray.companyDetails!!)
                 listOfClientDetails.addAll(getMasterArray.clientDetails!!)
+                if (invoiceClickId != 0) {
+                    println("invoiceClickId == $invoiceClickId")
+                    for (i in listOfCompanyDetails.indices) {
+                        println("invoiceClickId Company == ${listOfCompanyDetails[i].companyId}")
+                        if (invoiceClickId == listOfCompanyDetails[i].companyId) {
+                            selectedBusinesTypeId = listOfCompanyDetails[i].bussinessType!!
+                            binding.InvoiceBusinessTypeText.text =
+                                listOfCompanyDetails[i].industrialName!!
+                            binding.InvoiceBusinessId.setText("" + listOfCompanyDetails[i].bussinessId)
+                            binding.InvoiceBusinessName.setText("" + listOfCompanyDetails[i].bussinessName)
+                            binding.InvoiceBusinessEmail.setText("" + listOfCompanyDetails[i].email)
+                            binding.InvoiceBusinessMobile.setText("" + listOfCompanyDetails[i].mobile)
+                            binding.InvoiceBusinessMobile1.setText("" + listOfCompanyDetails[i].bussinessMobile)
+                            binding.InvoiceBillingAddress1.setText("" + listOfCompanyDetails[i].billingAddress1)
+                            selectedStateId = listOfCompanyDetails[i].stateId!!
+                            binding.InvoiceBusinessStateText.setText("" + listOfCompanyDetails[i].state)
+                            binding.InvoiceWebsite.setText("" + listOfCompanyDetails[i].website)
+                            binding.InvoiceTaxId.setText("" + listOfCompanyDetails[i].taxId)
+                            if (listOfCompanyDetails[i].mobile.equals(listOfCompanyDetails[i].bussinessMobile)) {
+                                binding.mobileNumberCheckBox.isChecked = true
+                            }
+                            binding.InvoiceBusCardText.text = "Update"
+                        }
+                    }
+                }
             }
-            if (!listOfCompanyDetails[0].status.equals("failure")){
+            if (!listOfCompanyDetails[0].status.equals("failure")) {
                 // Sample list of suggestions
                 val SuggestionsBusinessName = listOfCompanyDetails.map {
                     "${it.bussinessName}"
                 }
+
                 println("itBusiness=Name == ${SuggestionsBusinessName}")
 
                 // Create an ArrayAdapter
-                val adapterBusinessName = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, SuggestionsBusinessName)
+                val adapterBusinessName = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    SuggestionsBusinessName
+                )
                 // Set the adapter to the AutoCompleteTextView
                 binding.InvoiceBusinessName.setAdapter(adapterBusinessName)
-                binding.InvoiceBusinessName.threshold = 1 // Start showing suggestions after 1 character
+                binding.InvoiceBusinessName.threshold =
+                    1 // Start showing suggestions after 1 character
 
                 // Sample list of suggestions
                 val SuggestionsBusinessMobile = listOfCompanyDetails.map {
                     "${it.bussinessMobile}"
                 }
                 println("itBusiness=Name == ${SuggestionsBusinessMobile}")
-                val adapterBusinessMobile = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, SuggestionsBusinessMobile)
+                val adapterBusinessMobile = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    SuggestionsBusinessMobile
+                )
                 binding.InvoiceBusinessMobile1.setAdapter(adapterBusinessMobile)
-                binding.InvoiceBusinessMobile1.threshold = 1 // Start showing suggestions after 1 character
+                binding.InvoiceBusinessMobile1.threshold =
+                    1 // Start showing suggestions after 1 character
 
                 // Sample list of suggestions
                 val SuggestionsBillingAddress1 = listOfCompanyDetails.map {
                     "${it.billingAddress1}"
                 }
                 println("itBusiness=Name == ${SuggestionsBillingAddress1}")
-                val adapterBillingAddress1 = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, SuggestionsBillingAddress1)
+                val adapterBillingAddress1 = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    SuggestionsBillingAddress1
+                )
                 binding.InvoiceBillingAddress1.setAdapter(adapterBillingAddress1)
-                binding.InvoiceBillingAddress1.threshold = 1 // Start showing suggestions after 1 character
+                binding.InvoiceBillingAddress1.threshold =
+                    1 // Start showing suggestions after 1 character
 
                 // Sample list of suggestions
                 val SuggestionsBusinessEmail = listOfCompanyDetails.map {
                     "${it.email}"
                 }
                 println("itBusiness=Name == ${SuggestionsBusinessEmail}")
-                val adapterBusinessEmail = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, SuggestionsBusinessEmail)
+                val adapterBusinessEmail = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    SuggestionsBusinessEmail
+                )
                 binding.InvoiceBusinessEmail.setAdapter(adapterBusinessEmail)
-                binding.InvoiceBusinessEmail.threshold = 1 // Start showing suggestions after 1 character
+                binding.InvoiceBusinessEmail.threshold =
+                    1 // Start showing suggestions after 1 character
 
                 // Sample list of suggestions
                 val SuggestionsTaxId = listOfCompanyDetails.map {
                     "${it.taxId}"
                 }
                 println("itBusiness=Name == ${SuggestionsTaxId}")
-                val adapterTaxId = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, SuggestionsTaxId)
+                val adapterTaxId = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    SuggestionsTaxId
+                )
                 binding.InvoiceTaxId.setAdapter(adapterTaxId)
                 binding.InvoiceTaxId.threshold = 1 // Start showing suggestions after 1 character
             }
@@ -143,24 +203,24 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
                 Toast.makeText(
                     this@InvoiceBusinessDetailFormActivity,
-                    "Check your internet connetion",
+                    "Check your internet connection",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             }
-            showSearchableDialog<InvoiceGetDataMasterArray.GetStateList>(0,listOfState)
+            showSearchableDialog<InvoiceGetDataMasterArray.GetStateList>(0, listOfState)
         }
 
         binding.InvoiceBusinessTypeSpinner.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
                 Toast.makeText(
                     this@InvoiceBusinessDetailFormActivity,
-                    "Check your internet connetion",
+                    "Check your internet connection",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             }
-            showSearchableDialog<InvoiceGetDataMasterArray.GetIndustrialList>(1,listOfIndustrial)
+            showSearchableDialog<InvoiceGetDataMasterArray.GetIndustrialList>(1, listOfIndustrial)
         }
 
 
@@ -225,19 +285,24 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         val map = HashMap<String, Any>()
                         map["action"] = "addCompanyDetails"
                         map["user_id"] = "1227994"
+                        if (invoiceClickId != 0){
+                            map["id"] = invoiceClickId
+                        }
                         map["bussiness_name"] = "" + binding.InvoiceBusinessName.text.toString().trim()
                         map["email"] = "" + binding.InvoiceBusinessEmail.text.toString().trim()
                         map["bussiness_mobile"] = "" + binding.InvoiceBusinessMobile1.text.toString().trim()
-                        map["billing_address_1"] = "" + binding.InvoiceBillingAddress1.text.toString().trim()
+                        map["billing_address_1"] =
+                            "" + binding.InvoiceBillingAddress1.text.toString().trim()
                         map["billing_address_2"] = ""
                         map["website"] = "" + binding.InvoiceWebsite.text.toString().trim()
                         map["tax_name"] = ""
                         map["tax_id"] = "" + binding.InvoiceTaxId.text.toString().trim()
                         map["bussiness_id"] = "" + binding.InvoiceBusinessId.text.toString().trim()
-                        map["state"] = ""+selectedStateId
+                        map["state"] = "" + selectedStateId
+                        map["bussiness_type"] = "" + selectedBusinesTypeId
 
                         println("InvoiceRequest - $_TAG == $map")
-                   viewModel.getBusinessDetail(map)
+                        viewModel.getBusinessDetail(map)
 
                     } else {
                         Toast.makeText(
@@ -267,6 +332,35 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 ).show()
             }
         }
+        viewModel.addIndustries.observe(this) { getIndusData ->
+            if (getIndusData.status.equals("success")) {
+                if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
+                    val InputMap = HashMap<String, Any>()
+                    InputMap["action"] = "getMaster"
+                    InputMap["user_id"] = "1227994"
+
+                    println("InvoiceRequest - $_TAG == $InputMap")
+                    viewModel.getOverAllMasterDetail(InputMap)
+                } else {
+                    Toast.makeText(
+                        this@InvoiceBusinessDetailFormActivity,
+                        "Check Your Internet Connection",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                Toast.makeText(
+                    this@InvoiceBusinessDetailFormActivity,
+                    "Industrial Added Successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    this@InvoiceBusinessDetailFormActivity,
+                    "" + getIndusData.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     private fun <T> showSearchableDialog(
@@ -281,13 +375,24 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         val searchBar = stateDialog.findViewById<AppCompatEditText>(R.id.search_bar)
         val recyclerView = stateDialog.findViewById<RecyclerView>(R.id.recycler_view)
         val NoDataLay = stateDialog.findViewById<LinearLayout>(R.id.NoDataLay)
+        val AddItemCard = stateDialog.findViewById<CardView>(R.id.AddItemCard)
+        if (fromSpinner == 0) {
+            AddItemCard.visibility = View.GONE
+        }
+
         val filteredList: MutableList<T> = mutableListOf()
 
         filteredList.clear()
         // Initialize adapter
         filteredList.addAll(listOfState) // Initially show all items
 
-        val adapter = InvoiceMasterAdapter(filteredList, "", this,fromSpinner)
+        val adapter = InvoiceMasterAdapter(
+            this@InvoiceBusinessDetailFormActivity,
+            filteredList,
+            "",
+            this,
+            fromSpinner
+        )
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
@@ -300,7 +405,16 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 before: Int,
                 count: Int
             ) {
-                filterData<T>(searchQuery, recyclerView,fromSpinner,listOfState,filteredList,NoDataLay,stateDialog)
+                filterData<T>(
+                    searchQuery,
+                    recyclerView,
+                    fromSpinner,
+                    listOfState,
+                    filteredList,
+                    NoDataLay,
+                    stateDialog,
+                    AddItemCard
+                )
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -308,14 +422,16 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
 
         stateDialog.show()
     }
+
     private fun <T> filterData(
         searchQuery: CharSequence?,
         recyclerView: RecyclerView,
         fromSpinner: Int,
         listOfState: MutableList<T>,
         filteredList: MutableList<T>,
-        NoDataLay:LinearLayout,
-        stateDialog:Dialog
+        NoDataLay: LinearLayout,
+        stateDialog: Dialog,
+        AddItemCard: CardView
     ) {
         filteredList.clear()
         println("query == $searchQuery")
@@ -323,15 +439,20 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             filteredList.addAll(listOfState) // Show all items if the query is empty
             println("filterSize == ${filteredList.size}")
         } else {
-            /*filteredList.addAll(filteredList.filter {
-                it.english!!.contains(searchQuery, ignoreCase = true)  // Check if english contains search query
-            })*/
-            // Check if filteredList is empty and handle "no data found"
+
             filteredList.addAll(listOfState.filter { item ->
                 // Example: If the item is a State, filter by stateName
                 when (item) {
-                    is InvoiceGetDataMasterArray.GetStateList -> item.english!!.contains(searchQuery, ignoreCase = true)
-                    is InvoiceGetDataMasterArray.GetIndustrialList -> item.industrial!!.contains(searchQuery, ignoreCase = true)
+                    is InvoiceGetDataMasterArray.GetStateList -> item.english!!.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
+
+                    is InvoiceGetDataMasterArray.GetIndustrialList -> item.industrial!!.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
+
                     else -> {
                         false
                     }
@@ -345,15 +466,16 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 println("filterSize 12  == ${filteredList.size}")
                 NoDataLay.visibility = View.GONE
             }
-            NoDataLay.setOnClickListener {
+            AddItemCard.setOnClickListener {
                 stateDialog.dismiss()
                 showMasterDataAddDia()
             }
         }
         val adapter = InvoiceMasterAdapter(
+            this@InvoiceBusinessDetailFormActivity,
             filteredList,
             searchQuery.toString(),
-            this,fromSpinner
+            this, fromSpinner
         ) // Pass the query
         recyclerView.adapter = adapter
     }
@@ -365,25 +487,43 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val etItemName = dialog.findViewById<AppCompatEditText>(R.id.etItemName)
-        val btnCreate = dialog.findViewById<AppCompatButton>(R.id.btnCreate)
+        val btnCreate = dialog.findViewById<CardView>(R.id.btnCreate)
 
 
         btnCreate.setOnClickListener {
             val name = etItemName.text.toString().trim()
-            dialog.dismiss()
+            if (name.isNotEmpty()) {
+                dialog.dismiss()
+                if (!InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
+                    Toast.makeText(
+                        this@InvoiceBusinessDetailFormActivity,
+                        "Check Internet Connection",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+                val InputMap = HashMap<String, Any>()
+                InputMap["action"] = "addIndustrial"
+                InputMap["industrial"] = name
+
+                println("InvoiceRequest - $_TAG == $InputMap")
+                viewModel.addIndustrial(InputMap)
+            }
         }
+
         dialog.show()
     }
+
     companion object {
         var _TAG = "InvoiceBusinessDetailFormActivity"
     }
 
     override fun onItemClick(clikName: String, clikId: Int, fromClick: Int) {
         stateDialog.dismiss()
-        if (fromClick == 0){
+        if (fromClick == 0) {
             selectedStateId = clikId
             binding.InvoiceBusinessStateText.setText(clikName)
-        }else if (fromClick == 1){
+        } else if (fromClick == 1) {
             selectedBusinesTypeId = clikId
             binding.InvoiceBusinessTypeText.setText(clikName)
         }

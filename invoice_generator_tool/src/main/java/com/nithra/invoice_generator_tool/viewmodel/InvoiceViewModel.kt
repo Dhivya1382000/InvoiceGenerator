@@ -8,6 +8,8 @@ import com.nithra.invoice_generator_tool.activity.InvoiceBusinessDetailFormActiv
 import com.nithra.invoice_generator_tool.model.InvoiceGetBusinessDetail
 import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
+import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +24,12 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
 
     private val _getMasterDetail = MutableLiveData<InvoiceGetDataMasterArray>()
     val getMasterDetail: LiveData<InvoiceGetDataMasterArray> get() = _getMasterDetail
+
+    private val _addIndustries = MutableLiveData<InvoiceIndustrialAdd>()
+    val addIndustries: LiveData<InvoiceIndustrialAdd> get() = _addIndustries
+
+    private val _getItemDetails = MutableLiveData<InvoiceGetItemData>()
+    val getItemDetails: LiveData<InvoiceGetItemData> get() = _getItemDetails
 
     fun getBusinessDetail(map: HashMap<String, Any>) {
         viewModelScope.launch {
@@ -62,4 +70,29 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
         }
     }
 
+    fun addIndustrial(InputMap: HashMap<String, Any>) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getIndustries(InputMap)
+                _addIndustries.value = response
+                println("InvoiceResponse - $_TAG == ${_addIndustries.value}")
+            } catch (e: Exception) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+            }
+        }
+    }
+
+    fun getItemDetails(InputMap: HashMap<String, Any>) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getItemdata(InputMap)
+                _getItemDetails.value = response
+                println("InvoiceResponse - $_TAG == ${_addIndustries.value}")
+            } catch (e: Exception) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+            }
+        }
+    }
 }

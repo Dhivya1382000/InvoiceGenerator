@@ -9,6 +9,9 @@
             android:name=".activity.InvoiceAddItemFormActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.InvoiceBusinessAndCustomerActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.InvoiceAddExpenseFormActivity"
             android:exported="false" />
         <activity

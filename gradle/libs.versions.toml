@@ -18,6 +18,7 @@ kotlinxCoroutinesAndroid = "1.10.1"
 hiltAndroid = "2.55"
 hiltAndroidGradlePlugin = "2.55"
 lottie = "6.6.2"
+swiperefreshlayout = "1.2.0-beta01"
 
 
 [libraries]
@@ -38,6 +39,7 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
 hilt-android-gradle-plugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hiltAndroidGradlePlugin" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 
 [plugins]

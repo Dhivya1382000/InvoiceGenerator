@@ -25,21 +25,21 @@ class InvoiceGetDataMasterArray {
 
     @SerializedName("gst")
     @Expose
-    private val gst: List<GstList>? = null
+    var gst: List<GstList>? = null
 
     class GstList {
         @SerializedName("id")
         @Expose
-         var id: Int? = null
+        var id: Int? = null
 
         @SerializedName("gst")
         @Expose
-         var gst: String? = null
+        var gst: String? = null
     }
 
     @SerializedName("industrial")
     @Expose
-     var industrial: List<GetIndustrialList>? = null
+    var industrial: List<GetIndustrialList>? = null
 
     class GetIndustrialList {
 
@@ -54,7 +54,7 @@ class InvoiceGetDataMasterArray {
 
     @SerializedName("company_details")
     @Expose
-     var companyDetails: List<GetCompanyDetailList>? = null
+    var companyDetails: List<GetCompanyDetailList>? = null
 
     class GetCompanyDetailList {
         @SerializedName("user_id")
@@ -65,17 +65,17 @@ class InvoiceGetDataMasterArray {
         @Expose
         var mobile: String? = null
 
-        @SerializedName("id")
+        @SerializedName("state_id")
         @Expose
-        var id: Int? = null
+        var stateId: Int? = 0
 
         @SerializedName("state")
         @Expose
         var state: String? = null
 
-        @SerializedName("invoice_id")
+        @SerializedName("company_id")
         @Expose
-        var invoiceId: Int? = null
+        var companyId: Int? = 0
 
         @SerializedName("bussiness_name")
         @Expose
@@ -84,6 +84,14 @@ class InvoiceGetDataMasterArray {
         @SerializedName("email")
         @Expose
         var email: String? = null
+
+        @SerializedName("bussiness_type")
+        @Expose
+        var bussinessType: Int? = 0
+
+        @SerializedName("industrial_name")
+        @Expose
+        var industrialName: String? = ""
 
         @SerializedName("bussiness_mobile")
         @Expose
@@ -120,7 +128,7 @@ class InvoiceGetDataMasterArray {
 
     @SerializedName("client_details")
     @Expose
-     var clientDetails: List<GetClientDetails>? = null
+    var clientDetails: List<GetClientDetails>? = null
 
     class GetClientDetails {
 
@@ -134,7 +142,7 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("id")
         @Expose
-        var id: Int? = null
+        var stateId: Int? = null
 
         @SerializedName("state")
         @Expose
@@ -142,11 +150,15 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("invoice_id")
         @Expose
-        var invoiceId: Int? = null
+        var clientId: Int? = 0
 
         @SerializedName("type")
         @Expose
         var type: Int? = 0
+
+        @SerializedName("tax_id")
+        @Expose
+        var taxId: String? = ""
 
         @SerializedName("name")
         @Expose
@@ -195,9 +207,13 @@ class InvoiceGetDataMasterArray {
 
     @SerializedName("item_list")
     @Expose
-     var itemList: List<GetItemList>? = null
+    var itemList: List<GetItemList>? = null
 
     class GetItemList {
+        @SerializedName("status")
+        @Expose
+        var status: String? = ""
+
         @SerializedName("user_id")
         @Expose
         var userId: Int? = null
@@ -206,9 +222,9 @@ class InvoiceGetDataMasterArray {
         @Expose
         var mobile: String? = null
 
-        @SerializedName("invoice_id")
+        @SerializedName("item_id")
         @Expose
-        var invoiceId: Int? = null
+        var itemId: Int? = null
 
         @SerializedName("item_name")
         @Expose
@@ -220,7 +236,7 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("qty_type")
         @Expose
-        var qtyType: Int? = null
+        var qtyType: Int? = 0
 
         @SerializedName("qty")
         @Expose
@@ -241,5 +257,40 @@ class InvoiceGetDataMasterArray {
         @SerializedName("discount")
         @Expose
         var discount: Int? = null
+
+        @SerializedName("total_amt")
+        @Expose
+        var totalAmt: Int? = 0
     }
+
+    @SerializedName("unit_measurement")
+    @Expose
+    var unitMeasurement: List<GetUnitMeasure>? = null
+
+    class GetUnitMeasure {
+        @SerializedName("id")
+        @Expose
+        var id: Int? = null
+
+        @SerializedName("label")
+        @Expose
+        var label: String? = null
+    }
+
+    @SerializedName("payment_status")
+    @Expose
+    var paymentStatus: List<GetpaymentStatus>? = null
+
+    class GetpaymentStatus {
+        @SerializedName("id")
+        @Expose
+        var id: Int? = null
+
+        @SerializedName("label")
+        @Expose
+        var label: String? = null
+    }
+
 }
+
+

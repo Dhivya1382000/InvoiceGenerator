@@ -3,6 +3,8 @@ package com.nithra.invoice_generator_tool.viewmodel
 import com.nithra.invoice_generator_tool.model.InvoiceGetBusinessDetail
 import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
+import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoiceApiInterface
 import javax.inject.Inject
 
@@ -18,5 +20,13 @@ class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface
     suspend fun getCustomerDetail(requestInputMap: HashMap<String, Any>):InvoiceGetClientDetails {
         return api.getClientDetails(requestInputMap)
     }
+
+    suspend fun getIndustries(requestInputMap: HashMap<String, Any>):InvoiceIndustrialAdd {
+        return api.getIndustries(requestInputMap)
+    }
+    suspend fun getItemdata(requestInputMap: HashMap<String, Any>): InvoiceGetItemData {
+        return api.getItemdata(requestInputMap)
+    }
+
 
 }

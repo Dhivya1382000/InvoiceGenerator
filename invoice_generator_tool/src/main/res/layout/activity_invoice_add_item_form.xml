@@ -19,6 +19,7 @@
         android:gravity="center"
         app:title="Add Item"
         app:titleTextAppearance="@style/ToolbarTitleStyle" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,7 +42,7 @@
                     android:background="@drawable/invoice_textfield_background"
                     android:gravity="center">
 
-                    <androidx.appcompat.widget.AppCompatEditText
+                    <AutoCompleteTextView
                         android:id="@+id/InvoiceItemName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -112,7 +113,7 @@
                     android:fontFamily="@font/lexend_medium"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="Description*"
+                    android:text="Description"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="#000"
                     android:textSize="12dp" />
@@ -120,49 +121,111 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp">
-
-                <LinearLayout
+                android:orientation="horizontal">
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/invoice_textfield_background"
-                    android:gravity="center">
+                    android:layout_margin="10dp"
+                    android:layout_weight="1">
 
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/InvoiceItemQuantity"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/invoice_textfield_background"
+                        android:gravity="center">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/InvoiceItemQuantity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:fontFamily="@font/lexend_medium"
+                            android:hint="Item Quantity"
+                            android:inputType="number"
+                            android:padding="15dp"
+                            android:textColor="@color/invoice_black"
+                            android:textSize="15dp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:background="@color/invoice_white"
+                        android:fontFamily="@font/lexend_medium"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="Item Quantity*"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="#000"
+                        android:textSize="12dp" />
+
+
+                </RelativeLayout>
+            <!--    <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/invoice_textfield_background"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center"
+                    android:layout_marginTop="2dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/InvoiceQuantityNameText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:layout_weight="1"
+                        android:layout_gravity="center"
                         android:background="@null"
+                        android:paddingStart="10dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:paddingEnd="10dp"
                         android:fontFamily="@font/lexend_medium"
-                        android:hint="Quantity"
-                        android:inputType="textCapSentences"
-                        android:padding="15dp"
+                        android:hint="Unit"
+                        android:text=""
                         android:textColor="@color/invoice_black"
-                        android:textSize="15dp" />
+                        android:textSize="15sp" />
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/invoice_spinner_icon" />
+
+                </LinearLayout>-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/invoice_textfield_background"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/itemQtySpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
 
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:background="@color/invoice_white"
-                    android:fontFamily="@font/lexend_medium"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
-                    android:text="Quantity*"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:textColor="#000"
-                    android:textSize="12dp" />
 
+            </LinearLayout>
 
-            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -185,7 +248,7 @@
                         android:background="@null"
                         android:fontFamily="@font/lexend_medium"
                         android:hint="Rate"
-                        android:inputType="textCapSentences"
+                        android:inputType="numberDecimal"
                         android:padding="15dp"
                         android:textColor="@color/invoice_black"
                         android:textSize="15dp" />
@@ -208,31 +271,48 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
+         <!--   <RelativeLayout
+                android:id="@+id/InvoiceItemTaxSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp">
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/invoice_textfield_background"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp">
 
-                    <androidx.appcompat.widget.AppCompatEditText
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/InvoiceItemTax"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
                         android:background="@null"
+                        android:paddingStart="5dp"
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp"
+                        android:paddingEnd="5dp"
                         android:fontFamily="@font/lexend_medium"
-                        android:hint="Tax"
-                        android:inputType="textCapSentences"
-                        android:padding="15dp"
+                        android:hint="GST Amount"
+                        android:text=""
                         android:textColor="@color/invoice_black"
-                        android:textSize="15dp" />
+                        android:textSize="15sp" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="15dp"
+                        android:src="@drawable/invoice_spinner_icon" />
 
                 </LinearLayout>
 
@@ -244,39 +324,52 @@
                     android:fontFamily="@font/lexend_medium"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="Tax *"
+                    android:text="GST *"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="#000"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
 
-
-            </RelativeLayout>
-
+            </RelativeLayout>-->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp">
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/invoice_textfield_background"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingStart="10dp">
 
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/InvoiceItemDiscount"
-                        android:layout_width="match_parent"
+                    <!-- Add Spinner Instead of TextView -->
+                  <!--  <Spinner
+                        android:id="@+id/InvoiceItemTaxSpinner"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
                         android:layout_weight="1"
                         android:background="@null"
-                        android:fontFamily="@font/lexend_medium"
-                        android:hint="Discount"
-                        android:inputType="textCapSentences"
-                        android:padding="15dp"
-                        android:textColor="@color/invoice_black"
-                        android:textSize="15dp" />
+                        android:padding="5dp"
+                        android:textSize="15sp"
+                        android:spinnerMode="dropdown" />-->
+                    <Spinner
+                        android:id="@+id/InvoiceItemTaxSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:layout_gravity="center" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="15dp"
+                        android:src="@drawable/invoice_spinner_icon" />
 
                 </LinearLayout>
 
@@ -288,12 +381,92 @@
                     android:fontFamily="@font/lexend_medium"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="Discount *"
+                    android:text="GST %*"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="#000"
-                    android:textSize="12dp" />
-
+                    android:textSize="12sp" />
             </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/invoice_textfield_background"
+                        android:gravity="center">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/InvoiceItemDiscount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:fontFamily="@font/lexend_medium"
+                            android:hint="Discount"
+                            android:inputType="number"
+                            android:padding="15dp"
+                            android:textColor="@color/invoice_black"
+                            android:textSize="15dp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:background="@color/invoice_white"
+                        android:fontFamily="@font/lexend_medium"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="Discount"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="#000"
+                        android:textSize="12dp" />
+
+                </RelativeLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/invoice_textfield_background"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/itemDiscountSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/InvoiceTotalItemAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@null"
+                android:fontFamily="@font/lexend_medium"
+                android:text="Total Amount : ₹ 0"
+                android:inputType="textCapSentences"
+                android:padding="15dp"
+                android:textColor="@color/invoice_black"
+                android:textSize="15dp" />
+
         </LinearLayout>
     </ScrollView>
     <androidx.cardview.widget.CardView
@@ -308,6 +481,7 @@
         android:layout_centerHorizontal="true">
 
         <TextView
+            android:id="@+id/InvoiceItemSaveCardText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save"

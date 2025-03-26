@@ -12,4 +12,5 @@
     <color name="invoice_lite_gray2">#DFDFDF</color>
     <color name="invoice_dark_black">#111111</color>
     <color name="invoice_graynew">#CCCCCC</color>
+    <color name="invoice_pink">#FD3A84</color>
 </resources>

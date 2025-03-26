@@ -14,6 +14,5 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         binding = ActivityInvoiceCreateFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
     }
 }

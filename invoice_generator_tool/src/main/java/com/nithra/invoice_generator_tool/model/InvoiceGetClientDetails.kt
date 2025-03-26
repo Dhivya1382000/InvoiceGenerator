@@ -9,15 +9,15 @@ class InvoiceGetClientDetails {
 
     @SerializedName("status")
     @Expose
-    private val status: String? = null
+    var status: String? = null
 
     @SerializedName("msg")
     @Expose
-    private val msg: String? = null
+    var msg: String? = null
 
     @SerializedName("data")
     @Expose
-    private val data: List<GetClientData>? = null
+    var data: List<GetClientData>? = null
 
     class GetClientData {
         @SerializedName("user_id")
