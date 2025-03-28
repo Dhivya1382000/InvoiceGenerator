@@ -19,6 +19,10 @@ hiltAndroid = "2.55"
 hiltAndroidGradlePlugin = "2.55"
 lottie = "6.6.2"
 swiperefreshlayout = "1.2.0-beta01"
+uiAndroid = "1.7.8"
+foundation = "1.8.0-rc02"
+uiToolingPreview = "1.8.0-rc02"
+material3 = "1.4.0-alpha11"
 
 
 [libraries]
@@ -40,6 +44,10 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-android-gradle-plugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hiltAndroidGradlePlugin" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }
+androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "uiToolingPreview" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 
 [plugins]

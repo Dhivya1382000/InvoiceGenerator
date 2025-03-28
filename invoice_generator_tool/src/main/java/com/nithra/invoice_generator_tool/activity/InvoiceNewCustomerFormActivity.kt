@@ -38,6 +38,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
     var selectedStateId = 0
     var selectedBusinesTypeId = 1
+    var fromInvoice = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +57,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         }
         if (intent != null) {
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
+            fromInvoice = intent.getIntExtra("fromInvoice", 0)
         }
 
         if (binding.InvoiceIndividualChoice.isChecked) {
@@ -157,6 +159,9 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         }
 
 
+        viewModel.errorMessage.observe(this@InvoiceNewCustomerFormActivity){
+            Toast.makeText(this@InvoiceNewCustomerFormActivity, ""+it, Toast.LENGTH_SHORT).show()
+        }
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
             if (getMasterArray.status.equals("success")) {
                 listOfState.addAll(getMasterArray.state!!)
@@ -604,7 +609,10 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             filteredList,
             "",
             this,
-            fromSpinner
+            fromInvoice,
+            fromSpinner, onAddItemClick = {
+
+            }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -690,7 +698,9 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         val adapter = InvoiceMasterAdapter(
             this@InvoiceNewCustomerFormActivity, filteredList,
             searchQuery.toString(),
-            this, fromSpinner
+            this, fromInvoice ,fromSpinner, onAddItemClick = {
+
+            }
         ) // Pass the query
         recyclerView.adapter = adapter
     }

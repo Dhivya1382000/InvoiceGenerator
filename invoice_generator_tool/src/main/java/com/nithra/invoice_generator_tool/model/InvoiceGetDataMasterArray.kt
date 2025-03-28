@@ -260,7 +260,7 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("total_amt")
         @Expose
-        var totalAmt: Int? = 0
+        var totalAmt: String? = ""
     }
 
     @SerializedName("unit_measurement")

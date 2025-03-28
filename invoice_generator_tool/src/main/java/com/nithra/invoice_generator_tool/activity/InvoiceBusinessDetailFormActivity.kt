@@ -1,6 +1,8 @@
 package com.nithra.invoice_generator_tool.activity
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -43,6 +45,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
     var selectedBusinesTypeId = 0
     var fromInvoicePage = ""
     var invoiceClickId = 0
+    var fromInvoice = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +67,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         if (intent != null) {
             fromInvoicePage = "" + intent.getStringExtra("fromInvoicePage")
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
+            fromInvoice = intent.getIntExtra("fromInvoice", 0)
         }
 
         // Step 2: Set an OnCheckedChangeListener to handle checkbox state changes
@@ -88,6 +92,10 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 "Check Your Internet Connection",
                 Toast.LENGTH_SHORT
             ).show()
+        }
+
+        viewModel.errorMessage.observe(this@InvoiceBusinessDetailFormActivity){
+            Toast.makeText(this@InvoiceBusinessDetailFormActivity, ""+it, Toast.LENGTH_SHORT).show()
         }
 
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
@@ -315,6 +323,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             }
         }
 
+
         viewModel.getBusinessDetailForm.observe(this) { getBusinessDetail ->
             println("receiveData == ${getBusinessDetail.data!![0].bussinessName}")
             if (getBusinessDetail.status.equals("success")) {
@@ -391,7 +400,13 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             filteredList,
             "",
             this,
-            fromSpinner
+            fromInvoice,
+            fromSpinner, onAddItemClick = {/*selectedItem ->
+                val resultIntent = Intent()
+                resultIntent.putExtra("selectedItem", selectedItem)
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish()*/
+            }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -475,7 +490,11 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             this@InvoiceBusinessDetailFormActivity,
             filteredList,
             searchQuery.toString(),
-            this, fromSpinner
+            this,
+            fromInvoice,
+            fromSpinner, onAddItemClick = {
+
+            }
         ) // Pass the query
         recyclerView.adapter = adapter
     }

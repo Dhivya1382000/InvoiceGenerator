@@ -173,7 +173,8 @@ tools:openDrawer="start">
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/invoice_lite_blue"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:visibility="gone">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -187,8 +188,7 @@ tools:openDrawer="start">
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="15dp"/>
+                    android:layout_height="wrap_content"/>
                 <TextView
                     android:id="@+id/seeAllText"
                     android:layout_width="match_parent"
@@ -197,7 +197,7 @@ tools:openDrawer="start">
                     android:fontFamily="@font/lexend_medium"
                     android:textColor="@color/invoice_blue"
                     android:gravity="center"
-                    android:textSize="12dp"
+                    android:textSize="15dp"
                     android:padding="7dp" />
             </LinearLayout>
             <LinearLayout

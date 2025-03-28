@@ -21,7 +21,9 @@ class InvoiceMasterAdapter<T>(
     var filteredList: MutableList<T>,
     var updatedSearchText: String,
     var invoicemasterclick: InvoicemasterClick,
-    var fromClick: Int
+    var fromInvoice:Int,
+    var fromClick: Int,
+   var onAddItemClick: (T) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -68,7 +70,7 @@ class InvoiceMasterAdapter<T>(
         var clikStateName = ""
         var clikStateId = 0
         val post = position + 1
-        val listCount = if (position < 10) {
+        val listCount = if (post < 10) {
             "0" + post
         } else {
             "" + post
@@ -125,19 +127,37 @@ class InvoiceMasterAdapter<T>(
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.bussinessName
                     holder.binding.invoiceCustomerMobile.text = item.mobile
+                    if (fromInvoice == 1){
+                        holder.binding.AddInvoice.visibility = View.VISIBLE
+                    }else{
+                        holder.binding.AddInvoice.visibility = View.GONE
+                    }
                 }
                 is InvoiceGetDataMasterArray.GetClientDetails -> {
                     clickDataId = item.clientId!!
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.name
                     holder.binding.invoiceCustomerMobile.text = item.mobile
+                    if (fromInvoice == 1){
+                        holder.binding.AddInvoice.visibility = View.VISIBLE
+                    }else{
+                        holder.binding.AddInvoice.visibility = View.GONE
+                    }
                 }
                 is InvoiceGetDataMasterArray.GetItemList -> {
                     clickDataId = item.itemId!!
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.itemName
                     holder.binding.invoiceCustomerMobile.text = item.amount + "/" + "kg"
+                    if (fromInvoice == 1){
+                        holder.binding.AddInvoice.visibility = View.VISIBLE
+                    }else{
+                        holder.binding.AddInvoice.visibility = View.GONE
+                    }
                 }
+            }
+            holder.binding.AddInvoice.setOnClickListener {
+                onAddItemClick(item)
             }
             holder.itemView.setOnClickListener {
                 invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick)

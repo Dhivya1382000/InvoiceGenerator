@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id ("kotlin-kapt")
     alias(libs.plugins.hilt.android.gradle.plugin)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.0"
 }
 
 android {
@@ -35,6 +36,7 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        compose = true
     }
 
 }
@@ -62,6 +64,10 @@ dependencies {
     //hilt dagger
     implementation(libs.hilt.android)
     implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.ui.android)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     kapt("com.google.dagger:hilt-compiler:2.55")
 
     implementation(libs.lottie)

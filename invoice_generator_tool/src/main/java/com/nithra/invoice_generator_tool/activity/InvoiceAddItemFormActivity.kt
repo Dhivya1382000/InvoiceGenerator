@@ -1,6 +1,8 @@
 package com.nithra.invoice_generator_tool.activity
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,9 +13,11 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceAddItemFormBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +38,8 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
     var selectedDiscount = 0
     var finalAmount = ""
     var invoiceClickId = 0
+    var preference = InvioceSharedPreference()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,8 +59,6 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
         }
 
-
-
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceAddItemFormActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
@@ -70,6 +74,11 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
             ).show()
         }
 
+
+        viewModel.errorMessage.observe(this@InvoiceAddItemFormActivity){
+            Toast.makeText(this@InvoiceAddItemFormActivity, ""+it, Toast.LENGTH_SHORT).show()
+        }
+
         itemFormBinding.InvoiceItemQuantity.setText("1")
 
 
@@ -80,6 +89,11 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                     "" + getItemList.msg,
                     Toast.LENGTH_SHORT
                 ).show()
+                val resultIntent = Intent()
+                val selectedItemJson = Gson().toJson(getItemList.data)
+                preference.putString(this@InvoiceAddItemFormActivity,"INVOICE_EDIT_ITEMS",selectedItemJson)
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish()
             }
         }
 
@@ -133,7 +147,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
 
                             selectedMeasuresId = listOfitemList[i].qtyType!!
                             selectedGstId = listOfitemList[i].tax!!.toInt()
-                            selectedDiscount = listOfitemList[i].tax!!.toInt()
+                            selectedDiscount = listOfitemList[i].discountType!!.toInt()
                             println("qtyType == ${listOfitemList[i].qtyType!!}")
 
                             val MeasuresId =
@@ -158,72 +172,72 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                         }
                     }
                 } else {
-                    itemFormBinding.itemDiscountSpinner.onItemSelectedListener =
-                        object : AdapterView.OnItemSelectedListener {
-                            override fun onItemSelected(
-                                parent: AdapterView<*>,
-                                view: View?,
-                                position: Int,
-                                id: Long
-                            ) {
-                                val selectedOption = parent.getItemAtPosition(position)
-                                if (selectedOption == "Percentage") {
-                                    selectedDiscount = 1
-                                } else {
-                                    selectedDiscount = 2
-                                }
-                                calculateFinal()
-                                /*  Toast.makeText(
-                                      applicationContext,
-                                      "Selected: $selectedOption",
-                                      Toast.LENGTH_SHORT
-                                  ).show()*/
-                            }
 
-                            override fun onNothingSelected(parent: AdapterView<*>) {}
-                        }
-
-                    itemFormBinding.InvoiceItemTaxSpinner.onItemSelectedListener =
-                        object : AdapterView.OnItemSelectedListener {
-                            override fun onItemSelected(
-                                parent: AdapterView<*>,
-                                view: View?,
-                                position: Int,
-                                id: Long
-                            ) {
-                                val selectedGst = listOfGST[position]  // Get corresponding object
-                                selectedGstId = selectedGst.id!!
-                                selectedGstIdData = selectedGst.gst!!
-                                calculateFinal()
-                                //Toast.makeText(applicationContext, "Selected ID: ${selectedGst.id}", Toast.LENGTH_SHORT).show()
-                            }
-
-                            override fun onNothingSelected(parent: AdapterView<*>) {}
-                        }
-
-
-                    // Handle item selection
-                    itemFormBinding.itemQtySpinner.onItemSelectedListener =
-                        object : AdapterView.OnItemSelectedListener {
-                            override fun onItemSelected(
-                                parent: AdapterView<*>,
-                                view: View?,
-                                position: Int,
-                                id: Long
-                            ) {
-                                val selectedMeasure =
-                                    listOfMeasures[position]  // Get corresponding object
-                                selectedMeasuresId = selectedMeasure.id!!
-                                calculateFinal()
-                                //Toast.makeText(applicationContext, "Selected ID: ${selectedGst.id}", Toast.LENGTH_SHORT).show()
-                            }
-
-                            override fun onNothingSelected(parent: AdapterView<*>) {}
-                        }
                 }
 
             }
+            itemFormBinding.itemDiscountSpinner.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        val selectedOption = parent.getItemAtPosition(position)
+                        if (selectedOption == "Percentage") {
+                            selectedDiscount = 1
+                        } else {
+                            selectedDiscount = 2
+                        }
+                        calculateFinal()
+                        /*  Toast.makeText(
+                              applicationContext,
+                              "Selected: $selectedOption",
+                              Toast.LENGTH_SHORT
+                          ).show()*/
+                    }
 
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
+                }
+
+            itemFormBinding.InvoiceItemTaxSpinner.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        val selectedGst = listOfGST[position]  // Get corresponding object
+                        selectedGstId = selectedGst.id!!
+                        selectedGstIdData = selectedGst.gst!!
+                        calculateFinal()
+                        //Toast.makeText(applicationContext, "Selected ID: ${selectedGst.id}", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
+                }
+
+
+            // Handle item selection
+            itemFormBinding.itemQtySpinner.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        val selectedMeasure =
+                            listOfMeasures[position]  // Get corresponding object
+                        selectedMeasuresId = selectedMeasure.id!!
+                        calculateFinal()
+                        //Toast.makeText(applicationContext, "Selected ID: ${selectedGst.id}", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
+                }
 
             itemFormBinding.InvoiceItemRate.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -361,7 +375,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
 
                         println("InvoiceRequest - $_TAG == $map")
 
-                        viewModel.getItemDetails(map)
+                        viewModel.addItemData(map)
 
                     } else {
                         Toast.makeText(

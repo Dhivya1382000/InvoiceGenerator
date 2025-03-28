@@ -1,8 +1,10 @@
 package com.nithra.invoice_generator_tool.retrofit_interface
 
+import com.nithra.invoice_generator_tool.model.InvoiceAddedList
 import com.nithra.invoice_generator_tool.model.InvoiceGetBusinessDetail
 import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
 import retrofit2.Response
@@ -27,4 +29,10 @@ interface InvoiceApiInterface {
 
     @POST("invoiceData")
     suspend fun getItemdata(@Body requestMap: HashMap<String, Any>): InvoiceGetItemData
+
+    @POST("invoiceData")
+    suspend fun getInvoiceList(@Body requestMap: HashMap<String, Any>): MutableList<InvoiceGetInvoiceList>
+
+    @POST("invoiceData")
+    suspend fun addedList(@Body requestMap: HashMap<String, Any>): InvoiceAddedList
 }

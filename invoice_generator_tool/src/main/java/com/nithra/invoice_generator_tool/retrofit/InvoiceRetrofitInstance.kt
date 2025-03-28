@@ -1,4 +1,4 @@
-package com.nithra.invoice_generator_tool.apicall
+package com.nithra.invoice_generator_tool.retrofit
 
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoiceApiInterface
 import dagger.Module

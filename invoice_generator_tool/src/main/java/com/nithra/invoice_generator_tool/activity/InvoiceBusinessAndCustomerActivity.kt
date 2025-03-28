@@ -1,5 +1,6 @@
 package com.nithra.invoice_generator_tool.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -26,7 +27,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
     var listOfClients: MutableList<InvoiceGetDataMasterArray.GetClientDetails> = mutableListOf()
     var listOfItems: MutableList<InvoiceGetDataMasterArray.GetItemList> = mutableListOf()
     var preference = InvioceSharedPreference()
-
+    var fromInvoice = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityInvoiceRecyclerviewBinding.inflate(layoutInflater)
@@ -41,8 +42,13 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.invoice_back_arrow) // Custom Image
 
+
         binding.toolBarTitle.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+
+        if (intent != null){
+            fromInvoice = intent.getIntExtra("fromInvoice", 0)
         }
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
@@ -59,6 +65,12 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 Toast.LENGTH_SHORT
             ).show()
         }
+
+
+        viewModel.errorMessage.observe(this@InvoiceBusinessAndCustomerActivity){
+            Toast.makeText(this@InvoiceBusinessAndCustomerActivity, ""+it, Toast.LENGTH_SHORT).show()
+        }
+
         binding.swipeRefresh.setOnRefreshListener {
             listOfCompany.clear()
             listOfItems.clear()
@@ -137,7 +149,16 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             GetList,
             "",
             this,
-            fromCLick
+            fromInvoice,
+            fromCLick, onAddItemClick = { selectedItem ->
+                println("selected == ${selectedItem}")
+                val resultIntent = Intent()
+                val selectedItemJson = Gson().toJson(selectedItem)
+                preference.putString(this@InvoiceBusinessAndCustomerActivity,"INVOICE_SELECTED_ITEMS",selectedItemJson)
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish()
+
+            }
         )
         binding.recyclerCustomers.layoutManager = LinearLayoutManager(this)
         binding.recyclerCustomers.adapter = adapter
