@@ -4,6 +4,8 @@ import com.nithra.invoice_generator_tool.model.InvoiceAddedList
 import com.nithra.invoice_generator_tool.model.InvoiceGetBusinessDetail
 import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseList
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
@@ -35,4 +37,10 @@ interface InvoiceApiInterface {
 
     @POST("invoiceData")
     suspend fun addedList(@Body requestMap: HashMap<String, Any>): InvoiceAddedList
+
+    @POST("invoiceData")
+    suspend fun addedexpenseList(@Body requestMap: HashMap<String, Any>): InvoiceGetExpenseList
+
+    @POST("invoiceData")
+    suspend fun expenseList(@Body requestMap: HashMap<String, Any>): InvoiceGetExpenseDataList
 }

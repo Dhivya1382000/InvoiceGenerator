@@ -75,6 +75,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getInvoiceList"
             InputMap["user_id"] = "3"
+            InputMap["type"] = "0"
 
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getInvoiceList(InputMap)
@@ -143,8 +144,11 @@ class InvoiceHomeScreen : AppCompatActivity() {
 
                 R.id.nav_expence -> {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
-                        .show()
+                    /*Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
+                        .show()*/
+                    val intent = Intent(this@InvoiceHomeScreen, InvoiceBusinessAndCustomerActivity::class.java)
+                    intent.putExtra("InvoicefromPage", "Expense")
+                    startActivity(intent)
                 }
 
                 R.id.nav_item -> {
@@ -197,5 +201,8 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 true
             }
         }
+    }
+    companion object{
+        var _TAG = "InvoiceHomeScreen"
     }
 }

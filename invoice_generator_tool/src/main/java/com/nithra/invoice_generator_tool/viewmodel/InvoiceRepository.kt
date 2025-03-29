@@ -4,6 +4,8 @@ import com.nithra.invoice_generator_tool.model.InvoiceAddedList
 import com.nithra.invoice_generator_tool.model.InvoiceGetBusinessDetail
 import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseList
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
@@ -38,4 +40,11 @@ class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface
         return api.addedList(requestInputMap)
     }
 
+    suspend fun getExpenseData(requestInputMap: HashMap<String, Any>): InvoiceGetExpenseList {
+        return api.addedexpenseList(requestInputMap)
+    }
+
+        suspend fun getExpenseList(requestInputMap: HashMap<String, Any>): InvoiceGetExpenseDataList {
+        return api.expenseList(requestInputMap)
+    }
 }

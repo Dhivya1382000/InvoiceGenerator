@@ -38,15 +38,38 @@
                     android:text="1.Ugar"
                     android:textSize="14dp" />
 
-                <TextView
-                    android:id="@+id/itemGstSplit"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:textColor="@color/invoice_black"
-                    android:fontFamily="@font/lexend_medium"
-                    android:text="1% sgst +1% cgst"
-                    android:textSize="8dp" />
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/itemSGstSplit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/invoice_black"
+                        android:fontFamily="@font/lexend_medium"
+                        android:text="1% sgst"
+                        android:textSize="8dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:id="@+id/itemCGstSplit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textColor="@color/invoice_black"
+                        android:fontFamily="@font/lexend_medium"
+                        android:text=""
+                        android:textSize="8dp"
+                        />
+
+                </LinearLayout>
+
+
 
             </LinearLayout>
 

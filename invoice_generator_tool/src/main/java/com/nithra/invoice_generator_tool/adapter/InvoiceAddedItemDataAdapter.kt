@@ -9,7 +9,8 @@ import com.nithra.invoice_generator_tool.model.InvoiceOfflineDynamicData
 class InvoiceAddedItemDataAdapter(
     var listOfGetInvoicelist: MutableList<InvoiceOfflineDynamicData>,
     var onItemClick: (Int) -> Unit,
-    var OnEditClick :(InvoiceOfflineDynamicData,Int) -> Unit
+    var onShowItem: (ActivityInvoiceDynamicItemBinding,InvoiceOfflineDynamicData) -> Unit,
+    var OnEditClick :(InvoiceOfflineDynamicData,Int) -> Unit,
 ) : RecyclerView.Adapter<InvoiceAddedItemDataAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -28,6 +29,8 @@ class InvoiceAddedItemDataAdapter(
             tvItemName.text = "${position + 1} . " + listOfGetInvoicelist[position].item_name
             tvItemQty.text = listOfGetInvoicelist[position].qty
             tvItemAmount.text = listOfGetInvoicelist[position].amount
+
+            onShowItem(holder.binding,listOfGetInvoicelist[position])
 
             removeItem.setOnClickListener {
                 onItemClick(position)

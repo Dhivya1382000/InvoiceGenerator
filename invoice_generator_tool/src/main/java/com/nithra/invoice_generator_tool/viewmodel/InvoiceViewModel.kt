@@ -9,6 +9,8 @@ import com.nithra.invoice_generator_tool.model.InvoiceAddedList
 import com.nithra.invoice_generator_tool.model.InvoiceGetBusinessDetail
 import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseList
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
@@ -40,6 +42,12 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
 
     private val _getAddedInvoiceList = MutableLiveData<InvoiceAddedList>()
     val getAddedInvoiceList: LiveData<InvoiceAddedList> get() = _getAddedInvoiceList
+
+    private val _getAddedExpenseList = MutableLiveData<InvoiceGetExpenseList>()
+    val getAddedExpenseList: LiveData<InvoiceGetExpenseList> get() = _getAddedExpenseList
+
+    private val _getExpenseList = MutableLiveData<InvoiceGetExpenseDataList>()
+    val getExpenseList: LiveData<InvoiceGetExpenseDataList> get() = _getExpenseList
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -137,7 +145,7 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
             try {
                 val response = repository.getItemdata(InputMap)
                 _getItemDetails.value = response
-                println("InvoiceResponse - $_TAG == ${_addIndustries.value}")
+                println("InvoiceResponse - $_TAG == ${_getItemDetails.value}")
             }  catch (e: SocketTimeoutException) {
                 // Handle errors
                 println("exception == ${e.toString()}")
@@ -158,7 +166,7 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
             try {
                 val response = repository.getInvoiceList(InputMap)
                 _getInvoiceList.value = response
-                println("InvoiceResponse - $_TAG == ${_addIndustries.value}")
+                println("InvoiceResponse - $_TAG == ${_getInvoiceList.value}")
             }  catch (e: SocketTimeoutException) {
                 // Handle errors
                 println("exception == ${e.toString()}")
@@ -180,7 +188,7 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
             try {
                 val response = repository.getAddedList(InputMap)
                 _getAddedInvoiceList.value = response
-                println("InvoiceResponse - $_TAG == ${_addIndustries.value}")
+                println("InvoiceResponse - $_TAG == ${_getAddedInvoiceList.value}")
             }  catch (e: SocketTimeoutException) {
                 // Handle errors
                 println("exception == ${e.toString()}")
@@ -197,4 +205,47 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
         }
     }
 
+    fun addExpenseData(InputMap: HashMap<String, Any>) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getExpenseData(InputMap)
+                _getAddedExpenseList.value = response
+                println("InvoiceResponse - $_TAG == ${response}")
+            }  catch (e: SocketTimeoutException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }catch (e: IOException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }catch (e: Exception) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }
+        }
+    }
+
+    fun getExpenseList(InputMap: HashMap<String, Any>) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getExpenseList(InputMap)
+                _getExpenseList.value = response
+                println("InvoiceResponse - $_TAG == ${response}")
+            }  catch (e: SocketTimeoutException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }catch (e: IOException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }catch (e: Exception) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }
+        }
+    }
 }

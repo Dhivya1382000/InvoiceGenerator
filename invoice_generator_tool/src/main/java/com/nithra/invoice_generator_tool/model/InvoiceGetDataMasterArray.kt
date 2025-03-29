@@ -7,7 +7,7 @@ class InvoiceGetDataMasterArray {
 
     @SerializedName("status")
     @Expose
-    var status: String? = null
+    var status: String? = ""
 
     @SerializedName("state")
     @Expose
@@ -20,7 +20,7 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("english")
         @Expose
-        var english: String? = null
+        var english: String? = ""
     }
 
     @SerializedName("gst")
@@ -30,11 +30,11 @@ class InvoiceGetDataMasterArray {
     class GstList {
         @SerializedName("id")
         @Expose
-        var id: Int? = null
+        var id: Int? = 0
 
         @SerializedName("gst")
         @Expose
-        var gst: String? = null
+        var gst: String? = ""
     }
 
     @SerializedName("industrial")
@@ -49,7 +49,7 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("industrial")
         @Expose
-        var industrial: String? = null
+        var industrial: String? = ""
     }
 
     @SerializedName("company_details")
@@ -59,11 +59,11 @@ class InvoiceGetDataMasterArray {
     class GetCompanyDetailList {
         @SerializedName("user_id")
         @Expose
-        var userId: String? = null
+        var userId: String? = ""
 
         @SerializedName("mobile")
         @Expose
-        var mobile: String? = null
+        var mobile: String? = ""
 
         @SerializedName("state_id")
         @Expose
@@ -71,7 +71,7 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("state")
         @Expose
-        var state: String? = null
+        var state: String? = ""
 
         @SerializedName("company_id")
         @Expose
@@ -79,11 +79,11 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("bussiness_name")
         @Expose
-        var bussinessName: String? = null
+        var bussinessName: String? = ""
 
         @SerializedName("email")
         @Expose
-        var email: String? = null
+        var email: String? = ""
 
         @SerializedName("bussiness_type")
         @Expose
@@ -95,31 +95,31 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("bussiness_mobile")
         @Expose
-        var bussinessMobile: String? = null
+        var bussinessMobile: String? = ""
 
         @SerializedName("billing_address_1")
         @Expose
-        var billingAddress1: String? = null
+        var billingAddress1: String? = ""
 
         @SerializedName("billing_address_2")
         @Expose
-        var billingAddress2: String? = null
+        var billingAddress2: String? = ""
 
         @SerializedName("website")
         @Expose
-        var website: String? = null
+        var website: String? = ""
 
         @SerializedName("tax_name")
         @Expose
-        var taxName: String? = null
+        var taxName: String? = ""
 
         @SerializedName("tax_id")
         @Expose
-        var taxId: String? = null
+        var taxId: String? = ""
 
         @SerializedName("bussiness_id")
         @Expose
-        var bussinessId: String? = null
+        var bussinessId: String? = ""
 
         @SerializedName("status")
         @Expose
@@ -134,19 +134,19 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("user_id")
         @Expose
-        var userId: String? = null
+        var userId: String? = ""
 
         @SerializedName("mobile")
         @Expose
-        var mobile: String? = null
+        var mobile: String? = ""
 
         @SerializedName("id")
         @Expose
-        var stateId: Int? = null
+        var stateId: Int? = 0
 
         @SerializedName("state")
         @Expose
-        var state: String? = null
+        var state: String? = ""
 
         @SerializedName("invoice_id")
         @Expose
@@ -162,47 +162,47 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("name")
         @Expose
-        var name: String? = null
+        var name: String? = ""
 
         @SerializedName("company_name")
         @Expose
-        var companyName: String? = null
+        var companyName: String? = ""
 
         @SerializedName("mobile1")
         @Expose
-        var mobile1: String? = null
+        var mobile1: String? = ""
 
         @SerializedName("mobile2")
         @Expose
-        var mobile2: String? = null
+        var mobile2: String? = ""
 
         @SerializedName("display_name")
         @Expose
-        var displayName: String? = null
+        var displayName: String? = ""
 
         @SerializedName("email")
         @Expose
-        var email: String? = null
+        var email: String? = ""
 
         @SerializedName("bussiness_mobile")
         @Expose
-        var bussiness_mobile: String? = null
+        var bussiness_mobile: String? = ""
 
         @SerializedName("billing_address")
         @Expose
-        var billingAddress: String? = null
+        var billingAddress: String? = ""
 
         @SerializedName("shipping_address")
         @Expose
-        var shippingAddress: String? = null
+        var shippingAddress: String? = ""
 
         @SerializedName("remark")
         @Expose
-        var remark: String? = null
+        var remark: String? = ""
 
         @SerializedName("status")
         @Expose
-        var status: String? = null
+        var status: String? = ""
     }
 
     @SerializedName("item_list")
@@ -216,23 +216,23 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("user_id")
         @Expose
-        var userId: Int? = null
+        var userId: Int? = 0
 
         @SerializedName("mobile")
         @Expose
-        var mobile: String? = null
+        var mobile: String? = ""
 
         @SerializedName("item_id")
         @Expose
-        var itemId: Int? = null
+        var itemId: Int? = 0
 
         @SerializedName("item_name")
         @Expose
-        var itemName: String? = null
+        var itemName: String? = ""
 
         @SerializedName("amount")
         @Expose
-        var amount: String? = null
+        var amount: String? = ""
 
         @SerializedName("qty_type")
         @Expose
@@ -240,23 +240,23 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("qty")
         @Expose
-        var qty: String? = null
+        var qty: String? = ""
 
         @SerializedName("tax")
         @Expose
-        var tax: String? = null
+        var tax: String? = ""
 
         @SerializedName("description")
         @Expose
-        var description: String? = null
+        var description: String? = ""
 
         @SerializedName("discount_type")
         @Expose
-        var discountType: Int? = null
+        var discountType: Int? = 0
 
         @SerializedName("discount")
         @Expose
-        var discount: Int? = null
+        var discount: Int? = 0
 
         @SerializedName("total_amt")
         @Expose
@@ -270,11 +270,11 @@ class InvoiceGetDataMasterArray {
     class GetUnitMeasure {
         @SerializedName("id")
         @Expose
-        var id: Int? = null
+        var id: Int? = 0
 
         @SerializedName("label")
         @Expose
-        var label: String? = null
+        var label: String? = ""
     }
 
     @SerializedName("payment_status")
@@ -284,11 +284,11 @@ class InvoiceGetDataMasterArray {
     class GetpaymentStatus {
         @SerializedName("id")
         @Expose
-        var id: Int? = null
+        var id: Int? = 0
 
         @SerializedName("label")
         @Expose
-        var label: String? = null
+        var label: String? = ""
     }
 
 }

@@ -13,8 +13,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceBusinessItemlistBinding
+import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceExpenseItemlistBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class InvoiceMasterAdapter<T>(
     var activity: Context,
@@ -29,7 +33,7 @@ class InvoiceMasterAdapter<T>(
     companion object {
         const val VIEW_TYPE_STATE = 0
         const val VIEW_TYPE_COMPANY = 1
-        const val VIEW_TYPE_GST = 2
+        const val VIEW_TYPE_EXPENSE = 2
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -40,6 +44,7 @@ class InvoiceMasterAdapter<T>(
             is InvoiceGetDataMasterArray.GetCompanyDetailList -> VIEW_TYPE_COMPANY
             is InvoiceGetDataMasterArray.GetClientDetails -> VIEW_TYPE_COMPANY
             is InvoiceGetDataMasterArray.GetItemList -> VIEW_TYPE_COMPANY
+            is InvoiceGetExpenseDataList.DataList -> VIEW_TYPE_EXPENSE
             else -> throw IllegalArgumentException("Invalid View Type")
         }
     }
@@ -60,7 +65,12 @@ class InvoiceMasterAdapter<T>(
                 )
                 BusinessViewHolder(binding)
             }
-
+            VIEW_TYPE_EXPENSE -> {
+                val binding = ActivityInvoiceExpenseItemlistBinding.inflate(
+                    LayoutInflater.from(activity), parent, false
+                )
+                ExpenseViewHolder(binding)
+            }
             else -> throw IllegalArgumentException("Unknown View Type")
         }
     }
@@ -162,6 +172,24 @@ class InvoiceMasterAdapter<T>(
             holder.itemView.setOnClickListener {
                 invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick)
             }
+        }else if(holder is ExpenseViewHolder){
+            var clickDataId = 0
+            when(item){
+                is InvoiceGetExpenseDataList.DataList -> {
+                    clickDataId = item.invoiceId!!
+                    val createDate = formatDate("" + item.date)
+
+                    holder.binding.ExpItemName.text = item.itemName
+                    holder.binding.ExpInvoiceNo.text = item.invNumber
+                    holder.binding.ExpCreateDate.text = ""+createDate
+                    holder.binding.ExpAmount.text = " ₹ "+item.amount
+                    holder.binding.ExpSellerName.text = " ₹ "+item.sellerName
+
+                }
+            }
+            holder.itemView.setOnClickListener {
+
+            }
         }
 
     }
@@ -169,7 +197,13 @@ class InvoiceMasterAdapter<T>(
     override fun getItemCount(): Int {
         return filteredList.size
     }
+    fun formatDate(inputDate: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
+        val date = inputFormat.parse(inputDate)
+        return outputFormat.format(date!!)
+    }
     private fun getHighlightedText(fullText: String, updatedSearchText: String): SpannableString? {
         val spannableString = SpannableString(fullText)
         val startIndex = fullText.indexOf(updatedSearchText, ignoreCase = true)
@@ -199,5 +233,6 @@ class InvoiceMasterAdapter<T>(
     class BusinessViewHolder(var binding: ActivityInvoiceBusinessItemlistBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-
+    class ExpenseViewHolder(var binding: ActivityInvoiceExpenseItemlistBinding) :
+        RecyclerView.ViewHolder(binding.root)
 }

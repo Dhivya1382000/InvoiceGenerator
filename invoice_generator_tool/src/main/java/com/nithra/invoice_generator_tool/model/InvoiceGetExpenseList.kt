@@ -3,7 +3,10 @@ package com.nithra.invoice_generator_tool.model
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class InvoiceGetItemData {
+
+
+class InvoiceGetExpenseList {
+
     @SerializedName("status")
     @Expose
     var status: String? = null
@@ -14,9 +17,9 @@ class InvoiceGetItemData {
 
     @SerializedName("data")
     @Expose
-    var data: List<GetItemDataList>? = null
+    var data: List<ExpenseData>? = null
 
-    class GetItemDataList{
+    class ExpenseData {
         @SerializedName("user_id")
         @Expose
         var userId: Int? = null
@@ -25,9 +28,13 @@ class InvoiceGetItemData {
         @Expose
         var mobile: String? = null
 
-        @SerializedName("item_id")
+        @SerializedName("invoice_id")
         @Expose
-        var itemId: Int? = null
+        var invoiceId: Int? = null
+
+        @SerializedName("date")
+        @Expose
+        var date: String? = null
 
         @SerializedName("item_name")
         @Expose
@@ -37,28 +44,16 @@ class InvoiceGetItemData {
         @Expose
         var amount: String? = null
 
-        @SerializedName("qty_type")
+        @SerializedName("inv_number")
         @Expose
-        var qtyType: Int? = null
+        var invNumber: String? = null
 
-        @SerializedName("qty")
+        @SerializedName("seller_name")
         @Expose
-        var qty: String? = null
+        var sellerName: String? = null
 
-        @SerializedName("tax")
+        @SerializedName("remark")
         @Expose
-        var tax: String? = null
-
-        @SerializedName("description")
-        @Expose
-        var description: String? = null
-
-        @SerializedName("discount_type")
-        @Expose
-        var discountType: Int? = null
-
-        @SerializedName("discount")
-        @Expose
-        var discount: Int? = null
+        var remark: String? = null
     }
 }

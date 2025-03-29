@@ -17,4 +17,35 @@ class InvoiceOfflineDynamicData {
     var discount_type: Int? = null
     var discount: Int? = null
     var total_amt: String? = ""
+
+    //Business Detail list
+    var state_id: Int? = 0
+    var state: String? = null
+    var company_id: Int? = 0
+    var bussiness_name: String? = null
+    var email: String? = null
+    var bussiness_type: Int? = 0
+    var industrial_name: String? = ""
+    var bussiness_mobile: String? = null
+    var billing_address_1: String? = null
+    var billing_address_2: String? = null
+    var website: String? = null
+    var tax_name: String? = null
+    var tax_id: String? = null
+    var bussiness_id: String? = null
+
+    //Customer Detail list
+    var stateId: Int? = null
+    var invoice_id: Int? = 0
+    var type: Int? = 0
+    var taxId: String? = ""
+    var name: String? = null
+    var companyName: String? = null
+    var mobile1: String? = null
+    var mobile2: String? = null
+    var displayName: String? = null
+    var billingAddress: String? = null
+    var shippingAddress: String? = null
+    var remark: String? = null
+
 }

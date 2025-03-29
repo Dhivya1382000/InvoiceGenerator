@@ -12,6 +12,7 @@ import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceRecyclerviewBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
 import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
@@ -26,6 +27,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
     var listOfCompany: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> = mutableListOf()
     var listOfClients: MutableList<InvoiceGetDataMasterArray.GetClientDetails> = mutableListOf()
     var listOfItems: MutableList<InvoiceGetDataMasterArray.GetItemList> = mutableListOf()
+    var listOfExpenses: MutableList<InvoiceGetExpenseDataList.DataList> = mutableListOf()
     var preference = InvioceSharedPreference()
     var fromInvoice = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +68,28 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             ).show()
         }
 
+        if (fromPage == "Expense"){
+            if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
+                val InputMap = HashMap<String, Any>()
+                InputMap["action"] = "getExpenses"
+                InputMap["user_id"] = "1227994"
+
+                println("InvoiceRequest - $_TAG == $InputMap")
+                viewModel.getExpenseList(InputMap)
+            } else {
+                Toast.makeText(
+                    this@InvoiceBusinessAndCustomerActivity,
+                    "Check Your Internet Connection",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+   viewModel.getExpenseList.observe(this@InvoiceBusinessAndCustomerActivity){getList ->
+       if (getList.status.equals("success")){
+           getList.data?.let { listOfExpenses.addAll(it) }
+       }
+   }
 
         viewModel.errorMessage.observe(this@InvoiceBusinessAndCustomerActivity){
             Toast.makeText(this@InvoiceBusinessAndCustomerActivity, ""+it, Toast.LENGTH_SHORT).show()
@@ -97,14 +121,6 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     this@InvoiceBusinessAndCustomerActivity,
                     InvoiceBusinessDetailFormActivity::class.java
                 )
-               /* val gson = Gson()
-                val savedListOfCompany = gson.toJson(listOfCompany) // Convert User object to JSON
-
-                preference.putString(
-                    this@InvoiceBusinessAndCustomerActivity,
-                    "listOfCompany",
-                    savedListOfCompany
-                )*/
                 startActivity(intent)
             } else if (fromPage == "Customers") {
                 val intent = Intent(
@@ -134,8 +150,10 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompany)
                 } else if (fromPage == "Customers") {
                     setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClients)
-                } else {
+                } else if (fromPage == "Items"){
                     setAdapter<InvoiceGetDataMasterArray.GetItemList>(2, listOfItems)
+                }else if (fromPage == "Expense"){
+                    setAdapter<InvoiceGetExpenseDataList.DataList>(3, listOfExpenses)
                 }
             }
         }
@@ -154,10 +172,10 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 println("selected == ${selectedItem}")
                 val resultIntent = Intent()
                 val selectedItemJson = Gson().toJson(selectedItem)
+                println("selected Json == ${selectedItemJson}")
                 preference.putString(this@InvoiceBusinessAndCustomerActivity,"INVOICE_SELECTED_ITEMS",selectedItemJson)
                 setResult(Activity.RESULT_OK, resultIntent)
                 finish()
-
             }
         )
         binding.recyclerCustomers.layoutManager = LinearLayoutManager(this)
