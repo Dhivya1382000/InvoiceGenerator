@@ -10,12 +10,17 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.provider.Settings
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.core.content.pm.PackageInfoCompat
-import com.airbnb.lottie.LottieAnimationView
 import com.nithra.invoice_generator_tool.R
 
 object InvoiceUtils {
-    val messageNetCheck = "தங்களின் இணையதள சேவையை சரிபார்க்கவும்"
+    val messageNetCheck = "இணையதள சேவையை சரிபார்க்கவும்"
+    val messageLoading = "Loading please wait....."
+    val messageFav = "பிடித்தவைகளில் சேர்க்கப்பட்டது"
+    val messageUnfav = "பிடித்தவற்றிலிருந்து நீக்கப்பட்டது"
+    val errorMessage = "Something went wrong..."
 
     fun isNetworkAvailable(context: Context?): Boolean {
         val connectivityManager =
@@ -36,8 +41,9 @@ object InvoiceUtils {
             return connectivityManager.activeNetworkInfo?.isConnected ?: false
         }
     }
+
     fun getOpenActivity(context: Context, MetaDataFrom: String): Class<*>? {
-        val activityToStart = "" + getClassName(context,MetaDataFrom)
+        val activityToStart = "" + getClassName(context, MetaDataFrom)
         println("== book activity : $activityToStart")
         return try {
             Class.forName(activityToStart)
@@ -45,6 +51,7 @@ object InvoiceUtils {
             null
         }
     }
+
     fun getAndroidId(context: Context?): String {
         return Settings.Secure.getString(
             context?.contentResolver, Settings.Secure.ANDROID_ID
@@ -78,18 +85,19 @@ object InvoiceUtils {
 
     lateinit var loadingDialog: Dialog
 
-    fun loadingProgress(context: Context,  boolean: Boolean): Dialog {
+    fun loadingProgress(context: Context, title: String, boolean: Boolean): Dialog {
 
         loadingDialog = Dialog(
             context,
-            android.R.style.Theme_DeviceDefault_Dialog_MinWidth
+            android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth
         )
         loadingDialog.setContentView(R.layout.invoice_common_loading)
         if (loadingDialog.window != null) {
             loadingDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
-       // val progressBar: ProgressBar = loadingDialog.findViewById(R.id.progressBar)
-        val progressBar: LottieAnimationView = loadingDialog.findViewById(R.id.lottieAnimationView)
+        val titleText: TextView = loadingDialog.findViewById(R.id.title)
+        val progressBar: ProgressBar = loadingDialog.findViewById(R.id.progressBar)
+        titleText.text = title
 
         loadingDialog.setCancelable(boolean)
         loadingDialog.setCanceledOnTouchOutside(boolean)

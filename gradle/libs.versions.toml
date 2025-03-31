@@ -23,6 +23,8 @@ uiAndroid = "1.7.8"
 foundation = "1.8.0-rc02"
 uiToolingPreview = "1.8.0-rc02"
 material3 = "1.4.0-alpha11"
+hiltLifecycleViewmodel = "1.0.0-alpha03"
+fragmentKtx = "1.8.6"
 
 
 [libraries]
@@ -48,6 +50,7 @@ androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", vers
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "uiToolingPreview" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
 
 
 [plugins]

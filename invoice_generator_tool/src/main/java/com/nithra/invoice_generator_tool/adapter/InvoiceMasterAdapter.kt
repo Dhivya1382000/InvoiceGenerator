@@ -11,7 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceBusinessItemlistBinding
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceExpenseItemlistBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
@@ -27,7 +30,8 @@ class InvoiceMasterAdapter<T>(
     var invoicemasterclick: InvoicemasterClick,
     var fromInvoice:Int,
     var fromClick: Int,
-   var onAddItemClick: (T) -> Unit
+   var onAddItemClick: (T) -> Unit,
+    var onDeleteItem:(T) ->Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -85,23 +89,6 @@ class InvoiceMasterAdapter<T>(
         } else {
             "" + post
         }
-        /*  when (item) {
-              is InvoiceGetDataMasterArray.GetStateList  -> {
-                   clikStateName = item.english ?: "" // Cast your POJO to the expected type
-                   clikStateId = item.id!!
-              }
-              is InvoiceGetDataMasterArray.GetIndustrialList -> {
-                  clikStateName = item.industrial ?: "" // Cast your POJO to the expected type
-                  clikStateId = item.id!!
-              }
-              is InvoiceGetDataMasterArray.GstList -> {
-                  clikStateName = item.gst ?: "" // Cast your POJO to the expected type
-                  clikStateId = item.id!!
-              }
-              else -> {
-                  println("Unknown list type")
-              }
-          }*/
         if (holder is ViewHolder) {
             when (item) {
                 is InvoiceGetDataMasterArray.GetStateList -> {
@@ -126,7 +113,7 @@ class InvoiceMasterAdapter<T>(
             holder.textView.text = getHighlightedText(clikStateName, updatedSearchText)
 
             holder.itemView.setOnClickListener {
-                invoicemasterclick.onItemClick(clikStateName, clikStateId!!, fromClick)
+                invoicemasterclick.onItemClick(clikStateName, clikStateId, fromClick,position)
             }
 
         } else if (holder is BusinessViewHolder) {
@@ -134,13 +121,19 @@ class InvoiceMasterAdapter<T>(
             when (item) {
                 is InvoiceGetDataMasterArray.GetCompanyDetailList -> {
                     clickDataId = item.companyId!!
+                    clikStateName = item.bussinessName!!
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.bussinessName
                     holder.binding.invoiceCustomerMobile.text = item.mobile
                     if (fromInvoice == 1){
                         holder.binding.AddInvoice.visibility = View.VISIBLE
+                        holder.binding.menuIcon.visibility = View.GONE
+                    }else if (fromInvoice == 2){
+                        holder.binding.AddInvoice.visibility = View.GONE
+                        holder.binding.menuIcon.visibility = View.GONE
                     }else{
                         holder.binding.AddInvoice.visibility = View.GONE
+                        holder.binding.menuIcon.visibility = View.VISIBLE
                     }
                 }
                 is InvoiceGetDataMasterArray.GetClientDetails -> {
@@ -150,19 +143,23 @@ class InvoiceMasterAdapter<T>(
                     holder.binding.invoiceCustomerMobile.text = item.mobile
                     if (fromInvoice == 1){
                         holder.binding.AddInvoice.visibility = View.VISIBLE
+                        holder.binding.menuIcon.visibility = View.GONE
                     }else{
                         holder.binding.AddInvoice.visibility = View.GONE
+                        holder.binding.menuIcon.visibility = View.VISIBLE
                     }
                 }
                 is InvoiceGetDataMasterArray.GetItemList -> {
                     clickDataId = item.itemId!!
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.itemName
-                    holder.binding.invoiceCustomerMobile.text = item.amount + "/" + "kg"
+                    holder.binding.invoiceCustomerMobile.text = item.amount
                     if (fromInvoice == 1){
                         holder.binding.AddInvoice.visibility = View.VISIBLE
+                        holder.binding.menuIcon.visibility = View.GONE
                     }else{
                         holder.binding.AddInvoice.visibility = View.GONE
+                        holder.binding.menuIcon.visibility = View.VISIBLE
                     }
                 }
             }
@@ -170,8 +167,12 @@ class InvoiceMasterAdapter<T>(
                 onAddItemClick(item)
             }
             holder.itemView.setOnClickListener {
-                invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick)
+                invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick, position)
             }
+            holder.binding.menuIcon.setOnClickListener {
+                showPopupMenu(it, position,clikStateName,clickDataId)
+            }
+
         }else if(holder is ExpenseViewHolder){
             var clickDataId = 0
             when(item){
@@ -191,6 +192,28 @@ class InvoiceMasterAdapter<T>(
 
             }
         }
+
+    }
+
+    private fun showPopupMenu(view: View?, position: Int, clikStateName: String, clickDataId: Int) {
+        val popupMenu = PopupMenu(view!!.context, view)
+        popupMenu.inflate(R.menu.invoice_list_pop)
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.edit -> {
+                    //Toast.makeText(view.context, "Edit item $position", Toast.LENGTH_SHORT).show()
+                    invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick, position)
+                    true
+                }
+                R.id.delete -> {
+                    Toast.makeText(view.context, "Delete item $position", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
 
     }
 

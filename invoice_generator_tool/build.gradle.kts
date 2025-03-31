@@ -63,12 +63,19 @@ dependencies {
 
     //hilt dagger
     implementation(libs.hilt.android)
+    kapt("com.google.dagger:hilt-compiler:2.55")
+
+
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.ui.android)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    kapt("com.google.dagger:hilt-compiler:2.55")
+  //  implementation(libs.androidx.hilt.lifecycle.viewmodel)
+
+    //apply viewmodel in fragment
+    implementation(libs.androidx.fragment.ktx)
+
 
     implementation(libs.lottie)
 

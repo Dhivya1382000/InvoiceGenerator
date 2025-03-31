@@ -57,8 +57,9 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
     var selectedBusinessState = ""
     var selectedCustomerState = ""
     var selectedDate = ""
-    var TotalAmount = 0
+    var TotalAmount = 0.0
     var finalTotalAmount = 0.0
+    var DisountAmount = 0.0
     private val selectItemLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -72,9 +73,15 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                 if (submitData == "item") {
                     // Add new item to list
                     DynamicitemList.add(itemList)
-                    TotalAmount += itemList.amount!!.toInt()
-                    binding.ItemsFinalAmount.text = "₹ " + TotalAmount
+                    TotalAmount += itemList.total_amt!!.toDouble()
+                    finalTotalAmount = TotalAmount - DisountAmount
+                    binding.ItemsFinalAmount.text = "₹ " + finalTotalAmount
                     binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
+                    if (DynamicitemList.isEmpty()) {
+                        binding.DynamicItemCard.visibility = View.GONE
+                    } else {
+                        binding.DynamicItemCard.visibility = View.VISIBLE
+                    }
                     adapter.notifyDataSetChanged()
                 } else if (submitData == "business") {
                     println("iTemLit === ${itemList.company_id}")
@@ -150,6 +157,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         viewModel.errorMessage.observe(this@InvoiceCreateFormActivity) {
             Toast.makeText(this@InvoiceCreateFormActivity, "" + it, Toast.LENGTH_SHORT).show()
         }
+
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
             if (getMasterArray.status.equals("success")) {
                 listOfState.addAll(getMasterArray.state!!)
@@ -167,15 +175,19 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
             }
             val hasStatusKey = listOfItemDetails.any { !it.status.isNullOrEmpty() } ?: false
             println("map === " + hasStatusKey) // Output: true or false
-
         }
 
+        if (DynamicitemList.isEmpty()) {
+            binding.DynamicItemCard.visibility = View.GONE
+        } else {
+            binding.DynamicItemCard.visibility = View.VISIBLE
+        }
         val currentInvoiceNumber =
             preference.getInt(this@InvoiceCreateFormActivity, "InvoiceNumber") // Start from 1000
 
         newInvoiceNumber = currentInvoiceNumber + 1
 
-        binding.InvoiceIncreNumber.setText(".#NITHRA_INV - " + newInvoiceNumber)
+        binding.InvoiceIncreNumber.setText("#NITHRA_INV - " + newInvoiceNumber)
 
         binding.InvoiceBusinessChange.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
@@ -265,18 +277,25 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
 
         }
 
-        viewModel.getAddedInvoiceList.observe(this@InvoiceCreateFormActivity){
-            println("it == $it")
+        viewModel.getAddedInvoiceList.observe(this@InvoiceCreateFormActivity) { getAddeddat ->
+            if (getAddeddat.status.equals("success")) {
+                Toast.makeText(
+                    this@InvoiceCreateFormActivity,
+                    "" + getAddeddat.msg,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         binding.ItemsDiscountAmount.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 // Called after text is changed
                 Log.d("TextWatcher", "After: ${s.toString()}")
-                val DisountAmount =
-                    binding.ItemsDiscountAmount.text.toString().toDoubleOrNull() ?: 0.0
-                finalTotalAmount = TotalAmount - DisountAmount
-                binding.ItemsFinalAmount.text = "" + finalTotalAmount
+                if (s.toString().isNotEmpty()){
+                    DisountAmount = binding.ItemsDiscountAmount.text.toString().replace("₹", "").trim().toDouble() ?: 0.0
+                    finalTotalAmount = TotalAmount - DisountAmount
+                    binding.ItemsFinalAmount.text = "" + finalTotalAmount
+                }
             }
 
             override fun beforeTextChanged(
@@ -295,46 +314,63 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
             }
         })
 
-        adapter = InvoiceAddedItemDataAdapter(DynamicitemList, onItemClick = { position ->
-            DynamicitemList.removeAt(position)
-            adapter.notifyDataSetChanged()
-        }, onShowItem = { binding, clickItemPOs ->
+        adapter =
+            InvoiceAddedItemDataAdapter(DynamicitemList, onItemClick = { listOfDynamic, position ->
+                DynamicitemList.removeAt(position)
+                adapter.notifyDataSetChanged()
+                println("dyanmicList == ${DynamicitemList.size}")
+                if (DynamicitemList.size != 0) {
+                    TotalAmount -= listOfDynamic.total_amt!!.toInt()
+                    finalTotalAmount = TotalAmount + DisountAmount
+                    binding.ItemsFinalAmount.text = "₹ " + finalTotalAmount
+                    binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
+                    binding.ItemsDiscountAmount.setText(" ₹ " + DisountAmount)
+                    binding.DynamicItemCard.visibility = View.VISIBLE
+                } else {
+                    TotalAmount = 0.0
+                    DisountAmount = 0.0
+                    binding.ItemsDiscountAmount.setText("")
+                    binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
+                    binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
+                    binding.DynamicItemCard.visibility = View.GONE
+                }
+            }, onShowItem = { binding, clickItemPOs ->
 
-            println("selectedBus == $selectedBusinessState")
-            println("selectedCus == $selectedCustomerState")
+                println("selectedBus == $selectedBusinessState")
+                println("selectedCus == $selectedCustomerState")
 
-            if (selectedBusinessState == selectedCustomerState) {
-                for (i in listOfGstList.indices) {
-                    if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
-                        val totalGST = listOfGstList[i].gst
-                        val result = splitGST(totalGST!!)
-                        if (result != null) {
-                            val (sgst, cgst) = result
-                            binding.itemCGstSplit.text =
-                                "" + sgst + " % " + "sgst" + " + " + cgst + " % " + "cgst"
+                if (selectedBusinessState == selectedCustomerState) {
+                    for (i in listOfGstList.indices) {
+                        if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
+                            val totalGST = listOfGstList[i].gst
+                            val result = splitGST(totalGST!!)
+                            if (result != null) {
+                                val (sgst, cgst) = result
+                                binding.itemCGstSplit.text =
+                                    "" + sgst + " % " + "sgst" + " + " + cgst + " % " + "cgst"
+                            }
                         }
                     }
-                }
-            } else {
-                for (i in listOfGstList.indices) {
-                    if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
-                        binding.itemCGstSplit.text = "" + listOfGstList[i].gst + " % " + "Igst"
+                } else {
+                    for (i in listOfGstList.indices) {
+                        if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
+                            binding.itemCGstSplit.text = "" + listOfGstList[i].gst + " % " + "Igst"
+                        }
                     }
+
                 }
 
-            }
-
-        }, OnEditClick = { clickId, pos ->
-            val intent = Intent(
-                this@InvoiceCreateFormActivity,
-                InvoiceAddItemFormActivity::class.java
-            )
-            intent.putExtra("fromInvoice", 1)
-            intent.putExtra("clickDataId", clickId.item_id)
-            positionOfEDit = pos
-            clickEditId = clickId.item_id!!
-            selectItemEditLauncher.launch(intent)
-        })
+            }, OnEditClick = { clickId, pos ->
+                val intent = Intent(
+                    this@InvoiceCreateFormActivity,
+                    InvoiceAddItemFormActivity::class.java
+                )
+                intent.putExtra("fromInvoice", 1)
+                intent.putExtra("clickDataId", clickId.item_id)
+                positionOfEDit = pos
+                clickEditId = clickId.item_id!!
+                selectItemEditLauncher.launch(intent)
+            })
         val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         val currentDate = sdf.format(Date())
         binding.InvoiceDate.text = currentDate
@@ -393,7 +429,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
             datePicker.show(supportFragmentManager, "datePicker")
         }
 
-        binding.InvoiceDueDateLay.setOnClickListener {
+        binding.InvoiceDueDateEditLay.setOnClickListener {
             val datePicker = InvoiceDatePickerDialog({ selectedDatePickerDate ->
                 showDatePickerFormat(selectedDatePickerDate)
             }, binding.InvoiceDate.text.toString().trim())
@@ -566,6 +602,9 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
     }
 
     private fun GenerateInvoice() {
+        //check
+
+
         val map = LinkedHashMap<String, Any>()
         map["action"] = "addInvoice"
         map["user_id"] = "1227994"
@@ -591,7 +630,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         }
 
         println("InvoiceRequest - ${_TAG} == $map")
-         viewModel.addInvoiceList(map)
+        viewModel.addInvoiceList(map)
 
     }
 

@@ -72,7 +72,73 @@ class InvoiceGetInvoiceList {
     @Expose
     var pdf: String? = null
 
+    @SerializedName("total_invoice_amt")
+    @Expose
+    var totalInvoiceAmt: String? = ""
+
+    @SerializedName("discount_amt")
+    @Expose
+    var discountAmt: String? = ""
+
+    @SerializedName("status")
+    @Expose
+    var status: String? = ""
+
     @SerializedName("item")
     @Expose
-    var item: List<Any>? = null
+    var item: List<GetItemList>? = null
+
+    class GetItemList {
+        @SerializedName("status")
+        @Expose
+        var status: String? = ""
+
+        @SerializedName("user_id")
+        @Expose
+        var userId: Int? = 0
+
+        @SerializedName("mobile")
+        @Expose
+        var mobile: String? = ""
+
+        @SerializedName("item_id")
+        @Expose
+        var itemId: Int? = 0
+
+        @SerializedName("item_name")
+        @Expose
+        var itemName: String? = ""
+
+        @SerializedName("amount")
+        @Expose
+        var amount: String? = ""
+
+        @SerializedName("qty_type")
+        @Expose
+        var qtyType: Int? = 0
+
+        @SerializedName("qty")
+        @Expose
+        var qty: String? = ""
+
+        @SerializedName("tax")
+        @Expose
+        var tax: String? = ""
+
+        @SerializedName("description")
+        @Expose
+        var description: String? = ""
+
+        @SerializedName("discount_type")
+        @Expose
+        var discountType: Int? = 0
+
+        @SerializedName("discount")
+        @Expose
+        var discount: Int? = 0
+
+        @SerializedName("total_amt")
+        @Expose
+        var totalAmt: String? = ""
+    }
 }

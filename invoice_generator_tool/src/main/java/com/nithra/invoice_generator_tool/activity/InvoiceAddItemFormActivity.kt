@@ -38,7 +38,9 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
     var selectedDiscount = 0
     var finalAmount = ""
     var invoiceClickId = 0
+    var fromInvoicePage = ""
     var preference = InvioceSharedPreference()
+    var clickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +59,8 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
         }
         if (intent != null) {
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
+            fromInvoicePage = "" + intent.getStringExtra("fromInvoicePage")
+            clickPosition =intent.getIntExtra("clickPosition",0)
         }
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceAddItemFormActivity)) {
@@ -75,8 +79,8 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
         }
 
 
-        viewModel.errorMessage.observe(this@InvoiceAddItemFormActivity){
-            Toast.makeText(this@InvoiceAddItemFormActivity, ""+it, Toast.LENGTH_SHORT).show()
+        viewModel.errorMessage.observe(this@InvoiceAddItemFormActivity) {
+            Toast.makeText(this@InvoiceAddItemFormActivity, "" + it, Toast.LENGTH_SHORT).show()
         }
 
         itemFormBinding.InvoiceItemQuantity.setText("1")
@@ -89,11 +93,36 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                     "" + getItemList.msg,
                     Toast.LENGTH_SHORT
                 ).show()
-                val resultIntent = Intent()
-                val selectedItemJson = Gson().toJson(getItemList.data)
-                preference.putString(this@InvoiceAddItemFormActivity,"INVOICE_EDIT_ITEMS",selectedItemJson)
-                setResult(Activity.RESULT_OK, resultIntent)
-                finish()
+                println("invoice == $invoiceClickId")
+                println("invoice fromInvoicePage == $fromInvoicePage")
+                if (invoiceClickId != 0) {
+                    if (fromInvoicePage == "InvoiceBusinessAndCustomerActivity_Item") {
+                        val resultIntent = Intent()
+                        val addedData = Gson().toJson(getItemList.data)
+                        resultIntent.putExtra("INVOICE_FORM_DATA_UPDATE", addedData)
+                        resultIntent.putExtra("INVOICE_FORM_CLICK_POS", clickPosition)
+                        setResult(Activity.RESULT_OK, resultIntent)
+                        finish()
+                    } else {
+                        val resultIntent = Intent()
+                        val selectedItemJson = Gson().toJson(getItemList.data)
+                        preference.putString(
+                            this@InvoiceAddItemFormActivity,
+                            "INVOICE_EDIT_ITEMS",
+                            selectedItemJson
+                        )
+                        setResult(Activity.RESULT_OK, resultIntent)
+                        finish()
+                    }
+                } else {
+                    val resultIntent = Intent()
+                    val addedData = Gson().toJson(getItemList.data)
+                    resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
+                    setResult(Activity.RESULT_OK, resultIntent)
+                    finish()
+                }
+
+
             }
         }
 

@@ -13,4 +13,11 @@
     <color name="invoice_dark_black">#111111</color>
     <color name="invoice_graynew">#CCCCCC</color>
     <color name="invoice_pink">#FD3A84</color>
+    <color name="invoice_lite_green">#E8FFF0</color>
+    <color name="invoice_lite_blue1">#ECFEFF</color>
+    <color name="invoice_peack_green">#008999</color>
+    <color name="invoice_lite_red">#FFE2E2</color>
+    <color name="invoice_red">#FD3A3A</color>
+    <color name="invoice_red_mild">#FF2A51</color>
+    <color name="invoice_green_mild">#00CB1C</color>
 </resources>

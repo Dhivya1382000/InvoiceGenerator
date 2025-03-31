@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.InvoiceAllDataActivity"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolBarTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@color/invoice_white"
-        android:elevation="0dp"
-        android:gravity="center"
-        app:title="Invoice List"
-        app:titleTextAppearance="@style/ToolbarTitleStyle" />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/InvoiceRecycle"
+        android:id="@+id/tabRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/NoDataLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:src="@drawable/invoice_nodata_icon"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Data"
+            android:fontFamily="@font/lexend_medium"
+            android:textColor="@color/invoice_black"
+            android:layout_gravity="center"
+            android:textSize="18dp"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

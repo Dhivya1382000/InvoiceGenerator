@@ -265,7 +265,8 @@
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
                             android:hint="Mobile Number"
-                            android:inputType="textCapSentences"
+                            android:maxLength="10"
+                            android:inputType="number"
                             android:padding="15dp"
                             android:textColor="@color/invoice_black"
                             android:textSize="15dp" />
@@ -333,6 +334,7 @@
                             android:hint="Business Mobile Number"
                             android:inputType="number"
                             android:padding="15dp"
+                            android:maxLength="10"
                             android:textColor="@color/invoice_black"
                             android:textSize="15dp"/>
 

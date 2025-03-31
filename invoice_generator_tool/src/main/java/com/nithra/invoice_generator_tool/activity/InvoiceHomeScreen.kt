@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nithra.invoice_generator_tool.R
-import com.nithra.invoice_generator_tool.activity.InvoiceAddItemFormActivity.Companion._TAG
 import com.nithra.invoice_generator_tool.adapter.InvoiceRecentAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceHomeScreenBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
@@ -64,7 +63,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
         }
         // Initialize RecyclerView
         invoicerecentadapter = InvoiceRecentAdapter(
-            this@InvoiceHomeScreen,listOfGetInvoicelist
+            this@InvoiceHomeScreen, listOfGetInvoicelist
         )
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(this@InvoiceHomeScreen)
@@ -93,7 +92,11 @@ class InvoiceHomeScreen : AppCompatActivity() {
             } else {
                 binding.RecentInvoice.visibility = View.GONE
             }
-
+            binding.seeAllText.setOnClickListener {
+                val intent =
+                    Intent(this@InvoiceHomeScreen, InvoiceTypeOfAllListActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         // Handle Menu Clicks
@@ -105,7 +108,6 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 }
 
                 R.id.nav_business_detail -> {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
                     /*   Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
                            .show()*/
                     val intent = Intent(
@@ -114,64 +116,71 @@ class InvoiceHomeScreen : AppCompatActivity() {
                     )
                     intent.putExtra("InvoicefromPage", "Business")
                     startActivity(intent)
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+
                 }
 
                 R.id.nav_business_report -> {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
                     Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
                         .show()
                     val intent =
                         Intent(this@InvoiceHomeScreen, InvoioceBusinessReportActivity::class.java)
                     startActivity(intent)
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+
                 }
 
                 R.id.nav_invoice -> {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
                     val intent =
-                        Intent(this@InvoiceHomeScreen, InvoiceCreateFormActivity::class.java)
+                        Intent(this@InvoiceHomeScreen, InvoiceTypeOfAllListActivity::class.java)
                     startActivity(intent)
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
                 }
 
                 R.id.nav_customer -> {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(
                         this@InvoiceHomeScreen,
                         InvoiceBusinessAndCustomerActivity::class.java
                     )
                     intent.putExtra("InvoicefromPage", "Customers")
                     startActivity(intent)
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
                 }
 
                 R.id.nav_expence -> {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    /*Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
-                        .show()*/
-                    val intent = Intent(this@InvoiceHomeScreen, InvoiceBusinessAndCustomerActivity::class.java)
+                    val intent = Intent(
+                        this@InvoiceHomeScreen,
+                        InvoiceBusinessAndCustomerActivity::class.java
+                    )
                     intent.putExtra("InvoicefromPage", "Expense")
                     startActivity(intent)
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+
                 }
 
                 R.id.nav_item -> {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    /*   Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
-                           .show()*/
-                    /*   val intent = Intent(this@InvoiceHomeScreen, InvoiceAddItemFormActivity::class.java)
-                       startActivity(intent)*/
                     val intent = Intent(
                         this@InvoiceHomeScreen,
                         InvoiceBusinessAndCustomerActivity::class.java
                     )
                     intent.putExtra("InvoicefromPage", "Items")
                     startActivity(intent)
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+
                 }
 
                 R.id.nav_privacy -> {
+                    /*  Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
+                          .show()*/
+                    val intent = Intent(
+                        this@InvoiceHomeScreen,
+                        InvoiceWebviewLoadActivity::class.java
+                    )
+                    startActivity(intent)
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
-                        .show()
                 }
 
-                R.id.nav_feedback -> {
+                /*R.id.nav_feedback -> {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                     Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
                         .show()
@@ -181,7 +190,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                     Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
                         .show()
-                }
+                }*/
             }
             binding.drawerLayout.closeDrawer(GravityCompat.START) // Close drawer after selecting
             true
@@ -202,7 +211,8 @@ class InvoiceHomeScreen : AppCompatActivity() {
             }
         }
     }
-    companion object{
+
+    companion object {
         var _TAG = "InvoiceHomeScreen"
     }
 }

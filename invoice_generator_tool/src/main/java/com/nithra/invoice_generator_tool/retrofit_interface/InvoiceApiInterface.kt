@@ -9,6 +9,7 @@ import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseList
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
+import com.nithra.invoice_generator_tool.model.InvoicePieChart
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.FieldMap
@@ -43,4 +44,7 @@ interface InvoiceApiInterface {
 
     @POST("invoiceData")
     suspend fun expenseList(@Body requestMap: HashMap<String, Any>): InvoiceGetExpenseDataList
+
+    @POST("invoiceData")
+    suspend fun pieChart(@Body requestMap: HashMap<String, Any>): InvoicePieChart
 }

@@ -15,7 +15,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:padding="5dp"
-            android:src="@drawable/invoice_item_navicon"
+            android:src="@drawable/invoice_logo_icon"
             android:layout_gravity="center"/>
 
         <LinearLayout

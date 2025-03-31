@@ -62,6 +62,7 @@ dependencies {
 
     //hilt dagger
     implementation(libs.hilt.android)
+    //implementation(libs.androidx.hilt.lifecycle.viewmodel)
     kapt("com.google.dagger:hilt-compiler:2.55")
 
     implementation(project(":invoice_generator_tool"))

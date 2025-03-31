@@ -6,6 +6,12 @@
 
     <application>
         <activity
+            android:name=".activity.InvoiceTypeOfAllListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.InvoiceWebviewLoadActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.InvoioceBusinessReportActivity"
             android:exported="false" />
         <activity
@@ -13,15 +19,18 @@
             android:exported="false" />
         <activity
             android:name=".activity.InvoiceAddItemFormActivity"
+            android:configChanges="orientation|screenSize|uiMode"
             android:exported="false" />
         <activity
             android:name=".activity.InvoiceBusinessAndCustomerActivity"
             android:exported="false" />
         <activity
             android:name=".activity.InvoiceAddExpenseFormActivity"
+            android:configChanges="orientation|screenSize|uiMode"
             android:exported="false" />
         <activity
             android:name=".activity.InvoiceNewCustomerFormActivity"
+            android:configChanges="orientation|screenSize|uiMode"
             android:exported="false" />
         <activity
             android:name=".activity.InvoiceBusinessDetailFormActivity"

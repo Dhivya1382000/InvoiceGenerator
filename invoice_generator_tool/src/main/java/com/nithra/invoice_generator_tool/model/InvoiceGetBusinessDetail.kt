@@ -23,9 +23,9 @@ class DataBusiness {
     @Expose
     var userId: String? = null
 
-    @SerializedName("invoice_id")
+    @SerializedName("company_id")
     @Expose
-    var invoiceId: String? = null
+    var companyId: String? = null
 
     @SerializedName("mobile")
     @Expose

@@ -658,7 +658,7 @@
                 android:paddingBottom="7dp"
                 android:text="Display Name"
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
@@ -688,7 +688,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 
@@ -746,7 +746,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 
@@ -804,7 +804,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 
@@ -862,7 +862,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 
@@ -920,7 +920,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 
@@ -978,7 +978,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 
@@ -1036,7 +1036,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 
@@ -1064,7 +1064,7 @@
                 android:paddingBottom="7dp"
                 android:text="GST Number"
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
@@ -1078,7 +1078,7 @@
                 android:paddingBottom="7dp"
                 android:text=":"
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/InvoiceCustomerGST"
@@ -1094,7 +1094,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 
@@ -1152,7 +1152,7 @@
                 android:paddingBottom="7dp"
                 android:text=""
                 android:textColor="@color/invoice_black"
-                android:textSize="12dp" />
+                android:textSize="15dp" />
 
         </LinearLayout>
 

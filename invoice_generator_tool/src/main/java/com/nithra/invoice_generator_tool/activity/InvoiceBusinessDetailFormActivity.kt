@@ -19,6 +19,7 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceBusinessDetailFormBinding
@@ -46,6 +47,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
     var fromInvoicePage = ""
     var invoiceClickId = 0
     var fromInvoice = 0
+    var clickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +70,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             fromInvoicePage = "" + intent.getStringExtra("fromInvoicePage")
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
             fromInvoice = intent.getIntExtra("fromInvoice", 0)
+            clickPosition = intent.getIntExtra("clickPosition", 0)
         }
 
         // Step 2: Set an OnCheckedChangeListener to handle checkbox state changes
@@ -104,8 +107,9 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 listOfIndustrial.addAll(getMasterArray.industrial!!)
                 listOfCompanyDetails.addAll(getMasterArray.companyDetails!!)
                 listOfClientDetails.addAll(getMasterArray.clientDetails!!)
+                println("invoiceClickId == $invoiceClickId")
+
                 if (invoiceClickId != 0) {
-                    println("invoiceClickId == $invoiceClickId")
                     for (i in listOfCompanyDetails.indices) {
                         println("invoiceClickId Company == ${listOfCompanyDetails[i].companyId}")
                         if (invoiceClickId == listOfCompanyDetails[i].companyId) {
@@ -332,6 +336,22 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     "" + getBusinessDetail.msg,
                     Toast.LENGTH_SHORT
                 ).show()
+                if (invoiceClickId != 0){
+                    val resultIntent = Intent()
+                    val addedData = Gson().toJson(getBusinessDetail.data)
+                    resultIntent.putExtra("INVOICE_FORM_DATA_UPDATE", addedData)
+                    resultIntent.putExtra("INVOICE_FORM_CLICK_POS", clickPosition)
+                    setResult(Activity.RESULT_OK, resultIntent)
+                    finish()
+                }else{
+                    if (fromInvoicePage == "InvoiceBusinessAndCustomerActivity_Business") {
+                        val resultIntent = Intent()
+                        val addedData = Gson().toJson(getBusinessDetail.data)
+                        resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
+                        setResult(Activity.RESULT_OK, resultIntent)
+                        finish()
+                    }
+                }
 
             } else {
                 Toast.makeText(
@@ -537,7 +557,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         var _TAG = "InvoiceBusinessDetailFormActivity"
     }
 
-    override fun onItemClick(clikName: String, clikId: Int, fromClick: Int) {
+    override fun onItemClick(clikName: String, clikId: Int, fromClick: Int, position: Int) {
         stateDialog.dismiss()
         if (fromClick == 0) {
             selectedStateId = clikId

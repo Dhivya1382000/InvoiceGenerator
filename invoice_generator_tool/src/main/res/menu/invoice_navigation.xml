@@ -38,7 +38,7 @@
         android:icon="@drawable/invoice_privacy_navicon"
         android:title="Privacy Policy" />
 
-    <item
+  <!--  <item
         android:id="@+id/nav_feedback"
         android:icon="@drawable/invoice_feed_navicon"
         android:title="Feedback" />
@@ -46,6 +46,6 @@
     <item
         android:id="@+id/nav_share"
         android:icon="@drawable/invoice_share_navicon"
-        android:title="Share" />
+        android:title="Share" />-->
 
 </menu>

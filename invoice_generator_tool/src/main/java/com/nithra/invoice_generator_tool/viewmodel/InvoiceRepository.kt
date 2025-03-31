@@ -9,6 +9,7 @@ import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseList
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
+import com.nithra.invoice_generator_tool.model.InvoicePieChart
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoiceApiInterface
 import javax.inject.Inject
 
@@ -46,5 +47,9 @@ class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface
 
         suspend fun getExpenseList(requestInputMap: HashMap<String, Any>): InvoiceGetExpenseDataList {
         return api.expenseList(requestInputMap)
+    }
+
+    suspend fun getPieChart(requestInputMap: HashMap<String, Any>): InvoicePieChart {
+        return api.pieChart(requestInputMap)
     }
 }

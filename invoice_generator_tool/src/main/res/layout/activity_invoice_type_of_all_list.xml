@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/invoice_white">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolBarTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/invoice_white"
+        android:elevation="0dp"
+        android:gravity="center"
+        app:title="Invoice"
+        app:titleTextAppearance="@style/ToolbarTitleStyle" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/InvoiceTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorHeight="0dp"
+        app:tabGravity="center"
+        app:tabMode="scrollable"
+        android:background="@color/invoice_white"
+        android:paddingHorizontal="10dp"
+        app:tabRippleColor="@null"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/InvoiceViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

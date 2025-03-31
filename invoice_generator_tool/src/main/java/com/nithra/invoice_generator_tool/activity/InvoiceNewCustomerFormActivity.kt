@@ -1,6 +1,8 @@
 package com.nithra.invoice_generator_tool.activity
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +16,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceNewCustomerBinding
@@ -39,7 +42,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
     var selectedStateId = 0
     var selectedBusinesTypeId = 1
     var fromInvoice = 0
-
+    var fromInvoicePage = ""
+    var clickPosition = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,7 +62,10 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         if (intent != null) {
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
             fromInvoice = intent.getIntExtra("fromInvoice", 0)
+            fromInvoicePage = "" + intent.getStringExtra("fromInvoicePage")
+            clickPosition = intent.getIntExtra("clickPosition", 0)
         }
+        println("invoiceCli == $invoiceClickId")
 
         if (binding.InvoiceIndividualChoice.isChecked) {
             selectedBusinesTypeId = 1
@@ -159,8 +166,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         }
 
 
-        viewModel.errorMessage.observe(this@InvoiceNewCustomerFormActivity){
-            Toast.makeText(this@InvoiceNewCustomerFormActivity, ""+it, Toast.LENGTH_SHORT).show()
+        viewModel.errorMessage.observe(this@InvoiceNewCustomerFormActivity) {
+            Toast.makeText(this@InvoiceNewCustomerFormActivity, "" + it, Toast.LENGTH_SHORT).show()
         }
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
             if (getMasterArray.status.equals("success")) {
@@ -177,7 +184,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             selectedBusinesTypeId = listOfClientDetails[i].type!!
                             if (listOfClientDetails[i].type == 1) {
                                 binding.InvoiceIndividualChoice.isChecked = true
-                            }else{
+                            } else {
                                 binding.InvoiceBusinessChoice.isChecked = true
                             }
                             binding.InvoiceCustomerName.setText(listOfClientDetails[i].name)
@@ -189,7 +196,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             binding.InvoiceCusMobile2.setText(listOfClientDetails[i].mobile2)
                             binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].billingAddress)
                             binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].shippingAddress)
-                            if (listOfClientDetails[i].billingAddress.equals(listOfClientDetails[i].shippingAddress)){
+                            if (listOfClientDetails[i].billingAddress.equals(listOfClientDetails[i].shippingAddress)) {
                                 binding.checkBox1.isChecked = true
                             }
                             binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
@@ -389,7 +396,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             val map = HashMap<String, Any>()
                             map["action"] = "addClientDetails"
                             map["user_id"] = "1227994"
-                            if (invoiceClickId != 0){
+                            if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }
                             map["name"] = "" + binding.InvoiceCustomerName.text.toString().trim()
@@ -503,6 +510,9 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             val map = HashMap<String, Any>()
                             map["action"] = "addClientDetails"
                             map["user_id"] = "1227994"
+                            if (invoiceClickId != 0) {
+                                map["id"] = invoiceClickId
+                            }
                             map["name"] = "" + binding.InvoiceCustomerName.text.toString().trim()
                             map["company_name"] =
                                 "" + binding.InvoiceCusCompanyName.text.toString().trim()
@@ -540,6 +550,25 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         "" + getCustomerDetail.msg,
                         Toast.LENGTH_SHORT
                     ).show()
+                    println("fromInvoicePage == $fromInvoicePage")
+                    if (invoiceClickId != 0) {
+                        val resultIntent = Intent()
+                        val addedData = Gson().toJson(getCustomerDetail.data)
+                        resultIntent.putExtra("INVOICE_FORM_DATA_UPDATE", addedData)
+                        resultIntent.putExtra("INVOICE_FORM_CLICK_POS", clickPosition)
+                        setResult(Activity.RESULT_OK, resultIntent)
+                        finish()
+                    } else {
+                        if (fromInvoicePage == "InvoiceBusinessAndCustomerActivity_Customers") {
+                            val resultIntent = Intent()
+                            val addedData = Gson().toJson(getCustomerDetail.data)
+                            resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
+                            setResult(Activity.RESULT_OK, resultIntent)
+                            finish()
+                        }
+                    }
+
+
                 } else {
 
                 }
@@ -698,7 +727,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         val adapter = InvoiceMasterAdapter(
             this@InvoiceNewCustomerFormActivity, filteredList,
             searchQuery.toString(),
-            this, fromInvoice ,fromSpinner, onAddItemClick = {
+            this, fromInvoice, fromSpinner, onAddItemClick = {
 
             }
         ) // Pass the query
@@ -710,7 +739,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         var _TAG = "InvoiceNewCustomerFormActivity"
     }
 
-    override fun onItemClick(clikName: String, clikId: Int, fromClick: Int) {
+    override fun onItemClick(clikName: String, clikId: Int, fromClick: Int, position: Int) {
         stateDialog.dismiss()
         if (fromClick == 0) {
             selectedStateId = clikId
