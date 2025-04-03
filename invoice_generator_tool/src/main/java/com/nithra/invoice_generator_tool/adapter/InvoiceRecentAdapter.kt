@@ -26,14 +26,16 @@ class InvoiceRecentAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.apply {
-            InvoiceCusName.text = listOfGetInvoicelist[position].clientName
-            InvoiceNo.text = "." + listOfGetInvoicelist[position].invoiceNumber
+            val reversedPosition =  listOfGetInvoicelist.size - 1 - position // Reverse the order
+            val item = listOfGetInvoicelist[reversedPosition]
+            InvoiceCusName.text =item.clientName
+            InvoiceNo.text = "." +item.invoiceNumber
             InvoiceAmount.text = ""+listOfGetInvoicelist[position].paidAmt
             if (listOfGetInvoicelist[position].invoiceDate != null){
-                val createDate = formatDate("" + listOfGetInvoicelist[position].invoiceDate)
+                val createDate = formatDate("" +item.invoiceDate)
                 createdDate.text = "created on " + createDate
-
             }
+
         }
     }
 

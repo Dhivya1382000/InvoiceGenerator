@@ -52,7 +52,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
         toggle.syncState()
 
         val greetings = "" + getGreetingMessage()
-        binding.InvoiceUserName.setText(" " + greetings + " " + "Dhivya ,")
+        binding.InvoiceUserName.setText(" " + greetings + " " + "Mohanraj N,")
 
         binding.createInvoiceLay.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {

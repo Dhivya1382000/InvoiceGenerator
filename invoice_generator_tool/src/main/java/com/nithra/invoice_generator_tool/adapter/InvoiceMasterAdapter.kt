@@ -162,7 +162,7 @@ class InvoiceMasterAdapter<T>(
                     clickDeleteDataAction = "deleteItemDetails"
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.itemName
-                    holder.binding.invoiceCustomerMobile.text = item.amount
+                    holder.binding.invoiceCustomerMobile.text = " ₹ "+item.amount
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
@@ -193,6 +193,7 @@ class InvoiceMasterAdapter<T>(
                     holder.binding.ExpCreateDate.text = "" + createDate
                     holder.binding.ExpAmount.text = " ₹ " + item.amount
                     holder.binding.ExpSellerName.text = "" + item.sellerName
+                    holder.binding.businessName.text = "" + item.bussinessName
                 }
             }
             holder.itemView.setOnClickListener {

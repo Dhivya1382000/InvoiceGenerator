@@ -103,6 +103,7 @@ class InvoiceAddExpenseFormActivity : AppCompatActivity(), InvoicemasterClick {
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
         }
 
+        loadMasterData()
 
         binding.InvoiceExpenseLay.setOnClickListener {
             val datePicker = InvoiceDatePickerDialog({ selectedDatePickerDate ->
@@ -125,6 +126,18 @@ class InvoiceAddExpenseFormActivity : AppCompatActivity(), InvoicemasterClick {
                 resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
                 setResult(Activity.RESULT_OK, resultIntent)
                 finish()
+            }
+        }
+        viewmodel.errorMessage.observe(this@InvoiceAddExpenseFormActivity) {
+            println("eror ==== $it")
+            Toast.makeText(this@InvoiceAddExpenseFormActivity, "" + it, Toast.LENGTH_SHORT).show()
+        }
+
+        viewmodel.getMasterDetail.observe(this) { getMasterArray ->
+            listOfCompanyDetails.addAll(getMasterArray.companyDetails!!)
+            if ( listOfCompanyDetails[0].bussinessName!!.isNotEmpty()){
+                binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
+                clickDataId = listOfCompanyDetails[0].companyId!!
             }
         }
 
@@ -211,6 +224,7 @@ class InvoiceAddExpenseFormActivity : AppCompatActivity(), InvoicemasterClick {
                         map["seller_name"] =
                             "" + binding.InvoiceExpenseSellerName.text.toString().trim()
                         map["remark"] = "" + binding.InvoiceExpenseRemark.text.toString().trim()
+                        map["company_id"] = ""+clickDataId
 
                         println("InvoiceRequest - ${_TAG} == $map")
                         viewModel.addExpenseData(map)
@@ -377,7 +391,9 @@ class InvoiceAddExpenseFormActivity : AppCompatActivity(), InvoicemasterClick {
         var _TAG = "InvoiceAddExpenseFormActivity"
     }
 
-    override fun onItemClick(item: String, clikStateId: Int, fromClick: Int, position: Int) {
-
+    override fun onItemClick(item: String, clikId: Int, fromClick: Int, position: Int) {
+        binding.InvoiceBusinessTypeText.text = "" + item
+        clickDataId = clikId
+        stateDialog.dismiss()
     }
 }

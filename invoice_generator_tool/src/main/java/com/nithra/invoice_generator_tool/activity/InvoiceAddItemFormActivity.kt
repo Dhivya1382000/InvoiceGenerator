@@ -14,9 +14,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceAddItemFormBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
+import com.nithra.invoice_generator_tool.model.InvoiceOfflineDynamicData
 import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
@@ -41,6 +44,8 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
     var fromInvoicePage = ""
     var preference = InvioceSharedPreference()
     var clickPosition = 0
+    var OffLineEdit = 0
+    var InvoiceCickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,14 +65,22 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
         if (intent != null) {
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
             fromInvoicePage = "" + intent.getStringExtra("fromInvoicePage")
-            clickPosition =intent.getIntExtra("clickPosition",0)
+            clickPosition = intent.getIntExtra("clickPosition", 0)
+            OffLineEdit = intent.getIntExtra("OffLineEdit", 0)
+            InvoiceCickPosition = intent.getIntExtra("InvoiceCickPosition", 0)
         }
 
+        println("offEdit == $OffLineEdit")
+
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceAddItemFormActivity)) {
-            InvoiceUtils.loadingProgress(this@InvoiceAddItemFormActivity,""+InvoiceUtils.messageLoading,false).show()
+            InvoiceUtils.loadingProgress(
+                this@InvoiceAddItemFormActivity,
+                "" + InvoiceUtils.messageLoading,
+                false
+            ).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = "" + InvoiceUtils.userId
 
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
@@ -79,15 +92,11 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
             ).show()
         }
 
-
         viewModel.errorMessage.observe(this@InvoiceAddItemFormActivity) {
             itemFormBinding.mainItemLayForm.visibility = View.VISIBLE
             InvoiceUtils.loadingDialog.dismiss()
             Toast.makeText(this@InvoiceAddItemFormActivity, "" + it, Toast.LENGTH_SHORT).show()
         }
-
-        itemFormBinding.InvoiceItemQuantity.setText("1")
-
 
         viewModel.getItemDetails.observe(this) { getItemList ->
             itemFormBinding.mainItemLayForm.visibility = View.VISIBLE
@@ -171,48 +180,92 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                     ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, dataList)
                 itemFormBinding.itemQtySpinner.adapter = adapter2
 
+                if (OffLineEdit != 1) {
+                    if (invoiceClickId != 0) {
+                        println("invoiceClickId == $invoiceClickId")
+                        for (i in listOfitemList.indices) {
+                            println("invoiceClickId Company == ${listOfitemList[i].itemId}")
+                            if (invoiceClickId == listOfitemList[i].itemId) {
 
-                if (invoiceClickId != 0) {
-                    println("invoiceClickId == $invoiceClickId")
-                    for (i in listOfitemList.indices) {
-                        println("invoiceClickId Company == ${listOfitemList[i].itemId}")
-                        if (invoiceClickId == listOfitemList[i].itemId) {
+                                itemFormBinding.InvoiceItemName.setText(listOfitemList[i].itemName)
+                                itemFormBinding.InvoiceItemDesc.setText(listOfitemList[i].description)
+                                itemFormBinding.InvoiceItemQuantity.setText(listOfitemList[i].qty)
 
-                            itemFormBinding.InvoiceItemName.setText(listOfitemList[i].itemName)
-                            itemFormBinding.InvoiceItemDesc.setText(listOfitemList[i].description)
-                            itemFormBinding.InvoiceItemQuantity.setText(listOfitemList[i].qty)
+                                selectedMeasuresId = listOfitemList[i].qtyType!!
+                                selectedGstId = listOfitemList[i].tax!!.toInt()
+                                selectedDiscount = listOfitemList[i].discountType!!.toInt()
+                                println("qtyType == ${listOfitemList[i].qtyType!!}")
 
-                            selectedMeasuresId = listOfitemList[i].qtyType!!
-                            selectedGstId = listOfitemList[i].tax!!.toInt()
-                            selectedDiscount = listOfitemList[i].discountType!!.toInt()
-                            println("qtyType == ${listOfitemList[i].qtyType!!}")
+                                val MeasuresId =
+                                    listOfMeasures.indexOfFirst { it.id == selectedMeasuresId }
+                                itemFormBinding.itemQtySpinner.setSelection(MeasuresId)
 
-                            val MeasuresId =
-                                listOfMeasures.indexOfFirst { it.id == selectedMeasuresId }
-                            itemFormBinding.itemQtySpinner.setSelection(MeasuresId)
+                                itemFormBinding.InvoiceItemRate.setText(listOfitemList[i].amount!!)
 
-                            itemFormBinding.InvoiceItemRate.setText(listOfitemList[i].amount!!)
+                                val GstId = listOfGST.indexOfFirst { it.id == selectedGstId }
+                                itemFormBinding.InvoiceItemTaxSpinner.setSelection(GstId)
 
-                            val GstId = listOfGST.indexOfFirst { it.id == selectedGstId }
-                            itemFormBinding.InvoiceItemTaxSpinner.setSelection(GstId)
+                                itemFormBinding.InvoiceItemDiscount.setText("" + listOfitemList[i].discount)
 
-                            itemFormBinding.InvoiceItemDiscount.setText("" + listOfitemList[i].discount)
-
-                            if (selectedDiscount == 1) {
-                                itemFormBinding.itemDiscountSpinner.setSelection(0)
-                            } else {
-                                itemFormBinding.itemDiscountSpinner.setSelection(1)
+                                if (selectedDiscount == 1) {
+                                    itemFormBinding.itemDiscountSpinner.setSelection(0)
+                                } else {
+                                    itemFormBinding.itemDiscountSpinner.setSelection(1)
+                                }
+                                finalAmount = listOfitemList[i].totalAmt.toString()
+                                itemFormBinding.InvoiceTotalItemAmount.setText("Total Amount : " + listOfitemList[i].totalAmt)
+                                itemFormBinding.InvoiceItemSaveCardText.text = "Update"
                             }
-                            finalAmount = listOfitemList[i].totalAmt.toString()
-                            itemFormBinding.InvoiceTotalItemAmount.setText("Total Amount : " + listOfitemList[i].totalAmt)
-                            itemFormBinding.InvoiceItemSaveCardText.text = "Update"
                         }
-                    }
-                } else {
+                    } else {
 
+                    }
                 }
 
+
             }
+
+            if (OffLineEdit == 1){
+                val json = preference.getString(
+                    this@InvoiceAddItemFormActivity,
+                    "INVOICE_SET_LIST"
+                )
+                val type = object : TypeToken<List<InvoiceOfflineDynamicData>>() {}.type
+                val itemList: List<InvoiceOfflineDynamicData> = Gson().fromJson(json, type)
+
+                itemFormBinding.InvoiceItemName.setText(itemList[InvoiceCickPosition].item_name)
+                itemFormBinding.InvoiceItemDesc.setText(itemList[InvoiceCickPosition].description)
+                itemFormBinding.InvoiceItemQuantity.setText(itemList[InvoiceCickPosition].qty)
+
+                selectedMeasuresId = itemList[InvoiceCickPosition].qty_type!!
+                selectedGstId = itemList[InvoiceCickPosition].tax!!.toInt()
+                selectedDiscount = itemList[InvoiceCickPosition].discount_type!!.toInt()
+                println("qtyType == ${itemList[InvoiceCickPosition].qty_type!!}")
+
+                val MeasuresId =
+                    listOfMeasures.indexOfFirst { it.id == selectedMeasuresId }
+                itemFormBinding.itemQtySpinner.setSelection(MeasuresId)
+
+                itemFormBinding.InvoiceItemRate.setText(itemList[InvoiceCickPosition].amount!!)
+
+                val GstId = listOfGST.indexOfFirst { it.id == selectedGstId }
+                itemFormBinding.InvoiceItemTaxSpinner.setSelection(GstId)
+
+                itemFormBinding.InvoiceItemDiscount.setText("" + itemList[InvoiceCickPosition].discount)
+
+                if (selectedDiscount == 1) {
+                    itemFormBinding.itemDiscountSpinner.setSelection(InvoiceCickPosition)
+                } else {
+                    itemFormBinding.itemDiscountSpinner.setSelection(1)
+                }
+                finalAmount = itemList[InvoiceCickPosition].total_amt.toString()
+                itemFormBinding.InvoiceTotalItemAmount.setText("Total Amount : " + itemList[InvoiceCickPosition].total_amt)
+                itemFormBinding.InvoiceItemSaveCardText.text = "Update"
+            }else{
+                itemFormBinding.InvoiceItemQuantity.setText("1")
+            }
+
+
             itemFormBinding.itemDiscountSpinner.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
@@ -390,37 +443,77 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                    }*/
 
                 else -> {
-                    if (InvoiceUtils.isNetworkAvailable(this@InvoiceAddItemFormActivity)) {
-                        val map = HashMap<String, Any>()
-                        map["action"] = "addItem"
-                        map["user_id"] = ""+InvoiceUtils.userId
-                        if (invoiceClickId != 0) {
-                            map["id"] = invoiceClickId
-                        }
-                        map["item_name"] =
-                            "" + itemFormBinding.InvoiceItemName.text.toString().trim()
-                        map["amount"] = "" + itemFormBinding.InvoiceItemRate.text.toString().trim()
-                        map["qty_type"] = "" + selectedMeasuresId
-                        map["qty"] = "" + itemFormBinding.InvoiceItemQuantity.text.toString().trim()
-                        map["tax"] = "" + selectedGstId
-                        map["description"] =
+                    if (OffLineEdit == 1) {
+
+                        val GetEditListItem: MutableList<InvoiceGetItemData.GetItemDataList> =
+                            arrayListOf()
+                        val getItemList = InvoiceGetItemData.GetItemDataList()
+                        getItemList.itemId = invoiceClickId
+                        getItemList.itemName = "" + itemFormBinding.InvoiceItemName.text.toString().trim()
+                        getItemList.userId = InvoiceUtils.userId.toInt()
+                        getItemList.qtyType = selectedMeasuresId
+                        getItemList.qty = itemFormBinding.InvoiceItemQuantity.text.toString().trim()
+                        getItemList.tax = "" + selectedGstId
+                        getItemList.description =
                             "" + itemFormBinding.InvoiceItemDesc.text.toString().trim()
-                        map["discount_type"] = "" + selectedDiscount
-                        map["discount"] =
-                            "" + itemFormBinding.InvoiceItemDiscount.text.toString().trim()
-                        map["total_amt"] = "" + finalAmount
-
-                        println("InvoiceRequest - $_TAG == $map")
-                        InvoiceUtils.loadingProgress(this@InvoiceAddItemFormActivity,""+InvoiceUtils.messageLoading,false).show()
-                        viewModel.addItemData(map)
-
-                    } else {
-                        Toast.makeText(
+                        getItemList.discountType = selectedDiscount
+                        getItemList.discount =
+                            itemFormBinding.InvoiceItemDiscount.text.toString().trim().toIntOrNull()
+                                ?: 0
+                        getItemList.totalAmt = "" + finalAmount
+                        getItemList.amount = "" +  itemFormBinding.InvoiceItemRate.text.toString().trim()
+                        getItemList.status = "success"
+                        GetEditListItem.add(getItemList)
+                        println("getList === ${GetEditListItem.size}")
+                        val resultIntent = Intent()
+                        val selectedItemJson = Gson().toJson(GetEditListItem)
+                        preference.putString(
                             this@InvoiceAddItemFormActivity,
-                            "Check Your Internet Connection",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            "INVOICE_EDIT_ITEMS",
+                            selectedItemJson
+                        )
+                        setResult(Activity.RESULT_OK, resultIntent)
+                        finish()
+                    } else {
+                        if (InvoiceUtils.isNetworkAvailable(this@InvoiceAddItemFormActivity)) {
+                            val map = HashMap<String, Any>()
+                            map["action"] = "addItem"
+                            map["user_id"] = "" + InvoiceUtils.userId
+                            if (invoiceClickId != 0) {
+                                map["id"] = invoiceClickId
+                            }
+                            map["item_name"] =
+                                "" + itemFormBinding.InvoiceItemName.text.toString().trim()
+                            map["amount"] =
+                                "" + itemFormBinding.InvoiceItemRate.text.toString().trim()
+                            map["qty_type"] = "" + selectedMeasuresId
+                            map["qty"] =
+                                "" + itemFormBinding.InvoiceItemQuantity.text.toString().trim()
+                            map["tax"] = "" + selectedGstId
+                            map["description"] =
+                                "" + itemFormBinding.InvoiceItemDesc.text.toString().trim()
+                            map["discount_type"] = "" + selectedDiscount
+                            map["discount"] =
+                                "" + itemFormBinding.InvoiceItemDiscount.text.toString().trim()
+                            map["total_amt"] = "" + finalAmount
+
+                            println("InvoiceRequest - $_TAG == $map")
+                            InvoiceUtils.loadingProgress(
+                                this@InvoiceAddItemFormActivity,
+                                "" + InvoiceUtils.messageLoading,
+                                false
+                            ).show()
+                            viewModel.addItemData(map)
+
+                        } else {
+                            Toast.makeText(
+                                this@InvoiceAddItemFormActivity,
+                                "Check Your Internet Connection",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
+
                 }
             }
         }

@@ -103,6 +103,7 @@
                     android:layout_weight="1"
                     android:text="Created on"
                     android:fontFamily="@font/lexend_medium"
+                    android:gravity="center"
                     android:textColor="@color/invoice_pink"
                     android:textSize="12dp" />
 
@@ -110,6 +111,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:text="Status"
                     android:fontFamily="@font/lexend_medium"
                     android:textColor="@color/invoice_pink"
@@ -134,6 +136,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="NA#OM12"
+                        android:layout_marginEnd="2dp"
                         android:textColor="@android:color/black"
                         android:fontFamily="@font/lexend_medium"
                         android:textSize="13dp" />
@@ -144,6 +147,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="07/02/2025"
+                        android:gravity="center"
+                        android:layout_marginEnd="2dp"
                         android:fontFamily="@font/lexend_medium"
                         android:textColor="@android:color/black"
                         android:textSize="13dp" />
@@ -154,6 +159,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/lexend_medium"
+                        android:gravity="center"
                         android:text="Unpaid"
                         android:textColor="@color/invoice_black"
                         android:textSize="13dp" />
@@ -177,27 +183,89 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <!-- User Name -->
-                <TextView
-                    android:id="@+id/tvUserName"
+                android:orientation="vertical">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="Dhivya"
-                    android:layout_weight="1"
-                    android:textColor="@color/invoice_black"
-                    android:fontFamily="@font/lexend_medium"
-                    android:textSize="16dp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingTop="10dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="5dp"
+                            android:paddingBottom="5dp">
+                            <!-- User Name -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Client Name : "
+                                android:textColor="@color/invoice_pink"
+                                android:fontFamily="@font/lexend_medium"
+                                android:textSize="14dp"
+                                android:textStyle="normal" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/invoice_right_arrow" />
+                            <TextView
+                                android:id="@+id/tvUserName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Dhivya"
+                                android:layout_marginStart="5dp"
+                                android:layout_weight="1"
+                                android:textColor="@color/invoice_black"
+                                android:fontFamily="@font/lexend_medium"
+                                android:textSize="14dp"
+                                android:textStyle="bold" />
+
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingTop="5dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="5dp"
+                            android:paddingBottom="10dp">
+                            <!-- User Name -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Business Name :"
+                                android:textColor="@color/invoice_pink"
+                                android:fontFamily="@font/lexend_medium"
+                                android:textSize="14dp"
+                                android:textStyle="normal" />
+
+                            <TextView
+                                android:id="@+id/tvBusinessName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Dhivya"
+                                android:textColor="@color/invoice_black"
+                                android:fontFamily="@font/lexend_medium"
+                                android:textSize="14dp"
+                                android:layout_marginStart="5dp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/invoice_right_arrow" />
+                </LinearLayout>
 
             </LinearLayout>
+
 
         </LinearLayout>
 

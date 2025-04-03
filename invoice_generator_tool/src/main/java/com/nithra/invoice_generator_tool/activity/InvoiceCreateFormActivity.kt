@@ -39,6 +39,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -91,6 +92,14 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
 
                 if (submitData == "item") {
                     // Add new item to list
+                    println("itemId==== ${itemList.item_id}")
+                    for (i in DynamicitemList.indices){
+                        println("itemId Dy==== ${DynamicitemList[i].item_id}")
+                        if (DynamicitemList[i].item_id == itemList.item_id){
+                            Toast.makeText(this@InvoiceCreateFormActivity, "This item is already in the list", Toast.LENGTH_SHORT).show()
+                            return@registerForActivityResult
+                        }
+                    }
                     DynamicitemList.add(itemList)
                     TotalAmount += itemList.total_amt!!.toDouble()
                     finalTotalAmount = TotalAmount - DisountAmount
@@ -130,14 +139,41 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                 val type = object : TypeToken<List<InvoiceOfflineDynamicData>>() {}.type
                 val itemList: List<InvoiceOfflineDynamicData> = Gson().fromJson(json, type)
                 println("iTemLit from === ${itemList[0].item_id}")
+                println("iTemLit from amt === ${itemList[0].total_amt}")
+
                 println("iTemLit click === ${clickEditId}")
 
-                val index = itemList.indexOfFirst { clickEditId == itemList[0].item_id }
-                println("inddex === $index")
-                if (index != -1) {
-                    DynamicitemList[index] = itemList[0]
+               // val index = itemList.indexOfFirst { clickEditId == itemList[0].item_id }
+                var foundIndex = -1  // Default to -1 (not found)
+                for (i in DynamicitemList.indices) {
+                    println("itemId Dy==== ${DynamicitemList[i].item_id}")
+                    if (DynamicitemList[i].item_id == itemList[0].item_id) {
+                        foundIndex = i  // Store the index
+                        break  // Exit loop early
+                    }
+                }
+
+                println("iTemLit from amt name === ${itemList[0].item_name}")
+                println("inddex === $foundIndex")
+                println("inddex size === ${DynamicitemList.size}")
+                println("inddex itemList size === ${itemList.size}")
+                if (foundIndex != -1) {
+                    DynamicitemList[foundIndex] = itemList[0]
                 } else {
                     DynamicitemList.add(itemList[0])
+                }
+
+                TotalAmount = DynamicitemList.sumOf { it.total_amt?.toDouble() ?: 0.0 }
+                finalTotalAmount = TotalAmount - DisountAmount
+                val total = String.format("%.2f", finalTotalAmount)
+// Update UI
+                binding.ItemsFinalAmount.text = "₹ $total"
+                binding.ItemsTotalAmount.text = "₹ $total"
+
+                if (DynamicitemList.isEmpty()) {
+                    binding.DynamicItemCard.visibility = View.GONE
+                } else {
+                    binding.DynamicItemCard.visibility = View.VISIBLE
                 }
                 adapter.notifyDataSetChanged()
             }
@@ -492,10 +528,13 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                 println("dyanmicList == ${DynamicitemList.size}")
                 if (DynamicitemList.size != 0) {
                     TotalAmount -= listOfDynamic.total_amt!!.toDouble()
-                    finalTotalAmount = TotalAmount + DisountAmount
+                  //  finalTotalAmount = TotalAmount + DisountAmount
+                    val finalTotalAmountNew = (TotalAmount + DisountAmount).toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+                  finalTotalAmount = finalTotalAmountNew.toDouble()
                     val total = String.format ("%.2f", finalTotalAmount)
+                    val totalAmt = String.format ("%.2f", TotalAmount)
                     binding.ItemsFinalAmount.text = "₹ " + total
-                    binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
+                    binding.ItemsTotalAmount.text = " ₹ " + totalAmt
                     binding.ItemsDiscountAmount.setText(" ₹ " + DisountAmount)
                     binding.DynamicItemCard.visibility = View.VISIBLE
                 } else {
@@ -537,10 +576,15 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                     this@InvoiceCreateFormActivity,
                     InvoiceAddItemFormActivity::class.java
                 )
-                intent.putExtra("fromInvoice", 1)
+                intent.putExtra("OffLineEdit", 1)
                 intent.putExtra("clickDataId", clickId.item_id)
                 positionOfEDit = pos
                 clickEditId = clickId.item_id!!
+                val addedData = Gson().toJson(DynamicitemList)
+                println("DynamicList == $addedData")
+                preference.putString(this@InvoiceCreateFormActivity,"INVOICE_SET_LIST",addedData)
+                intent.putExtra("InvoiceCickPosition",pos)
+           //     intent.putExtra("INVOICE_SET_LIST", addedData)
                 selectItemEditLauncher.launch(intent)
             })
         val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
@@ -604,7 +648,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         binding.InvoiceDueDateEditLay.setOnClickListener {
             val datePicker = InvoiceDatePickerDialog({ selectedDatePickerDate ->
                 showDatePickerFormat(selectedDatePickerDate)
-            }, binding.InvoiceDate.text.toString().trim())
+            }, binding.InvoiceDueDateEdit.text.toString().trim())
             datePicker.show(supportFragmentManager, "datePicker")
         }
 
@@ -810,30 +854,6 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
             map["item[$pos][discount]"] = createPartFromString("" + i.discount)
         }
 
-        // Step 2: Create the PDF
-  /*      createPdf(htmlContent) { pdfFile ->
-            if (pdfFile != null) {
-                // Step 3: Validate the PDF file before sending
-                Log.d("Upload", "PDF File Ready: ${pdfFile.path}, Size: ${pdfFile.length()} bytes")
-
-                val requestBody = pdfFile.asRequestBody("application/pdf".toMediaTypeOrNull())
-
-                pdfPart = MultipartBody.Part.createFormData(
-                    "pdf",
-                    pdfFile.path,
-                    requestBody
-                )
-            } else {
-                Log.e("Upload Error", "PDF file is not valid, cannot upload!")
-            }
-
-        }*/
-
-           /* if (pdfFile != null) {
-                uploadPdfToServer(pdfFile)
-            } else {
-                Log.e("Upload Error", "Failed to generate PDF")
-            }*/
         println("InvoiceRequest - : $map")
         println("InvoiceRequest pdfPart - : $pdfPart")
 
@@ -890,13 +910,11 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                         <th>Invoice No</th>
                         <th>Invoice Date</th>
                         <th>Due Date</th>
-                        <th>Due Period</th>
                     </tr>
                     <tr>
                         <td class="info-address">${binding.InvoiceIncreNumber.text.toString()}</td>
                         <td class="info-address">${binding.InvoiceDate.text.toString()}</td>
                         <td class="info-address">${binding.InvoiceDueDateEdit.text.toString()}</td>
-                        <td class="info-address">25 days</td>
                     </tr>
                 </table>
                 <table class="table-container">
@@ -940,90 +958,6 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
     fun createPartFromString(value: String): RequestBody {
         return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
     }
-/*
-    private fun createPdf(htmlContent: String): File? {
-        val handler = Handler(Objects.requireNonNull(Looper.myLooper())!!)
-        InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity, "loading...", false).show()
-        return try {
-            // Define output file location
-            val pdfLocation = File(
-                getPdfFilePath()!!.path,
-                "Calendar_Invoice.pdf"
-            )
-
-            // Check if the file exists and delete it
-            if (pdfLocation.exists()) {
-                pdfLocation.delete()
-                Thread.sleep(20) // Small delay to ensure deletion
-            }
-            pdfLocation.createNewFile()
-
-            // Start conversion
-            htmlToPdfConvertor.convert(
-                pdfLocation = pdfLocation,
-                htmlString = htmlContent,
-                onPdfGenerationFailed = { exception ->
-                    InvoiceUtils.loadingDialog.dismiss()
-                    exception.printStackTrace()
-                },
-                onPdfGenerated = { pdfFile ->
-                    InvoiceUtils.loadingDialog.dismiss()
-                }
-            )
-
-            pdfLocation // Return the generated file
-        } catch (e: Exception) {
-            e.printStackTrace()
-            println("pdfGstCalculation Error: ${e.message}")
-            null // Return null if an error occurs
-        }
-
-    }*/
-
-    /*private fun createPdf(htmlContent: String): File? {
-        val handler = Handler(Objects.requireNonNull(Looper.myLooper())!!)
-        InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity, "loading...", false).show()
-
-        return try {
-            val pdfLocation = File(
-                getPdfFilePath(),
-                "Calendar_Invoice.pdf"
-            )
-
-            if (pdfLocation.exists()) {
-                pdfLocation.delete()
-                Thread.sleep(50) // Small delay to ensure file is deleted
-            }
-            pdfLocation.createNewFile()
-
-            // Start conversion
-            htmlToPdfConvertor.convert(
-                pdfLocation = pdfLocation,
-                htmlString = htmlContent,
-                onPdfGenerationFailed = { exception ->
-                    InvoiceUtils.loadingDialog.dismiss()
-                    exception.printStackTrace()
-                    Log.e("PDF Error", "PDF generation failed: ${exception.message}")
-                },
-                onPdfGenerated = { pdfFile ->
-                    InvoiceUtils.loadingDialog.dismiss()
-                    Log.d("PDF", "PDF successfully created: ${pdfFile.path} | Size: ${pdfFile.length()} bytes")
-                }
-            )
-
-            if (pdfLocation.exists() && pdfLocation.length() > 0) {
-                return pdfLocation // Return the generated PDF file
-            } else {
-                Log.e("PDF Error", "PDF file was not created properly")
-                return null
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("PDF Error", "Exception while creating PDF: ${e.message}")
-            null
-        }
-    }*/
-
     private fun createPdf(htmlContent: String, callback: (File?) -> Unit) {
         InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity, "loading...", false).show()
 
@@ -1062,8 +996,6 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun openPdf(pdfFile: File) {
         if (pdfFile.exists()) {
             val uri = FileProvider.getUriForFile(
@@ -1092,365 +1024,6 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         } else {
             dir
         }
-    }
-
-    /*   fun createInvoicePdf(
-           context: Context, invoice: MutableList<InvoiceOfflineDynamicData>,
-           map: LinkedHashMap<String, Any>
-       ) {
-           val root = filesDir.toString()
-           val handler = Handler(Looper.myLooper()!!)
-           val millis = System.currentTimeMillis() / 1000
-           val fileName = "Invoice_Pdf_$millis.pdf"
-           val emptyPdfFile = createEmptyFile()
-           var filePath = emptyPdfFile.path
-           println("PDF Created Successfully!")
-
-           try {
-               InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity, "PDF Generating...", false).show()
-               val paint = Paint().apply {
-                   textSize = 20f
-                   color = Color.BLACK
-               }
-
-               val document = Document(PageSize.A4)
-               val writer = PdfWriter.getInstance(document, FileOutputStream(emptyPdfFile))
-
-               // Set the header event
-               writer.pageEvent =
-                   HeaderFooterEvent(
-                       this@InvoiceCreateFormActivity,
-                       getString(R.string.tc_app_name_english)
-                   )
-
-               document.open()
-
-               // Add spacing before the title
-               val emptyLine2 = Paragraph("\n\n\n")
-               document.add(emptyLine2)
-
-               val tablenew = PdfPTable(1) // 2 columns
-               tablenew.widthPercentage = 100f // Table width is 100% of page width
-
-               tablenew.setWidths(floatArrayOf(1f))
-
-               val cell = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       "GST Calculation",
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               cell.horizontalAlignment = Element.ALIGN_CENTER // Horizontally center
-               cell.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               tablenew.addCell(cell)
-               document.add(tablenew)
-
-               val table = PdfPTable(2) // 2 columns
-               table.widthPercentage = 100f // Table width is 100% of page width
-               table.setWidths(floatArrayOf(1f, 1f))
-
-               val textCell = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       listofData["purchase_amount"]!!.first,
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               textCell.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               textCell.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               textCell.backgroundColor = BaseColor.WHITE
-               table.addCell(textCell)
-
-
-               val quantityCell = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       "Rs. " + listofData["purchase_amount"]!!.second.toString(),
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               quantityCell.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               quantityCell.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               quantityCell.backgroundColor = BaseColor.WHITE
-               table.addCell(quantityCell)
-
-               val textCell1 = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       listofData["SGST"]!!.first.toString(),
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               textCell1.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               textCell1.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               textCell1.backgroundColor = BaseColor.WHITE
-               table.addCell(textCell1)
-
-               val quantityCell1 = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       "Rs. " + listofData["SGST"]!!.second.toString(),
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               quantityCell1.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               quantityCell1.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               quantityCell1.backgroundColor = BaseColor.WHITE
-               table.addCell(quantityCell1)
-
-               val textCell2 = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       listofData["CGST"]!!.first,
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               textCell2.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               textCell2.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               textCell2.backgroundColor = BaseColor.WHITE
-               table.addCell(textCell2)
-
-               val quantityCell2 = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       "Rs. " + listofData["CGST"]!!.second.toString(),
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               quantityCell2.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               quantityCell2.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               quantityCell2.backgroundColor = BaseColor.WHITE
-               table.addCell(quantityCell2)
-
-
-               val textCell3 = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       listofData["total_gst"]!!.first,
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               textCell3.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               textCell3.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               textCell3.backgroundColor = BaseColor.WHITE
-               table.addCell(textCell3)
-
-               val quantityCell3 = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       "Rs. " + listofData["total_gst"]!!.second.toString(),
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               quantityCell3.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               quantityCell3.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               quantityCell3.backgroundColor = BaseColor.WHITE
-               table.addCell(quantityCell3)
-
-               if (listofData["amount_without_gst"] != Pair("", "")) {
-                   val textCell4 = PdfPCell().apply {
-                       val fontSize = 15f // Set your desired font size here
-                       val font = Font()
-                       font.size = fontSize
-                       phrase = Phrase(
-                           listofData["amount_without_gst"]!!.first,
-                           font
-                       )
-                       borderWidth = 0.5f
-                       paddingTop = 10f
-                       paddingBottom = 10f
-                       paddingLeft = 10f
-                       paddingRight = 10f
-                   }
-                   textCell4.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-                   textCell4.setVerticalAlignment(Element.ALIGN_MIDDLE)
-                   textCell4.backgroundColor = BaseColor.WHITE
-                   table.addCell(textCell4)
-
-                   val quantityCell4 = PdfPCell().apply {
-                       val fontSize = 15f // Set your desired font size here
-                       val font = Font()
-                       font.size = fontSize
-                       phrase = Phrase(
-                           "Rs. " + listofData["amount_without_gst"]!!.second.toString(),
-                           font
-                       )
-                       borderWidth = 0.5f
-                       paddingTop = 10f
-                       paddingBottom = 10f
-                       paddingLeft = 10f
-                       paddingRight = 10f
-                   }
-                   quantityCell4.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-                   quantityCell4.setVerticalAlignment(Element.ALIGN_MIDDLE)
-                   quantityCell4.backgroundColor = BaseColor.WHITE
-                   table.addCell(quantityCell4)
-               }
-
-               val textCell5 = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(listofData["total_with_gst"]!!.first, font)
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               textCell5.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               textCell5.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               textCell5.backgroundColor = BaseColor.WHITE
-               table.addCell(textCell5)
-
-               val quantityCell5 = PdfPCell().apply {
-                   val fontSize = 15f // Set your desired font size here
-                   val font = Font()
-                   font.size = fontSize
-                   phrase = Phrase(
-                       "Rs. " + listofData["total_with_gst"]!!.second.toString(),
-                       font
-                   )
-                   borderWidth = 0.5f
-                   paddingTop = 10f
-                   paddingBottom = 10f
-                   paddingLeft = 10f
-                   paddingRight = 10f
-               }
-               quantityCell5.horizontalAlignment = Element.ALIGN_LEFT // Horizontally center
-               quantityCell5.setVerticalAlignment(Element.ALIGN_MIDDLE)
-               quantityCell5.backgroundColor = BaseColor.WHITE
-               table.addCell(quantityCell5)
-
-
-               //document.add(PdfPCell(Paragraph("$vegtableName - இன்றைய விலை நிலவரம்"))) // Add table title directly as a cell
-               document.add(table)
-               document.close()
-               InvoiceUtils.loadingDialog.dismiss()
-
-               handler.postDelayed({
-                   val uri =
-                       FileProvider.getUriForFile(
-                           this@GstCalulation_Resultpage,
-                           packageName,
-                           emptyPdfFile
-                       )
-                   println("pdfFile : $emptyPdfFile")
-
-                   *//*        val i = Intent(this@GstCalulation_Resultpage, TcPdfViewer::class.java)
-                        i.putExtra("title", "")
-                        i.putExtra("type", "uri")
-                        i.putExtra("path", emptyPdfFile)*//*
-
-                val sharingIntent = Intent(Intent.ACTION_SEND)
-                sharingIntent.type = "application/pdf"
-                sharingIntent.putExtra(
-                    Intent.EXTRA_SUBJECT,
-                    "நித்ரா காலண்டர்"
-                )
-
-                sharingIntent.putExtra(
-                    Intent.EXTRA_TEXT, """
-     ஜிஎஸ்டி, ஈ.எம்.ஐ மற்றும் வட்டி கணக்கீடு குறித்த கூடுதல் விவரங்களையும் மற்றும் நாட்காட்டி பற்றிய(Tamil Calendar) தகவல்களை இலவசமாக பெற கீழ்க்கண்ட லிங்கை கிளிக் செய்யுங்கள்
-     
-     http://bit.ly/2vfArRP
-     """.trimIndent()
-                )
-                sharingIntent.putExtra(Intent.EXTRA_STREAM, uri)
-                startActivity(Intent.createChooser(sharingIntent, "Share Via"))
-                Utils.mProgress.dismiss()
-                load = 0
-            }, 500)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Utils.mProgress.dismiss()
-            println("dir==$e")
-        }
-    }*/
-
-    private fun createEmptyFile(): File {
-        val fileName = "Invoice_Pdf_$millis.pdf"
-        val directory = getExternalBreezyDirectory(this@InvoiceCreateFormActivity)
-        println("dir==$directory")
-        val file = File(directory, fileName)
-        if (file.exists()) {
-            file.delete()
-        }
-        file.createNewFile()
-        return file
-    }
-
-    fun getExternalBreezyDirectory(context: Context): File {
-        val directory = File(context.filesDir.toString() + "/Nithra/InvoiceGenerator")
-        println("dir==1$directory")
-        if (!directory.exists()) {
-            directory.mkdirs()
-        }
-        return directory
     }
 
     companion object {

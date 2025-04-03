@@ -165,7 +165,6 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 binding.UnPaidAmount.text = " ₹ " + totalUnpaid
                 val composeView = findViewById<ComposeView>(R.id.pieChartComposeView)
                 composeView.setContent {
-                    //  PieChartScreen() // Load the Compose Pie Chart inside XML view
                     PieChart(listOfGetInvoicePieChart, pieChartList.total_amount!!)
                 }
             }

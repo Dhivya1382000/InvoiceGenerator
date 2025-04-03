@@ -36,7 +36,7 @@ class InvoiceAddedItemDataAdapter(
                 onItemClick(listOfGetInvoicelist[position],position)
             }
             itemEdit.setOnClickListener {
-                OnEditClick(listOfGetInvoicelist[position]!!,position)
+                OnEditClick(listOfGetInvoicelist[position]!!,position,)
             }
         }
     }

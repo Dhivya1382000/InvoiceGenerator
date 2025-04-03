@@ -140,5 +140,7 @@ class InvoiceGetInvoiceList {
         @SerializedName("total_amt")
         @Expose
         var totalAmt: String? = ""
+
+
     }
 }
