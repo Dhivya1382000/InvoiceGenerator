@@ -41,6 +41,12 @@
         <activity
             android:name=".activity.InvoiceHomeScreen"
             android:exported="false" />
+        <activity
+            android:name=".activity.InvoicePdfViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.InvoiceFilePdfViewActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

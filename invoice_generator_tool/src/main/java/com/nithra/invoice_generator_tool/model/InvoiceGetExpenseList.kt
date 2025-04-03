@@ -55,5 +55,7 @@ class InvoiceGetExpenseList {
         @SerializedName("remark")
         @Expose
         var remark: String? = null
+
+        var status: String? = ""
     }
 }

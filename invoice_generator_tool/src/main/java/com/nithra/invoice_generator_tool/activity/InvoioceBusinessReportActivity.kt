@@ -101,11 +101,6 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
         loadMasterData()
 
-        if (clickDataId != 0){
-          loadPiechart()
-        }
-
-
         viewmodel.errorMessage.observe(this@InvoioceBusinessReportActivity) {
             println("eror ==== $it")
             Toast.makeText(this@InvoioceBusinessReportActivity, "" + it, Toast.LENGTH_SHORT).show()
@@ -115,6 +110,11 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             listOfCompanyDetails.addAll(getMasterArray.companyDetails!!)
             if ( listOfCompanyDetails[0].bussinessName!!.isNotEmpty()){
                 binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
+                clickDataId = listOfCompanyDetails[0].companyId!!
+                if (clickDataId != 0){
+                    listOfGetInvoicePieChart.clear()
+                    loadPiechart()
+                }
             }
         }
 
@@ -150,8 +150,12 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             if (pieChartList.status.equals("success")) {
                 listOfGetInvoicePieChart.addAll(pieChartList.data!!)
                 listOfGetInvoiceExpense = pieChartList.expenses!!
-                println("chart amount == " + pieChartList.expenses!!.data!!.totalAmount)
-                binding.ExpensesAmount.text = " ₹ "  + pieChartList.expenses!!.data!!.totalAmount
+//                println("chart amount == " + pieChartList.expenses!!.data!!.totalAmount)
+                if (!pieChartList.expenses!!.status.equals("failure")){
+                    binding.ExpensesAmount.text = " ₹ "  + pieChartList.expenses!!.data!!.totalAmount
+                }else{
+                    binding.ExpensesAmount.text = "NIL"
+                }
                 binding.TotalPaidAmount.text = " ₹ "  + pieChartList.total_amount
                 val totalPaid = listOfGetInvoicePieChart.filter { it.amtType == 1 }
                     .sumOf { it.totalPaid!! } //paid
@@ -173,7 +177,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "1227994"
+            InputMap["user_id"] = ""+InvoiceUtils.userId
 
             println("InvoiceRequest - ${InvoiceBusinessDetailFormActivity._TAG} == $InputMap")
             viewmodel.getOverAllMasterDetail(InputMap)
@@ -190,7 +194,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "picChartReport"
-            InputMap["user_id"] = "1227994"
+            InputMap["user_id"] = ""+InvoiceUtils.userId
             InputMap["company_id"] = ""+clickDataId
 
             println("InvoiceRequest - $_TAG == $InputMap")
@@ -418,5 +422,9 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         binding.InvoiceBusinessTypeText.text = "" + item
         clickDataId = clikId
         stateDialog.dismiss()
+        if (clickDataId != 0){
+            listOfGetInvoicePieChart.clear()
+            loadPiechart()
+        }
     }
 }

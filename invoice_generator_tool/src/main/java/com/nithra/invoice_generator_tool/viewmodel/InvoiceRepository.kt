@@ -12,6 +12,8 @@ import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
 import com.nithra.invoice_generator_tool.model.InvoicePieChart
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoiceApiInterface
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface) {
@@ -38,8 +40,11 @@ class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface
         return api.getInvoiceList(requestInputMap)
     }
 
-    suspend fun getAddedList(requestInputMap: HashMap<String, Any>):  InvoiceAddedList {
-        return api.addedList(requestInputMap)
+    suspend fun getAddedList(
+        requestInputMap: LinkedHashMap<String, RequestBody>,
+        pdfPart: MultipartBody.Part?
+    ):  InvoiceAddedList {
+        return api.addedList(requestInputMap,pdfPart)
     }
 
     suspend fun getExpenseData(requestInputMap: HashMap<String, Any>): InvoiceGetExpenseList {

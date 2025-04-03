@@ -18,6 +18,8 @@ import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
 import com.nithra.invoice_generator_tool.model.InvoicePieChart
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -196,10 +198,13 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
         }
     }
 
-    fun addInvoiceList(InputMap: HashMap<String, Any>) {
+    fun addInvoiceList(
+        InputMap: LinkedHashMap<String, RequestBody>,
+        pdfPart: MultipartBody.Part?
+    ) {
         viewModelScope.launch {
             try {
-                val response = repository.getAddedList(InputMap)
+                val response = repository.getAddedList(InputMap,pdfPart)
                 _getAddedInvoiceList.value = response
                 println("InvoiceResponse - $_TAG == ${_getAddedInvoiceList.value}")
             } catch (e: SocketTimeoutException) {
@@ -273,15 +278,15 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
                 println("InvoiceResponse - $_TAG == ${response}")
             } catch (e: SocketTimeoutException) {
                 // Handle errors
-                println("exception == ${e.toString()}")
+                println("exception 258== ${e.toString()}")
                 _errorMessage.value = e.message
             } catch (e: IOException) {
                 // Handle errors
-                println("exception == ${e.toString()}")
+                println("exception 258q == ${e.toString()}")
                 _errorMessage.value = e.message
             } catch (e: Exception) {
                 // Handle errors
-                println("exception == ${e.toString()}")
+                println("exception 258== ${e.toString()}")
                 _errorMessage.value = e.message
             }
         }

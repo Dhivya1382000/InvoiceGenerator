@@ -40,12 +40,12 @@ class InvoiceOfflineDynamicData {
     var type: Int? = 0
     var taxId: String? = ""
     var name: String? = null
-    var companyName: String? = null
+    var company_name: String? = null
     var mobile1: String? = null
     var mobile2: String? = null
-    var displayName: String? = null
-    var billingAddress: String? = null
-    var shippingAddress: String? = null
+    var display_name: String? = null
+    var billing_address: String? = null
+    var shipping_address: String? = null
     var remark: String? = null
 
 }

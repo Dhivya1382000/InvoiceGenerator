@@ -103,7 +103,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
 //            InvoiceUtils.loadingProgress(this@InvoiceHomeScreen,InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "homeReport"
-            InputMap["user_id"] = "1227994"
+            InputMap["user_id"] = ""+InvoiceUtils.userId
             InputMap["type"] = "1"
             InputMap["year"] = "2025"
 
@@ -129,7 +129,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 .show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getInvoiceList"
-            InputMap["user_id"] = "1227994"
+            InputMap["user_id"] = ""+InvoiceUtils.userId
             InputMap["type"] = "0"
 
             println("InvoiceRequest - $_TAG == $InputMap")

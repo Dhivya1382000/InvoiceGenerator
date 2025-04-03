@@ -11,13 +11,13 @@ import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
 import com.nithra.invoice_generator_tool.model.InvoicePieChart
-import retrofit2.Response
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
-import retrofit2.http.FieldMap
-import retrofit2.http.GET
-import retrofit2.http.HeaderMap
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.PartMap
 
 interface InvoiceApiInterface {
     @POST("invoiceData")
@@ -40,7 +40,10 @@ interface InvoiceApiInterface {
 
     @Multipart
     @POST("invoiceData")
-    suspend fun addedList(@Body requestMap: HashMap<String, Any>): InvoiceAddedList
+    suspend fun addedList(
+        @PartMap requestMap: LinkedHashMap<String, RequestBody>,
+        @Part pdfPart: MultipartBody.Part?, // ✅ File
+    ): InvoiceAddedList
 
     @POST("invoiceData")
     suspend fun addedexpenseList(@Body requestMap: HashMap<String, Any>): InvoiceGetExpenseList

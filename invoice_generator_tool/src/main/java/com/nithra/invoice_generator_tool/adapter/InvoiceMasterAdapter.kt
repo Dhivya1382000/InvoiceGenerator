@@ -188,13 +188,11 @@ class InvoiceMasterAdapter<T>(
                 is InvoiceGetExpenseDataList.DataList -> {
                     clickDataId = item.invoiceId!!
                     val createDate = formatDate("" + item.date)
-
                     holder.binding.ExpItemName.text = item.itemName
                     holder.binding.ExpInvoiceNo.text = item.invNumber
                     holder.binding.ExpCreateDate.text = "" + createDate
                     holder.binding.ExpAmount.text = " ₹ " + item.amount
-                    holder.binding.ExpSellerName.text = " ₹ " + item.sellerName
-
+                    holder.binding.ExpSellerName.text = "" + item.sellerName
                 }
             }
             holder.itemView.setOnClickListener {

@@ -30,6 +30,66 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/InvoiceBusinessTypeSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/invoice_textfield_background"
+                    android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/InvoiceBusinessTypeText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:paddingStart="5dp"
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp"
+                        android:paddingEnd="5dp"
+                        android:fontFamily="@font/lexend_medium"
+                        android:hint="Business Name"
+                        android:text=""
+                        android:textColor="@color/invoice_black"
+                        android:textSize="15sp" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="15dp"
+                        android:src="@drawable/invoice_spinner_icon" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:background="@color/invoice_white"
+                    android:fontFamily="@font/lexend_medium"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="Business Name"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="#000"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/InvoiceExpenseLay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -144,7 +204,7 @@
                         android:background="@null"
                         android:fontFamily="@font/lexend_medium"
                         android:hint="Amount"
-                        android:inputType="textCapSentences"
+                        android:inputType="number"
                         android:padding="15dp"
                         android:textColor="@color/invoice_black"
                         android:textSize="15dp" />
@@ -293,7 +353,7 @@
                     android:fontFamily="@font/lexend_medium"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="Remark *"
+                    android:text="Remark"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="#000"
                     android:textSize="12dp" />

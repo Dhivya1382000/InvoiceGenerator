@@ -1,15 +1,17 @@
 package com.nithra.invoice_generator_tool.activity
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -31,11 +33,15 @@ import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.Objects
 
 @AndroidEntryPoint
 class InvoiceCreateFormActivity : AppCompatActivity() {
@@ -71,7 +77,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
     var invoiceCustomerBillingAddress = ""
     var millis: Long = 0
     lateinit var htmlToPdfConvertor: InvoiceHtmlToPdfConvertor
-
+    var filePart: File? = null
 
     private val selectItemLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -88,8 +94,9 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                     DynamicitemList.add(itemList)
                     TotalAmount += itemList.total_amt!!.toDouble()
                     finalTotalAmount = TotalAmount - DisountAmount
-                    binding.ItemsFinalAmount.text = "₹ " + finalTotalAmount
-                    binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
+                    val total = String.format ("%.2f", finalTotalAmount)
+                    binding.ItemsFinalAmount.text = "₹ " + total
+                    binding.ItemsTotalAmount.text = " ₹ " + total
                     if (DynamicitemList.isEmpty()) {
                         binding.DynamicItemCard.visibility = View.GONE
                     } else {
@@ -100,11 +107,13 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                     println("iTemLit === ${itemList.company_id}")
                     selectedBusinessId = itemList.company_id!!
                     selectedBusinessState = itemList.state!!
+                    invoiceBillingAddress = itemList.billing_address_1!!
                     binding.InvoiceBusinessTypeText.text = itemList.bussiness_name
                 } else {
                     println("iTemLit === ${itemList.invoice_id}")
                     selectedCustomerId = itemList.invoice_id!!
                     selectedCustomerState = itemList.state!!
+                    invoiceCustomerBillingAddress = itemList.billing_address!!
                     binding.InvoiceCustomerName.text = itemList.name
                 }
 
@@ -156,10 +165,14 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
 
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
-            InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity,""+InvoiceUtils.messageLoading,false).show()
+            InvoiceUtils.loadingProgress(
+                this@InvoiceCreateFormActivity,
+                "" + InvoiceUtils.messageLoading,
+                false
+            ).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "1227994"
+            InputMap["user_id"] = ""+InvoiceUtils.userId
 
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
@@ -193,6 +206,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                 selectedBusinessState = listOfCompanyDetails[0].state!!
                 selectedCustomerState = listOfClientDetails[0].state!!
                 binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
+                invoiceBillingAddress = listOfCompanyDetails[0].billingAddress1!!
             }
             val hasStatusKey = listOfItemDetails.any { !it.status.isNullOrEmpty() } ?: false
             println("map === " + hasStatusKey) // Output: true or false
@@ -203,8 +217,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         } else {
             binding.DynamicItemCard.visibility = View.VISIBLE
         }
-        val currentInvoiceNumber =
-            preference.getInt(this@InvoiceCreateFormActivity, "InvoiceNumber") // Start from 1000
+        val currentInvoiceNumber = preference.getInt(this@InvoiceCreateFormActivity, "InvoiceNumber") // Start from 1000
 
         newInvoiceNumber = currentInvoiceNumber + 1
 
@@ -250,11 +263,6 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         }
 
         binding.AddInvoiceText.setOnClickListener {
-            /* if (listOfItemDetails[0].status.equals("failure")){
-                 val intent = Intent(this@InvoiceCreateFormActivity,InvoiceAddItemFormActivity::class.java)
-                 startActivity(intent)
-                 return@setOnClickListener
-             }*/
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
                 Toast.makeText(
                     this@InvoiceCreateFormActivity,
@@ -284,10 +292,141 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
             }
         }
 
+        binding.InvoiceGeneratePreview.setOnClickListener {
+            val htmlContent = generateInvoiceHtml(
+                invoiceBillingAddress = invoiceBillingAddress,
+                invoiceCustomerBillingAddress = invoiceCustomerBillingAddress,
+                finalTotalAmount = finalTotalAmount.toString(),
+                invoiceItems = DynamicitemList,
+                binding = binding
+            )
+            runBlocking {
+
+                createPdf(htmlContent) { pdfFile ->
+                    if (pdfFile != null) {
+                        // Step 3: Validate the PDF file before sending
+                        Log.d(
+                            "Upload",
+                            "PDF File Ready: ${pdfFile.path}, Size: ${pdfFile.length()} bytes"
+                        )
+                        val intent = Intent(this@InvoiceCreateFormActivity, InvoiceFilePdfViewActivity::class.java).apply {
+                            putExtra("pdf_path", pdfFile.absolutePath)
+                        }
+                        startActivity(intent)
+
+                    } else {
+                        Log.e("Upload Error", "PDF file is not valid, cannot upload!")
+                    }
+                }
+            }
+        }
         binding.InvoiceGenerateSaveCard.setOnClickListener {
             preference.putInt(this@InvoiceCreateFormActivity, "InvoiceNumber", newInvoiceNumber)
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
-                GenerateInvoice()
+
+                val htmlContent = generateInvoiceHtml(
+                    invoiceBillingAddress = invoiceBillingAddress,
+                    invoiceCustomerBillingAddress = invoiceCustomerBillingAddress,
+                    finalTotalAmount = finalTotalAmount.toString(),
+                    invoiceItems = DynamicitemList,
+                    binding = binding
+                )
+
+                when {
+                    binding.InvoiceBusinessTypeText.text.toString().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Select business details",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+                    binding.InvoiceCustomerName.text.toString().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Select customer details",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+                    binding.InvoiceIncreNumber.text.toString().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Enter invoice number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+                    binding.InvoiceDate.text.toString().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Enter invoice number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+                    DynamicitemList.isEmpty() ->{
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Add invoice item",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+                    selectedPaymentType == 1 ->{
+                        if (binding.InvoicePaidAmount.text.toString().isEmpty()){
+                            Toast.makeText(
+                                this@InvoiceCreateFormActivity,
+                                "Enter paid amount",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@setOnClickListener
+                        }
+                    }
+                    selectedPaymentType == 2 ->{
+                        if (binding.InvoicePaidAmount.text.toString().trim().isEmpty()){
+                            Toast.makeText(
+                                this@InvoiceCreateFormActivity,
+                                "Enter paid amount",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@setOnClickListener
+                        }else if (binding.InvoiceDueDateEdit.text.toString().trim().isEmpty()){
+                            Toast.makeText(
+                                this@InvoiceCreateFormActivity,
+                                "Enter due date",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@setOnClickListener
+                        }
+                    }
+
+                }
+
+                runBlocking {
+
+                    createPdf(htmlContent) { pdfFile ->
+                        if (pdfFile != null) {
+                            // Step 3: Validate the PDF file before sending
+                            Log.d(
+                                "Upload",
+                                "PDF File Ready: ${pdfFile.path}, Size: ${pdfFile.length()} bytes"
+                            )
+
+                            val requestBody = pdfFile.asRequestBody("application/pdf".toMediaTypeOrNull())
+
+                            val pdfPart = MultipartBody.Part.createFormData(
+                                "pdf",
+                                pdfFile.path,
+                                requestBody
+                            )
+                            GenerateInvoice(pdfPart)
+
+                        } else {
+                            Log.e("Upload Error", "PDF file is not valid, cannot upload!")
+                        }
+                    }
+                }
             } else {
                 Toast.makeText(
                     this@InvoiceCreateFormActivity,
@@ -300,12 +439,20 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
 
         viewModel.getAddedInvoiceList.observe(this@InvoiceCreateFormActivity) { getAddeddat ->
             if (getAddeddat.status.equals("success")) {
+                val pdfFileUrl = getAddeddat.data?.invoiceDetails!![0].pdf
+                val bussinessName = getAddeddat.data?.invoiceDetails!![0].bussinessName
+                if (pdfFileUrl!!.isNotEmpty()) {
+                    val intent = Intent(this@InvoiceCreateFormActivity, InvoicePdfViewActivity::class.java)
+                    intent.putExtra("InvoicePdfLink", pdfFileUrl)
+                    intent.putExtra("InvoicePdfName", bussinessName)
+                    startActivity(intent)
+                }
+
                 Toast.makeText(
                     this@InvoiceCreateFormActivity,
                     "" + getAddeddat.msg,
                     Toast.LENGTH_SHORT
                 ).show()
-
             }
         }
 
@@ -344,9 +491,10 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
                 println("dyanmicList == ${DynamicitemList.size}")
                 if (DynamicitemList.size != 0) {
-                    TotalAmount -= listOfDynamic.total_amt!!.toInt()
+                    TotalAmount -= listOfDynamic.total_amt!!.toDouble()
                     finalTotalAmount = TotalAmount + DisountAmount
-                    binding.ItemsFinalAmount.text = "₹ " + finalTotalAmount
+                    val total = String.format ("%.2f", finalTotalAmount)
+                    binding.ItemsFinalAmount.text = "₹ " + total
                     binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
                     binding.ItemsDiscountAmount.setText(" ₹ " + DisountAmount)
                     binding.DynamicItemCard.visibility = View.VISIBLE
@@ -354,8 +502,8 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                     TotalAmount = 0.0
                     DisountAmount = 0.0
                     binding.ItemsDiscountAmount.setText("")
-                    binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
-                    binding.ItemsTotalAmount.text = " ₹ " + TotalAmount
+                    val total = String.format ("%.2f", finalTotalAmount)
+                    binding.ItemsTotalAmount.text = " ₹ " + total
                     binding.DynamicItemCard.visibility = View.GONE
                 }
             }, onShowItem = { binding, clickItemPOs ->
@@ -466,6 +614,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         binding.dynamicContainer.adapter = adapter
 
     }
+
 
     fun splitGST(totalGST: String): Pair<Double, Double>? {
         return try {
@@ -627,269 +776,293 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun GenerateInvoice() {
-
-        val htmlContent = """
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            padding: 20px;
-        }
-        .invoice-container {
-      width: 100%;
-    margin: auto;
-    border-radius: 8px;
-    padding: 0; 
-    border: none; 
-    background: none;
-    box-shadow: none;
-        }
-        .info-address{
-        font-size: 18px;
-             margin-left: 15px;
-       }
-        .header {
-            text-align: center;
-            font-size: 45px;
-            font-weight: bold;
-            color: green;
-              padding: 20px;
-            margin-bottom: 15px;
-        }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        .info-table th, .info-table td {
-            padding: 8px;
-            text-align: left;
-        }
-        .info-table th {
-            background-color: green;
-            color: white;
-        }
-        .details {
-            font-size: 14px;
-            margin-bottom: 15px;
-             margin-left: 15px;
-        }
-        .table-container {
-            width: 100%;
-             align:center
-            border-collapse: collapse;
-        }
-        .table-container th {
-            background: green;
-            color: white;
-            padding: 8px;
-            text-align: left;
-        }
-        .table-container td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-        .total {
-            text-align: right;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 10px;
-              padding: 20px;
-        }
-        .note {
-            font-size: 14px;
-            margin-top: 15px;
-            margin-left: 15px;
-        }
-        .note-title {
-        font-size: 22px;
-        margin-left: 15px;
-        font-weight: bold;
-    }
-    .note-text {
-        font-size: 18px;
-         margin-left: 15px;
-    }
-    </style>
-</head>
-<body>
-    <div class="invoice-container">
-        <div class="header">INVOICE</div>
-
-        <!-- From & To Table -->
-        <table class="info-table">
-            <tr>
-                <th>From</th>
-                <th>To</th>
-            </tr>
-            <tr>
-                <td class="info-address">
-                  $invoiceBillingAddress
-                </td>
-                <td class="info-address">
-                $invoiceCustomerBillingAddress
-                </td>
-            </tr>
-        </table>
-
-        <!-- Invoice Details Table -->
-        <table class="info-table">
-            <tr>
-                <th>Invoice No</th>
-                <th>Invoice Date</th>
-                <th>Due Date</th>
-                <th>Due Period</th>
-            </tr>
-            <tr >
-                <td class="info-address" >NH8123RE</td>
-                <td class="info-address" >23-May-2025</td>
-                <td class="info-address" >23-Jun-2025</td>
-                <td class="info-address">25 days</td>
-            </tr>
-        </table>
-
-        <!-- Item List -->
-        <table class="table-container">
-            <tr>
-                <th>S.no / Item List</th>
-                <th>Qty</th>
-                <th>Amount</th>
-            </tr>
-            <tr>
-                <td class="info-address" >1. Sugar<br><small>(5% GST included)</small></td>
-                <td class="info-address">2 kgs</td>
-                <td class="info-address" >₹ 250</td>
-            </tr>
-            <tr>
-                <td class="info-address" >2. Rice<br><small>(5% GST included)</small></td>
-                <td class="info-address" >2 kgs</td>
-                <td class="info-address">₹ 5000</td>
-            </tr>
-            <tr>
-                <td class="info-address">3. Tomato<br><small>(5% GST included)</small></td>
-                <td class="info-address">1/2 kgs</td>
-                <td class="info-address">₹ 350</td>
-            </tr>
-            <tr>
-                <td class="info-address">4. Wheat<br><small>(5% GST included)</small></td>
-                <td class="info-address">2 kgs</td>
-                <td class="info-address">₹ 50000</td>
-            </tr>
-            
-            <tr>
-                <td class="info-address">4. Wheat<br><small>(5% GST included)</small></td>
-                <td class="info-address">2 kgs</td>
-                <td class="info-address">₹ 50000</td>
-            </tr>
-            
-            
-        </table>
-
-        <div class="total">Total: $finalTotalAmount</div>
-
-     <p><span class="note-title">Note:</span> <span class="note-text">${binding.InvoiceRemarkEdit.text.toString()}</span></p>
-
-     <p><span class="note-title">Terms & Conditions:</span></p>
-     <p class="note-text">${binding.InvoiceTermsAndConditionEdit.text.toString()}</p>
-    </div>
-</body>
-</html>
-        """.trimIndent()
-
-        createPdf(htmlContent)
-
-        when {
-            binding.InvoiceBusinessTypeText.text.toString().isEmpty() -> {
-                Toast.makeText(
-                    this@InvoiceCreateFormActivity,
-                    "Select business details",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+    private fun GenerateInvoice(pdfPart: MultipartBody.Part) {
         //check
-        val map = LinkedHashMap<String, Any>()
-        map["action"] = "addInvoice"
-        map["user_id"] = "1227994"
-        map["bussiness_id"] = "" + selectedBusinessId
-        map["client_id"] = "" + selectedCustomerId
-        map["invoice_number"] = "" + binding.InvoiceIncreNumber.text.toString().trim()
-        map["order_no"] = "" + binding.InvoiceOrderId.text.toString().trim()
-        map["invoice_date"] = "" + selectedDate
-        map["amt_type"] = "" + selectedPaymentType
-        map["paid_amt"] = "" + binding.InvoicePaidAmount.text.toString().trim()
-        map["due_date"] = "" + binding.InvoiceDueDateEdit.text.toString().trim()
-        map["remark"] = "" + binding.InvoiceRemarkEdit.text.toString().trim()
-        map["terms_condition"] = "" + binding.InvoiceTermsAndConditionEdit.text.toString()
-        map["total_amount"] = "" + finalTotalAmount
-        map["discount_amt"] = "" + DisountAmount
-        // Create the desired map structure
-        val itemList = DynamicitemList.map {
-            mapOf(
-                "item_id" to it.item_id.toString(),
-                "amount" to it.amount.toString(),
-                "qty_type" to it.qty_type.toString(),
-                "qty" to it.qty.toString(),
-                "tax" to it.tax.toString(),
-                "description" to it.description.toString(),
-                "discount_type" to it.discount_type.toString(),
-                "discount" to it.discount.toString()
+        val map = LinkedHashMap<String, RequestBody>()
+        map["action"] = createPartFromString("addInvoice")
+        map["user_id"] = createPartFromString(""+InvoiceUtils.userId)
+        map["bussiness_id"] = createPartFromString("" + selectedBusinessId)
+        map["client_id"] = createPartFromString("" + selectedCustomerId)
+        map["invoice_number"] =
+            createPartFromString("" + binding.InvoiceIncreNumber.text.toString().trim())
+        map["order_no"] = createPartFromString("" + binding.InvoiceOrderId.text.toString().trim())
+        map["invoice_date"] = createPartFromString("" + selectedDate)
+        map["amt_type"] = createPartFromString("" + selectedPaymentType)
+        map["paid_amt"] =
+            createPartFromString("" + binding.InvoicePaidAmount.text.toString().trim())
+        map["due_date"] =
+            createPartFromString("" + binding.InvoiceDueDateEdit.text.toString().trim())
+        map["remark"] = createPartFromString("" + binding.InvoiceRemarkEdit.text.toString().trim())
+        map["terms_condition"] =
+            createPartFromString("" + binding.InvoiceTermsAndConditionEdit.text.toString())
+        val total = String.format ("%.2f", finalTotalAmount)
+        map["total_invoice_amt"] = createPartFromString("" + total)
+        map["discount_amt"] = createPartFromString("" + DisountAmount)
+
+        for ((pos, i) in DynamicitemList.withIndex()) {
+            map["item[$pos][item_id]"] = createPartFromString("" + i.item_id)
+            map["item[$pos][amount]"] = createPartFromString("" + i.amount)
+            map["item[$pos][qty_type]"] = createPartFromString("" + i.qty_type)
+            map["item[$pos][qty]"] = createPartFromString("" + i.qty)
+            map["item[$pos][tax]"] = createPartFromString("" + i.tax)
+            map["item[$pos][description]"] = createPartFromString("" + i.description)
+            map["item[$pos][discount_type]"] = createPartFromString("" + i.discount_type)
+            map["item[$pos][discount]"] = createPartFromString("" + i.discount)
+        }
+
+        // Step 2: Create the PDF
+  /*      createPdf(htmlContent) { pdfFile ->
+            if (pdfFile != null) {
+                // Step 3: Validate the PDF file before sending
+                Log.d("Upload", "PDF File Ready: ${pdfFile.path}, Size: ${pdfFile.length()} bytes")
+
+                val requestBody = pdfFile.asRequestBody("application/pdf".toMediaTypeOrNull())
+
+                pdfPart = MultipartBody.Part.createFormData(
+                    "pdf",
+                    pdfFile.path,
+                    requestBody
+                )
+            } else {
+                Log.e("Upload Error", "PDF file is not valid, cannot upload!")
+            }
+
+        }*/
+
+           /* if (pdfFile != null) {
+                uploadPdfToServer(pdfFile)
+            } else {
+                Log.e("Upload Error", "Failed to generate PDF")
+            }*/
+        println("InvoiceRequest - : $map")
+        println("InvoiceRequest pdfPart - : $pdfPart")
+
+        viewModel.addInvoiceList(map, pdfPart)
+        }
+
+
+
+    fun generateInvoiceHtml(
+        invoiceBillingAddress: String,
+        invoiceCustomerBillingAddress: String,
+        finalTotalAmount: String,
+        invoiceItems: List<InvoiceOfflineDynamicData>, // List of items
+        binding: ActivityInvoiceCreateFormBinding // Replace with actual binding class
+    ): String {
+        val htmlBuilder = StringBuilder()
+        htmlBuilder.append(
+            """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+                body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
+                .invoice-container { width: 100%; margin: auto; border-radius: 8px; padding: 0; background: none; }
+                .info-address { font-size: 18px; margin-left: 15px; }
+                .header { text-align: center; font-size: 45px; font-weight: bold; color: green; padding: 20px; margin-bottom: 15px; }
+                .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                .info-table th, .info-table td { padding: 8px; text-align: left; }
+                .info-table th { background-color: green; color: white; }
+                .table-container { width: 100%; border-collapse: collapse; }
+                .table-container th { background: green; color: white; padding: 8px; text-align: left; }
+                .table-container td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                .total { text-align: right; font-size: 20px; font-weight: bold; margin-top: 10px; padding: 20px; }
+                .note-title { font-size: 22px; margin-left: 15px; font-weight: bold; }
+                .note-text { font-size: 18px; margin-left: 15px; }
+            </style>
+        </head>
+        <body>
+            <div class="invoice-container">
+                <div class="header">INVOICE</div>
+                <table class="info-table">
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                    </tr>
+                    <tr>
+                        <td class="info-address">$invoiceBillingAddress</td>
+                        <td class="info-address">$invoiceCustomerBillingAddress</td>
+                    </tr>
+                </table>
+                <table class="info-table">
+                    <tr>
+                        <th>Invoice No</th>
+                        <th>Invoice Date</th>
+                        <th>Due Date</th>
+                        <th>Due Period</th>
+                    </tr>
+                    <tr>
+                        <td class="info-address">${binding.InvoiceIncreNumber.text.toString()}</td>
+                        <td class="info-address">${binding.InvoiceDate.text.toString()}</td>
+                        <td class="info-address">${binding.InvoiceDueDateEdit.text.toString()}</td>
+                        <td class="info-address">25 days</td>
+                    </tr>
+                </table>
+                <table class="table-container">
+                    <tr>
+                        <th>S.no / Item List</th>
+                        <th>Qty</th>
+                        <th>Amount</th>
+                    </tr>
+        """.trimIndent()
+        )
+
+        // **Loop through the list to generate table rows dynamically**
+        invoiceItems.forEachIndexed { index, item ->
+            htmlBuilder.append(
+                """
+            <tr>
+                <td class="info-address">${index + 1}. ${item.item_name}<br><small>(${item.tax} GST included)</small></td>
+                <td class="info-address">${item.qty}</td>
+                <td class="info-address">₹ ${item.total_amt}</td>
+            </tr>
+            """.trimIndent()
             )
         }
-        map["item"] = itemList
 
-        println("InvoiceRequest - : $map")
-//   createInvoicePdf(this@InvoiceCreateFormActivity,DynamicitemList,map,)
+        htmlBuilder.append(
+            """
+                </table>
+                <div class="total">Total: ₹ $finalTotalAmount</div>
+                <p><span class="note-title">Note:</span> <span class="note-text">${binding.InvoiceRemarkEdit.text.toString()}</span></p>
+                <p><span class="note-title">Terms & Conditions:</span></p>
+                <p class="note-text">${binding.InvoiceTermsAndConditionEdit.text.toString()}</p>
+            </div>
+        </body>
+        </html>
+        """.trimIndent()
+        )
 
-        // viewModel.addInvoiceList(map)
-
+        return htmlBuilder.toString()
     }
 
-    private fun createPdf(htmlContent: String) {
+    fun createPartFromString(value: String): RequestBody {
+        return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
+    }
+/*
+    private fun createPdf(htmlContent: String): File? {
         val handler = Handler(Objects.requireNonNull(Looper.myLooper())!!)
         InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity, "loading...", false).show()
-        try {
-            // define output file location and html content
+        return try {
+            // Define output file location
             val pdfLocation = File(
                 getPdfFilePath()!!.path,
-                "InvoiceGenerate " + System.currentTimeMillis() + ".pdf"
+                "Calendar_Invoice.pdf"
             )
-// Check if the file exists and delete it
+
+            // Check if the file exists and delete it
             if (pdfLocation.exists()) {
                 pdfLocation.delete()
-                Thread.sleep(20)
-                pdfLocation.createNewFile()
-            } else {
-                pdfLocation.createNewFile()
+                Thread.sleep(20) // Small delay to ensure deletion
             }
-            // start conversion
+            pdfLocation.createNewFile()
+
+            // Start conversion
             htmlToPdfConvertor.convert(
                 pdfLocation = pdfLocation,
                 htmlString = htmlContent,
                 onPdfGenerationFailed = { exception ->
-                    // something went wrong, stop loading and log the exception
                     InvoiceUtils.loadingDialog.dismiss()
                     exception.printStackTrace()
-
                 },
                 onPdfGenerated = { pdfFile ->
-                    // pdf was generated, stop the loading and open it
                     InvoiceUtils.loadingDialog.dismiss()
-                    // openPdf(pdfFile)
-                })
+                }
+            )
+
+            pdfLocation // Return the generated file
         } catch (e: Exception) {
             e.printStackTrace()
-            println("pdfGstCalulation " + e.message.toString())
-
+            println("pdfGstCalculation Error: ${e.message}")
+            null // Return null if an error occurs
         }
 
+    }*/
+
+    /*private fun createPdf(htmlContent: String): File? {
+        val handler = Handler(Objects.requireNonNull(Looper.myLooper())!!)
+        InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity, "loading...", false).show()
+
+        return try {
+            val pdfLocation = File(
+                getPdfFilePath(),
+                "Calendar_Invoice.pdf"
+            )
+
+            if (pdfLocation.exists()) {
+                pdfLocation.delete()
+                Thread.sleep(50) // Small delay to ensure file is deleted
+            }
+            pdfLocation.createNewFile()
+
+            // Start conversion
+            htmlToPdfConvertor.convert(
+                pdfLocation = pdfLocation,
+                htmlString = htmlContent,
+                onPdfGenerationFailed = { exception ->
+                    InvoiceUtils.loadingDialog.dismiss()
+                    exception.printStackTrace()
+                    Log.e("PDF Error", "PDF generation failed: ${exception.message}")
+                },
+                onPdfGenerated = { pdfFile ->
+                    InvoiceUtils.loadingDialog.dismiss()
+                    Log.d("PDF", "PDF successfully created: ${pdfFile.path} | Size: ${pdfFile.length()} bytes")
+                }
+            )
+
+            if (pdfLocation.exists() && pdfLocation.length() > 0) {
+                return pdfLocation // Return the generated PDF file
+            } else {
+                Log.e("PDF Error", "PDF file was not created properly")
+                return null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("PDF Error", "Exception while creating PDF: ${e.message}")
+            null
+        }
+    }*/
+
+    private fun createPdf(htmlContent: String, callback: (File?) -> Unit) {
+        InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity, "loading...", false).show()
+
+        try {
+            val pdfLocation = File(getPdfFilePath(), "Calendar_Invoice.pdf")
+
+            if (pdfLocation.exists()) {
+                pdfLocation.delete()
+                Thread.sleep(50) // Ensure deletion is completed
+            }
+            pdfLocation.createNewFile()
+
+            htmlToPdfConvertor.convert(
+                pdfLocation = pdfLocation,
+                htmlString = htmlContent,
+                onPdfGenerationFailed = { exception ->
+                    InvoiceUtils.loadingDialog.dismiss()
+                    Log.e("PDF Error", "PDF generation failed: ${exception.message}")
+                    callback(null) // Return null on failure
+                },
+                onPdfGenerated = { pdfFile ->
+                    InvoiceUtils.loadingDialog.dismiss()
+                    if (pdfFile.exists() && pdfFile.length() > 0) {
+                        Log.d("PDF", "PDF successfully created: ${pdfFile.path} | Size: ${pdfFile.length()} bytes")
+                        callback(pdfFile) // Return generated PDF
+                    } else {
+                        Log.e("PDF Error", "PDF file was not created properly")
+                        callback(null)
+                    }
+                }
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("PDF Error", "Exception while creating PDF: ${e.message}")
+            callback(null)
+        }
     }
+
+
 
     private fun openPdf(pdfFile: File) {
         if (pdfFile.exists()) {

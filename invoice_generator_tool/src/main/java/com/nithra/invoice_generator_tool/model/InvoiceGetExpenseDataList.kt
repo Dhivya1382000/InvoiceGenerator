@@ -51,7 +51,10 @@ class InvoiceGetExpenseDataList {
         @SerializedName("remark")
         @Expose
         var remark: String? = null
-    }
 
+        @SerializedName("bussiness_name")
+        @Expose
+        var bussinessName: String? = null
+    }
 
 }

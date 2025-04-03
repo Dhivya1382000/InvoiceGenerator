@@ -75,7 +75,6 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                                 adapter.notifyItemInserted(0)
                                 adapter.notifyDataSetChanged()
                             }
-
                         }
 
                         "Customers" -> {
@@ -99,7 +98,6 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                                 adapter.notifyDataSetChanged()
                             }
                         }
-
                         "Items" -> {
                             if (listOfItems[0].status.equals("failure")) {
                                 listOfItems.clear()
@@ -124,9 +122,14 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         }
 
                         "Expense" -> {
-                            val newItem =
-                                Gson().fromJson(it, InvoiceGetExpenseDataList.DataList::class.java)
-                            listOfExpenses.add(0, newItem)
+                          /*  val newItem = Gson().fromJson(it, InvoiceGetExpenseDataList.DataList::class.java)
+                            listOfExpenses.add(0, newItem)*/
+                            val type = object :
+                                TypeToken<List<InvoiceGetExpenseDataList.DataList>>() {}.type
+                            val itemList: List<InvoiceGetExpenseDataList.DataList> =
+                                Gson().fromJson(it, type)
+                            listOfExpenses.add(0, itemList[0])
+                            println("listOfEx === ${listOfExpenses.size}")
                             if (listOfExpenses.size != 0) {
                                 binding.NoDataLay.visibility = View.GONE
                                 binding.recyclerCustomers.visibility = View.VISIBLE
@@ -241,7 +244,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getExpenses"
-                InputMap["user_id"] = "1227994"
+                InputMap["user_id"] = ""+InvoiceUtils.userId
 
                 println("InvoiceRequest - $_TAG == $InputMap")
                 InvoiceUtils.loadingProgress(
@@ -261,7 +264,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getMaster"
-                InputMap["user_id"] = "1227994"
+                InputMap["user_id"] = ""+InvoiceUtils.userId
 
                 println("InvoiceRequest - $_TAG == $InputMap")
                 InvoiceUtils.loadingProgress(
@@ -281,17 +284,23 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
 
         viewModel.getExpenseList.observe(this@InvoiceBusinessAndCustomerActivity) { getList ->
             InvoiceUtils.loadingDialog.dismiss()
+            binding.swipeRefresh.isRefreshing = false
             if (getList.status.equals("success")) {
                 binding.swipeRefresh.isRefreshing = false
+                binding.NoDataLay.visibility = View.GONE
+                binding.recyclerCustomers.visibility = View.VISIBLE
                 getList.data?.let { listOfExpenses.addAll(it) }
                 println("listEx == ${listOfExpenses[0].itemName}")
                 setAdapter<InvoiceGetExpenseDataList.DataList>(3, listOfExpenses)
             } else {
+                binding.NoDataLay.visibility = View.VISIBLE
+                binding.recyclerCustomers.visibility = View.GONE
                 //  InvoiceUtils.loadingProgress(this@InvoiceBusinessAndCustomerActivity,InvoiceUtils.errorMessage,false).show()
             }
         }
 
         viewModel.errorMessage.observe(this@InvoiceBusinessAndCustomerActivity) {
+            binding.swipeRefresh.isRefreshing = false
             Toast.makeText(this@InvoiceBusinessAndCustomerActivity, "" + it, Toast.LENGTH_SHORT)
                 .show()
         }
@@ -308,7 +317,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getExpenses"
-                    InputMap["user_id"] = "1227994"
+                    InputMap["user_id"] = ""+InvoiceUtils.userId
 
                     println("InvoiceRequest - $_TAG == $InputMap")
                     viewModel.getExpenseList(InputMap)
@@ -323,7 +332,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getMaster"
-                    InputMap["user_id"] = "1227994"
+                    InputMap["user_id"] = ""+InvoiceUtils.userId
 
                     println("InvoiceRequest - $_TAG == $InputMap")
                     viewModel.getOverAllMasterDetail(InputMap)
@@ -336,7 +345,6 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 }
             }
         }
-
 
         viewModel.getMasterDetail.observe(this@InvoiceBusinessAndCustomerActivity) { getMasterArray ->
             println("getMastr == ${getMasterArray.companyDetails!!.size}")
@@ -404,7 +412,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                             val InputMap = HashMap<String, Any>()
                             InputMap["action"] = "getMaster"
-                            InputMap["user_id"] = "1227994"
+                            InputMap["user_id"] = ""+InvoiceUtils.userId
 
                             println("InvoiceRequest - $_TAG == $InputMap")
                             InvoiceUtils.loadingProgress(
@@ -609,7 +617,25 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         "InvoiceBusinessAndCustomerActivity_Customers"
                     )
                     addItemLauncher.launch(intent)
-                } else {
+                } else if (fromPage == "Expense") {
+                    if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
+                        val intent = Intent(
+                            this@InvoiceBusinessAndCustomerActivity,
+                            InvoiceAddExpenseFormActivity::class.java
+                        )
+                        intent.putExtra(
+                            "fromInvoicePage",
+                            "InvoiceBusinessAndCustomerActivity_Expenses"
+                        )
+                        addItemLauncher.launch(intent)
+                    } else {
+                        Toast.makeText(
+                            this@InvoiceBusinessAndCustomerActivity,
+                            "" + InvoiceUtils.messageNetCheck,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }else {
                     val intent = Intent(
                         this@InvoiceBusinessAndCustomerActivity,
                         InvoiceAddItemFormActivity::class.java

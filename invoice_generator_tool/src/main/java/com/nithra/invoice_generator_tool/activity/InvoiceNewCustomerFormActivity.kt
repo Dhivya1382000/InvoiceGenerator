@@ -154,7 +154,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             InvoiceUtils.loadingProgress(this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "1227994"
+            InputMap["user_id"] = ""+InvoiceUtils.userId
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
         } else {
@@ -397,7 +397,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addClientDetails"
-                            map["user_id"] = "1227994"
+                            map["user_id"] = ""+InvoiceUtils.userId
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }
@@ -511,7 +511,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addClientDetails"
-                            map["user_id"] = "1227994"
+                            map["user_id"] = ""+InvoiceUtils.userId
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }

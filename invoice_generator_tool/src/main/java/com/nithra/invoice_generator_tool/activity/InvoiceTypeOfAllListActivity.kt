@@ -116,7 +116,7 @@ class InvoiceTypeOfAllListActivity : AppCompatActivity() {
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceTypeOfAllListActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "1227994"
+            InputMap["user_id"] = ""+InvoiceUtils.userId
 
             println("InvoiceRequest - $_TAG == $InputMap")
             InvoiceUtils.loadingProgress(
