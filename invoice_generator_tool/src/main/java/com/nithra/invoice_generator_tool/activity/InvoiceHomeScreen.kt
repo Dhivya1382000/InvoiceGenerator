@@ -197,8 +197,8 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 }
 
                 R.id.nav_business_report -> {
-                    Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
-                        .show()
+                    /*Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
+                        .show()*/
                     if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                         val intent = Intent(
                             this@InvoiceHomeScreen,

@@ -156,6 +156,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
 
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
+            InvoiceUtils.loadingProgress(this@InvoiceCreateFormActivity,""+InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
             InputMap["user_id"] = "1227994"
@@ -171,11 +172,14 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         }
 
         viewModel.errorMessage.observe(this@InvoiceCreateFormActivity) {
-            println("")
+            binding.mainCusFormLay.visibility = View.VISIBLE
+            InvoiceUtils.loadingDialog.dismiss()
             Toast.makeText(this@InvoiceCreateFormActivity, "" + it, Toast.LENGTH_SHORT).show()
         }
 
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
+            binding.mainCusFormLay.visibility = View.VISIBLE
+            InvoiceUtils.loadingDialog.dismiss()
             if (getMasterArray.status.equals("success")) {
                 listOfState.addAll(getMasterArray.state!!)
                 listOfIndustrial.addAll(getMasterArray.industrial!!)
@@ -273,7 +277,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(
                         this@InvoiceCreateFormActivity,
-                        "Please choose your business detail",
+                        "Please choose your customer detail",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -800,9 +804,13 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
 
         createPdf(htmlContent)
 
-        when{
-            binding.InvoiceBusinessTypeText.text.toString().isEmpty()->{
-                Toast.makeText(this@InvoiceCreateFormActivity, "Select business details", Toast.LENGTH_SHORT).show()
+        when {
+            binding.InvoiceBusinessTypeText.text.toString().isEmpty() -> {
+                Toast.makeText(
+                    this@InvoiceCreateFormActivity,
+                    "Select business details",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         //check
@@ -873,7 +881,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                 onPdfGenerated = { pdfFile ->
                     // pdf was generated, stop the loading and open it
                     InvoiceUtils.loadingDialog.dismiss()
-                   // openPdf(pdfFile)
+                    // openPdf(pdfFile)
                 })
         } catch (e: Exception) {
             e.printStackTrace()

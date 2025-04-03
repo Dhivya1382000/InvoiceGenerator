@@ -64,6 +64,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
         }
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceAddItemFormActivity)) {
+            InvoiceUtils.loadingProgress(this@InvoiceAddItemFormActivity,""+InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
             InputMap["user_id"] = "1227994"
@@ -80,6 +81,8 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
 
 
         viewModel.errorMessage.observe(this@InvoiceAddItemFormActivity) {
+            itemFormBinding.mainItemLayForm.visibility = View.VISIBLE
+            InvoiceUtils.loadingDialog.dismiss()
             Toast.makeText(this@InvoiceAddItemFormActivity, "" + it, Toast.LENGTH_SHORT).show()
         }
 
@@ -87,6 +90,8 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
 
 
         viewModel.getItemDetails.observe(this) { getItemList ->
+            itemFormBinding.mainItemLayForm.visibility = View.VISIBLE
+            InvoiceUtils.loadingDialog.dismiss()
             if (getItemList.status.equals("success")) {
                 Toast.makeText(
                     this@InvoiceAddItemFormActivity,
@@ -128,6 +133,8 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
         }
 
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
+            itemFormBinding.mainItemLayForm.visibility = View.VISIBLE
+            InvoiceUtils.loadingDialog.dismiss()
             if (getMasterArray.status.equals("success")) {
                 listOfGST.addAll(getMasterArray.gst!!)
                 listOfitemList.addAll(getMasterArray.itemList!!)
@@ -404,7 +411,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                         map["total_amt"] = "" + finalAmount
 
                         println("InvoiceRequest - $_TAG == $map")
-
+                        InvoiceUtils.loadingProgress(this@InvoiceAddItemFormActivity,""+InvoiceUtils.messageLoading,false).show()
                         viewModel.addItemData(map)
 
                     } else {

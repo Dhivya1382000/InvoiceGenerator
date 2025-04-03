@@ -74,7 +74,10 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 println("iTemLit === ${itemList.company_id}")
                 selectedBusinessId = itemList.company_id!!
                 selectedBusinessState = itemList.state!!
+                clickDataId = itemList.company_id!!
                 binding.InvoiceBusinessTypeText.text = itemList.bussiness_name
+                listOfCompanyDetails.clear()
+                loadMasterData()
             }
         }
 
@@ -95,47 +98,24 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         }
 
         listOfGetInvoicePieChart = arrayListOf()
-        if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
-            val InputMap = HashMap<String, Any>()
-            InputMap["action"] = "picChartReport"
-            InputMap["user_id"] = "1227994"
-            InputMap["company_id"] = ""+clickDataId
 
-            println("InvoiceRequest - $_TAG == $InputMap")
-            InvoiceUtils.loadingProgress(
-                this@InvoioceBusinessReportActivity,
-                InvoiceUtils.messageLoading, false
-            ).show()
-            viewmodel.getPieChart(InputMap)
-        } else {
-            Toast.makeText(
-                this@InvoioceBusinessReportActivity,
-                "Check Your Internet Connection",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-        if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
-            val InputMap = HashMap<String, Any>()
-            InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "1227994"
+        loadMasterData()
 
-            println("InvoiceRequest - ${InvoiceBusinessDetailFormActivity._TAG} == $InputMap")
-            viewmodel.getOverAllMasterDetail(InputMap)
-        } else {
-            Toast.makeText(
-                this@InvoioceBusinessReportActivity,
-                "Check Your Internet Connection",
-                Toast.LENGTH_SHORT
-            ).show()
+        if (clickDataId != 0){
+          loadPiechart()
         }
+
 
         viewmodel.errorMessage.observe(this@InvoioceBusinessReportActivity) {
+            println("eror ==== $it")
             Toast.makeText(this@InvoioceBusinessReportActivity, "" + it, Toast.LENGTH_SHORT).show()
         }
 
         viewmodel.getMasterDetail.observe(this) { getMasterArray ->
             listOfCompanyDetails.addAll(getMasterArray.companyDetails!!)
-            binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
+            if ( listOfCompanyDetails[0].bussinessName!!.isNotEmpty()){
+                binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
+            }
         }
 
         binding.InvoiceBusinessTypeSpinner.setOnClickListener {
@@ -147,7 +127,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 ).show()
                 return@setOnClickListener
             }
-            if (listOfCompanyDetails[0].status.equals("failure")){
+            if (binding.InvoiceBusinessTypeText.text.isEmpty()){
                 val intent = Intent(
                     this@InvoioceBusinessReportActivity,
                     InvoiceBusinessAndCustomerActivity::class.java
@@ -189,6 +169,45 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
     }
 
+    private fun loadMasterData() {
+        if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
+            val InputMap = HashMap<String, Any>()
+            InputMap["action"] = "getMaster"
+            InputMap["user_id"] = "1227994"
+
+            println("InvoiceRequest - ${InvoiceBusinessDetailFormActivity._TAG} == $InputMap")
+            viewmodel.getOverAllMasterDetail(InputMap)
+        } else {
+            Toast.makeText(
+                this@InvoioceBusinessReportActivity,
+                "Check Your Internet Connection",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun loadPiechart() {
+        if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
+            val InputMap = HashMap<String, Any>()
+            InputMap["action"] = "picChartReport"
+            InputMap["user_id"] = "1227994"
+            InputMap["company_id"] = ""+clickDataId
+
+            println("InvoiceRequest - $_TAG == $InputMap")
+            InvoiceUtils.loadingProgress(
+                this@InvoioceBusinessReportActivity,
+                InvoiceUtils.messageLoading, false
+            ).show()
+            viewmodel.getPieChart(InputMap)
+        } else {
+            Toast.makeText(
+                this@InvoioceBusinessReportActivity,
+                "Check Your Internet Connection",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     private fun <T> showSearchableDialog(
         fromSpinner: Int,
         listOfState: MutableList<T>,
@@ -203,12 +222,12 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         val NoDataLay = stateDialog.findViewById<LinearLayout>(R.id.NoDataLay)
         val AddItemCard = stateDialog.findViewById<CardView>(R.id.AddItemCard)
 
+        AddItemCard.visibility = View.GONE
         val filteredList: MutableList<T> = mutableListOf()
 
         filteredList.clear()
         // Initialize adapter
         filteredList.addAll(listOfState) // Initially show all items
-
 
         val adapter = InvoiceMasterAdapter(
             this@InvoioceBusinessReportActivity,
@@ -245,7 +264,12 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 )
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s!!.isEmpty()){
+                    recyclerView.visibility = View.VISIBLE
+                    NoDataLay.visibility = View.GONE
+                }
+            }
         })
 
         stateDialog.show()
@@ -281,30 +305,36 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                     }
                 }
             })
+
+            val adapter = InvoiceMasterAdapter(
+                this@InvoioceBusinessReportActivity,
+                filteredList,
+                searchQuery.toString(),
+                this,
+                2,
+                fromSpinner, onAddItemClick = {
+
+                },
+                onDeleteItem ={deleteId ,pos,actionName->
+
+                }
+            ) // Pass the query
+            recyclerView.adapter = adapter
+
             if (filteredList.isEmpty()) {
                 // Display a message or take action if no results were found
                 println("filterSize 11  == ${filteredList.size}")
                 NoDataLay.visibility = View.VISIBLE
+                recyclerView.visibility =View.GONE
             } else {
                 println("filterSize 12  == ${filteredList.size}")
                 NoDataLay.visibility = View.GONE
+                recyclerView.visibility =View.VISIBLE
             }
+            adapter.notifyDataSetChanged()
 
         }
-        val adapter = InvoiceMasterAdapter(
-            this@InvoioceBusinessReportActivity,
-            filteredList,
-            searchQuery.toString(),
-            this,
-            2,
-            fromSpinner, onAddItemClick = {
 
-            },
-            onDeleteItem ={deleteId ,pos,actionName->
-
-            }
-        ) // Pass the query
-        recyclerView.adapter = adapter
     }
 
     @Composable

@@ -151,10 +151,10 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
+            InvoiceUtils.loadingProgress(this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
             InputMap["user_id"] = "1227994"
-
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
         } else {
@@ -167,9 +167,13 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
 
         viewModel.errorMessage.observe(this@InvoiceNewCustomerFormActivity) {
+            binding.mainCusFormLay.visibility = View.VISIBLE
+            InvoiceUtils.loadingDialog.dismiss()
             Toast.makeText(this@InvoiceNewCustomerFormActivity, "" + it, Toast.LENGTH_SHORT).show()
         }
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
+            binding.mainCusFormLay.visibility = View.VISIBLE
+            InvoiceUtils.loadingDialog.dismiss()
             if (getMasterArray.status.equals("success")) {
                 listOfState.addAll(getMasterArray.state!!)
                 listOfIndustrial.addAll(getMasterArray.industrial!!)
@@ -283,8 +287,6 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 binding.InvoiceCusShippingAddress.threshold =
                     1 // Start showing suggestions after 1 character
             }
-
-
         }
 
         binding.InvoiceCusSaveCard.setOnClickListener {
@@ -417,8 +419,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             map["tax_id"] = "" + binding.InvoiceCusTaxId.text.toString().trim()
 
                             println("InvoiceRequest - $_TAG == $map")
+                            InvoiceUtils.loadingProgress(this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
                             viewModel.getCustomerDetail(map)
-
                         } else {
                             Toast.makeText(
                                 this@InvoiceNewCustomerFormActivity,
@@ -530,6 +532,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             map["state"] = "" + selectedStateId
 
                             println("InvoiceRequest - $_TAG == $map")
+                            InvoiceUtils.loadingProgress(this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
                             viewModel.getCustomerDetail(map)
 
                         } else {
@@ -544,6 +547,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             }
 
             viewModel.getCustomerDetail.observe(this) { getCustomerDetail ->
+                InvoiceUtils.loadingDialog.dismiss()
                 if (getCustomerDetail.status.equals("success")) {
                     Toast.makeText(
                         this@InvoiceNewCustomerFormActivity,

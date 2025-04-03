@@ -32,22 +32,29 @@ class InvoiceAllListAdapter(
         holder.binding.apply {
             InvoiceAmount.text = "" + item.totalInvoiceAmt
             InvoiceNo.text = "" + item.invoiceNumber
-            val createDate = formatDate("" + item.invoiceDate)
-            tvCreatedOn.text = "" + createDate
-            if (item.amtType!! == 1) {
-                tvStatus.text = "Paid"
-                InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_green))
-                InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_green))
-            } else if (item.amtType!! == 2) {
-                tvStatus.text = "Un paid"
-                InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_red))
-                InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_red))
-            } else if (item.amtType!! == 3) {
-                tvStatus.text = "Partially Paid"
-                InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_blue))
-                InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_peack_green))
+            if (item.invoiceDate != null){
+                val createDate = formatDate("" + item.invoiceDate)
+                tvCreatedOn.text = "" + createDate
             }
-            tvUserName.text = item.clientName
+
+            if (item.amtType != null){
+                if (item.amtType!! == 1) {
+                    tvStatus.text = "Paid"
+                    InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_green))
+                    InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_green))
+                } else if (item.amtType!! == 2) {
+                    tvStatus.text = "Un paid"
+                    InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_red))
+                    InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_red))
+                } else if (item.amtType!! == 3) {
+                    tvStatus.text = "Partially Paid"
+                    InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_blue))
+                    InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_peack_green))
+                }
+            }
+            if (item.clientName != null){
+                tvUserName.text = item.clientName
+            }
         }
     }
 

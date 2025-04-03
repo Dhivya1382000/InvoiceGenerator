@@ -10,11 +10,12 @@
 
     <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main"
+        android:id="@+id/mainCusFormLay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/invoice_white"
         android:orientation="vertical"
+        android:visibility="gone"
         tools:context=".activity.InvoiceBusinessDetailFormActivity">
 
         <androidx.appcompat.widget.Toolbar
@@ -591,7 +592,7 @@
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
                             android:hint="Paid Amount"
-                            android:inputType="textCapSentences"
+                            android:inputType="number"
                             android:padding="15dp"
                             android:textColor="@color/invoice_black"
                             android:textSize="15dp" />

@@ -323,6 +323,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         map["bussiness_type"] = "" + selectedBusinesTypeId
 
                         println("InvoiceRequest - $_TAG == $map")
+                        InvoiceUtils.loadingProgress(this@InvoiceBusinessDetailFormActivity,""+InvoiceUtils.messageLoading,false).show()
                         viewModel.getBusinessDetail(map)
 
                     } else {
@@ -339,6 +340,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
 
         viewModel.getBusinessDetailForm.observe(this) { getBusinessDetail ->
             println("receiveData == ${getBusinessDetail.data!![0].bussinessName}")
+            InvoiceUtils.loadingDialog.dismiss()
             if (getBusinessDetail.status.equals("success")) {
                 Toast.makeText(
                     this@InvoiceBusinessDetailFormActivity,
