@@ -11,6 +11,7 @@ import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
 import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
 import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseList
+import com.nithra.invoice_generator_tool.model.InvoiceGetHomeReport
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
@@ -53,6 +54,12 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
 
     private val _getPiechartList= MutableLiveData<InvoicePieChart>()
     val getPiechartList: LiveData<InvoicePieChart> get() = _getPiechartList
+
+    private val _getDelete = MutableLiveData<Map<String,Any>>()
+    val getDelete: LiveData<Map<String,Any>> get() = _getDelete
+
+    private val _getHomeChart= MutableLiveData<InvoiceGetHomeReport>()
+    val getHomeChart: LiveData<InvoiceGetHomeReport> get() = _getHomeChart
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -197,15 +204,15 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
                 println("InvoiceResponse - $_TAG == ${_getAddedInvoiceList.value}")
             } catch (e: SocketTimeoutException) {
                 // Handle errors
-                println("exception == ${e.toString()}")
+                println("exception addInvoiceList SocketTimeoutException== ${e.toString()}")
                 _errorMessage.value = e.message
             } catch (e: IOException) {
                 // Handle errors
-                println("exception == ${e.toString()}")
+                println("exception addInvoiceList IOException== ${e.toString()}")
                 _errorMessage.value = e.message
             } catch (e: Exception) {
                 // Handle errors
-                println("exception == ${e.toString()}")
+                println("exception addInvoiceList Exception== ${e.toString()}")
                 _errorMessage.value = e.message
             }
         }
@@ -277,9 +284,52 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
                 println("exception == ${e.toString()}")
                 _errorMessage.value = e.message
             }
+        }
+    }
 
+    fun getDeleteData(InputMap: HashMap<String, Any>) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getDeleteData(InputMap)
+                _getDelete.value = response
+                println("InvoiceResponse - $_TAG == ${response}")
+            } catch (e: SocketTimeoutException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            } catch (e: IOException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            } catch (e: Exception) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }
+        }
+    }
 
+    fun getHomeReport(InputMap: HashMap<String, Any>) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getHomeReportData(InputMap)
+                _getHomeChart.value = response
+                println("InvoiceResponse - $_TAG == ${response}")
+            } catch (e: SocketTimeoutException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            } catch (e: IOException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            } catch (e: Exception) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }
         }
     }
 
 }
+

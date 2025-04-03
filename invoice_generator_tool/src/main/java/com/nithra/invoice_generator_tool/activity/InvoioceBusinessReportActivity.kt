@@ -1,6 +1,9 @@
 package com.nithra.invoice_generator_tool.activity
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
@@ -10,6 +13,7 @@ import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
@@ -26,12 +30,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoioceBusinessReportBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
+import com.nithra.invoice_generator_tool.model.InvoiceOfflineDynamicData
 import com.nithra.invoice_generator_tool.model.InvoicePieChart
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,7 +57,26 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         mutableListOf()
     private lateinit var stateDialog: Dialog
     var clickDataId = 0
+    var preference = InvioceSharedPreference()
+    var selectedBusinessId = 0
+    var selectedBusinessState = ""
 
+
+    private val selectItemLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val json = preference.getString(
+                    this@InvoioceBusinessReportActivity,
+                    "INVOICE_SELECTED_ITEMS"
+                ) // Default empty list
+                val type = object : TypeToken<InvoiceOfflineDynamicData>() {}.type
+                val itemList: InvoiceOfflineDynamicData = Gson().fromJson(json, type)
+                println("iTemLit === ${itemList.company_id}")
+                selectedBusinessId = itemList.company_id!!
+                selectedBusinessState = itemList.state!!
+                binding.InvoiceBusinessTypeText.text = itemList.bussiness_name
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +98,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "picChartReport"
-            InputMap["user_id"] = "3"
+            InputMap["user_id"] = "1227994"
             InputMap["company_id"] = ""+clickDataId
 
             println("InvoiceRequest - $_TAG == $InputMap")
@@ -119,10 +147,21 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 ).show()
                 return@setOnClickListener
             }
-            showSearchableDialog<InvoiceGetDataMasterArray.GetCompanyDetailList>(
-                0,
-                listOfCompanyDetails
-            )
+            if (listOfCompanyDetails[0].status.equals("failure")){
+                val intent = Intent(
+                    this@InvoioceBusinessReportActivity,
+                    InvoiceBusinessAndCustomerActivity::class.java
+                )
+                intent.putExtra("fromInvoice", 1)
+                intent.putExtra("InvoicefromPage", "Business")
+                selectItemLauncher.launch(intent)
+            }else{
+                showSearchableDialog<InvoiceGetDataMasterArray.GetCompanyDetailList>(
+                    0,
+                    listOfCompanyDetails
+                )
+            }
+
         }
 
 
@@ -163,15 +202,13 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         val recyclerView = stateDialog.findViewById<RecyclerView>(R.id.recycler_view)
         val NoDataLay = stateDialog.findViewById<LinearLayout>(R.id.NoDataLay)
         val AddItemCard = stateDialog.findViewById<CardView>(R.id.AddItemCard)
-        if (fromSpinner == 0) {
-            AddItemCard.visibility = View.GONE
-        }
 
         val filteredList: MutableList<T> = mutableListOf()
 
         filteredList.clear()
         // Initialize adapter
         filteredList.addAll(listOfState) // Initially show all items
+
 
         val adapter = InvoiceMasterAdapter(
             this@InvoioceBusinessReportActivity,
@@ -180,6 +217,8 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             this,
             2,
             fromSpinner, onAddItemClick = {
+            },  onDeleteItem ={deleteId ,pos,actionName->
+
             }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -259,6 +298,9 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             this,
             2,
             fromSpinner, onAddItemClick = {
+
+            },
+            onDeleteItem ={deleteId ,pos,actionName->
 
             }
         ) // Pass the query

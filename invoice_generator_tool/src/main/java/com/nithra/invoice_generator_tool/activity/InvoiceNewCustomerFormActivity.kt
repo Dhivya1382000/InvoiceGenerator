@@ -561,6 +561,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                     } else {
                         if (fromInvoicePage == "InvoiceBusinessAndCustomerActivity_Customers") {
                             val resultIntent = Intent()
+                            getCustomerDetail.data!![0].status = getCustomerDetail.status!!
                             val addedData = Gson().toJson(getCustomerDetail.data)
                             resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
                             setResult(Activity.RESULT_OK, resultIntent)
@@ -641,6 +642,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             fromInvoice,
             fromSpinner, onAddItemClick = {
 
+            },  onDeleteItem ={deleteId ,pos,actionName->
+
             }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -689,9 +692,6 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             filteredList.addAll(listOfState) // Show all items if the query is empty
             println("filterSize == ${filteredList.size}")
         } else {
-            /*filteredList.addAll(filteredList.filter {
-                it.english!!.contains(searchQuery, ignoreCase = true)  // Check if english contains search query
-            })*/
             // Check if filteredList is empty and handle "no data found"
             filteredList.addAll(listOfState.filter { item ->
                 // Example: If the item is a State, filter by stateName
@@ -728,6 +728,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             this@InvoiceNewCustomerFormActivity, filteredList,
             searchQuery.toString(),
             this, fromInvoice, fromSpinner, onAddItemClick = {
+
+            },  onDeleteItem ={deleteId ,pos,actionName->
 
             }
         ) // Pass the query

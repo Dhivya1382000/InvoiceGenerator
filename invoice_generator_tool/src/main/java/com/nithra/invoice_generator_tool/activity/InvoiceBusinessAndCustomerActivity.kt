@@ -1,14 +1,20 @@
 package com.nithra.invoice_generator_tool.activity
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -17,7 +23,6 @@ import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceRecyclerviewBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
 import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
-import com.nithra.invoice_generator_tool.model.InvoiceOfflineDynamicData
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
 import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
@@ -37,96 +42,185 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
     var fromInvoice = 0
     var businessClickId = 0
     var fromPage: String = ""
-    lateinit var adapter : InvoiceMasterAdapter<*>
+    lateinit var adapter: InvoiceMasterAdapter<*>
+    var ListPosition = 0
+    var actionName = ""
 
-    val addItemLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data?.getStringExtra("INVOICE_FORM_DATA")
-            println("Data == $data")
-            data?.let {
-                when (fromPage) {
-                    "Business" -> {
-                        val type = object : TypeToken<List<InvoiceGetDataMasterArray.GetCompanyDetailList>>() {}.type
-                        val itemList: List<InvoiceGetDataMasterArray.GetCompanyDetailList> = Gson().fromJson(it, type)
-                        listOfCompany.add(0, itemList[0])  // Add at the first position
-                        adapter.notifyItemInserted(0)
-                        adapter.notifyDataSetChanged()
-                    }
-                    "Customers" -> {
-                        val type = object : TypeToken<List<InvoiceGetDataMasterArray.GetClientDetails>>() {}.type
-                        val itemList: List<InvoiceGetDataMasterArray.GetClientDetails> = Gson().fromJson(it, type)
-                        listOfClients.add(0, itemList[0])  // Add at the first position
-                        adapter.notifyItemInserted(0)
-                        adapter.notifyDataSetChanged()
-                    }
-                    "Items" -> {
-                       // val newItem = Gson().fromJson(it, InvoiceGetDataMasterArray.GetItemList::class.java)
-                        val type = object : TypeToken<List<InvoiceGetDataMasterArray.GetItemList>>() {}.type
-                        val itemList: List<InvoiceGetDataMasterArray.GetItemList> = Gson().fromJson(it, type)
-                        listOfItems.add(0,itemList[0])
-                        adapter.notifyItemInserted(0)
-                        adapter.notifyDataSetChanged()
-                    }
-                    "Expense" -> {
-                        val newItem = Gson().fromJson(it, InvoiceGetExpenseDataList.DataList::class.java)
-                        listOfExpenses.add(0,newItem)
-                        adapter.notifyItemInserted(0)
-                        adapter.notifyDataSetChanged()
+
+    val addItemLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data?.getStringExtra("INVOICE_FORM_DATA")
+                println("Data == $data")
+                data?.let {
+                    when (fromPage) {
+                        "Business" -> {
+                            if (listOfCompany[0].status.equals("failure")) {
+                                listOfCompany.clear()
+                            }
+                            val type = object :
+                                TypeToken<List<InvoiceGetDataMasterArray.GetCompanyDetailList>>() {}.type
+                            val itemList: List<InvoiceGetDataMasterArray.GetCompanyDetailList> =
+                                Gson().fromJson(it, type)
+                            listOfCompany.add(0, itemList[0])
+                            println("Status== ${listOfCompany[0].status}")
+                            if (itemList[0].status.equals("success")) {
+                                binding.NoDataLay.visibility = View.GONE
+                                binding.recyclerCustomers.visibility = View.VISIBLE
+                            } else {
+                                binding.NoDataLay.visibility = View.VISIBLE
+                                binding.recyclerCustomers.visibility = View.GONE
+                            }
+                            if (::adapter.isInitialized) {
+                                adapter.notifyItemInserted(0)
+                                adapter.notifyDataSetChanged()
+                            }
+
+                        }
+
+                        "Customers" -> {
+                            if (listOfClients[0].status.equals("failure")) {
+                                listOfClients.clear()
+                            }
+                            val type = object :
+                                TypeToken<List<InvoiceGetDataMasterArray.GetClientDetails>>() {}.type
+                            val itemList: List<InvoiceGetDataMasterArray.GetClientDetails> =
+                                Gson().fromJson(it, type)
+                            listOfClients.add(0, itemList[0])  // Add at the first position
+                            if (itemList[0].status.equals("success")) {
+                                binding.NoDataLay.visibility = View.GONE
+                                binding.recyclerCustomers.visibility = View.VISIBLE
+                            } else {
+                                binding.NoDataLay.visibility = View.VISIBLE
+                                binding.recyclerCustomers.visibility = View.GONE
+                            }
+                            if (::adapter.isInitialized) {
+                                adapter.notifyItemInserted(0)
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+
+                        "Items" -> {
+                            if (listOfItems[0].status.equals("failure")) {
+                                listOfItems.clear()
+                            }
+                            // val newItem = Gson().fromJson(it, InvoiceGetDataMasterArray.GetItemList::class.java)
+                            val type = object :
+                                TypeToken<List<InvoiceGetDataMasterArray.GetItemList>>() {}.type
+                            val itemList: List<InvoiceGetDataMasterArray.GetItemList> =
+                                Gson().fromJson(it, type)
+                            listOfItems.add(0, itemList[0])
+                            if (itemList[0].status.equals("success")) {
+                                binding.NoDataLay.visibility = View.GONE
+                                binding.recyclerCustomers.visibility = View.VISIBLE
+                            } else {
+                                binding.NoDataLay.visibility = View.VISIBLE
+                                binding.recyclerCustomers.visibility = View.GONE
+                            }
+                            if (::adapter.isInitialized) {
+                                adapter.notifyItemInserted(0)
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+
+                        "Expense" -> {
+                            val newItem =
+                                Gson().fromJson(it, InvoiceGetExpenseDataList.DataList::class.java)
+                            listOfExpenses.add(0, newItem)
+                            if (listOfExpenses.size != 0) {
+                                binding.NoDataLay.visibility = View.GONE
+                                binding.recyclerCustomers.visibility = View.VISIBLE
+                            } else {
+                                binding.NoDataLay.visibility = View.VISIBLE
+                                binding.recyclerCustomers.visibility = View.GONE
+                            }
+                            if (::adapter.isInitialized) {
+                                adapter.notifyItemInserted(0)
+                                adapter.notifyDataSetChanged()
+                            }
+
+                        }
                     }
                 }
             }
         }
-    }
-    val editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data?.getStringExtra("INVOICE_FORM_DATA_UPDATE")
-            val dataClicpos = result.data?.getIntExtra("INVOICE_FORM_CLICK_POS",0)
-            println("Data == $data")
-            println("dataClicpos == $dataClicpos")
-            data?.let {
-                when (fromPage) {
-                    "Business" -> {
-                        val type = object : TypeToken<List<InvoiceGetDataMasterArray.GetCompanyDetailList>>() {}.type
-                        val itemList: List<InvoiceGetDataMasterArray.GetCompanyDetailList> = Gson().fromJson(it, type)
-                        if (dataClicpos != -1) {
-                            listOfCompany[dataClicpos!!] = itemList[0]  // Update the correct index
-                            adapter.notifyItemChanged(dataClicpos)  // Refresh only updated item
+    val editLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data?.getStringExtra("INVOICE_FORM_DATA_UPDATE")
+                val dataClicpos = result.data?.getIntExtra("INVOICE_FORM_CLICK_POS", 0)
+                println("Data == $data")
+                println("dataClicpos == $dataClicpos")
+                data?.let {
+                    when (fromPage) {
+                        "Business" -> {
+                            val type = object :
+                                TypeToken<List<InvoiceGetDataMasterArray.GetCompanyDetailList>>() {}.type
+                            val itemList: List<InvoiceGetDataMasterArray.GetCompanyDetailList> =
+                                Gson().fromJson(it, type)
+                            if (dataClicpos != -1) {
+                                listOfCompany[dataClicpos!!] =
+                                    itemList[0]  // Update the correct index
+                                if (::adapter.isInitialized) {
+                                    adapter.notifyItemChanged(dataClicpos)  // Refresh only updated item
+                                } else {
+                                    binding.NoDataLay.visibility = View.GONE
+                                    binding.recyclerCustomers.visibility = View.VISIBLE
+                                }
+                            }
                         }
-                    }
-                    "Customers" -> {
-                        val type = object : TypeToken<List<InvoiceGetDataMasterArray.GetClientDetails>>() {}.type
-                        val itemList: List<InvoiceGetDataMasterArray.GetClientDetails> = Gson().fromJson(it, type)
-                        if (dataClicpos != -1 ) {
-                            listOfClients[dataClicpos!!] = itemList[0]  // Update the correct index
-                            adapter.notifyItemChanged(dataClicpos)  // Refresh only updated item
+
+                        "Customers" -> {
+                            val type = object :
+                                TypeToken<List<InvoiceGetDataMasterArray.GetClientDetails>>() {}.type
+                            val itemList: List<InvoiceGetDataMasterArray.GetClientDetails> =
+                                Gson().fromJson(it, type)
+                            if (dataClicpos != -1) {
+                                listOfClients[dataClicpos!!] =
+                                    itemList[0]  // Update the correct index
+                                if (::adapter.isInitialized) {
+                                    adapter.notifyItemChanged(dataClicpos)  // Refresh only updated item
+                                }
+                            }
                         }
-                    }
-                    "Items" -> {
-                        val type = object : TypeToken<List<InvoiceGetDataMasterArray.GetItemList>>() {}.type
-                        val itemList: List<InvoiceGetDataMasterArray.GetItemList> = Gson().fromJson(it, type)
-                        if (dataClicpos != -1) {
-                            listOfItems[dataClicpos!!] = itemList[0]  // Update the correct index
-                            adapter.notifyItemChanged(dataClicpos)  // Refresh only updated item
+
+                        "Items" -> {
+                            val type = object :
+                                TypeToken<List<InvoiceGetDataMasterArray.GetItemList>>() {}.type
+                            val itemList: List<InvoiceGetDataMasterArray.GetItemList> =
+                                Gson().fromJson(it, type)
+                            if (dataClicpos != -1) {
+                                listOfItems[dataClicpos!!] =
+                                    itemList[0]  // Update the correct index
+                                if (::adapter.isInitialized) {
+                                    adapter.notifyItemChanged(dataClicpos)  // Refresh only updated item
+
+                                }
+                            }
                         }
-                    }
-                    "Expense" -> {
-                        val newItem = Gson().fromJson(it, InvoiceGetExpenseDataList.DataList::class.java)
-                        listOfExpenses.add(0,newItem)
-                        adapter.notifyItemInserted(0)
-                        adapter.notifyDataSetChanged()
+
+                        "Expense" -> {
+                            val newItem =
+                                Gson().fromJson(it, InvoiceGetExpenseDataList.DataList::class.java)
+                            listOfExpenses.add(0, newItem)
+                            if (::adapter.isInitialized) {
+                                adapter.notifyItemInserted(0)
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
                     }
                 }
             }
         }
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityInvoiceRecyclerviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (intent != null){
+        if (intent != null) {
             fromInvoice = intent.getIntExtra("fromInvoice", 0)
-            fromPage = ""+intent.getStringExtra("InvoicefromPage")
+            fromPage = "" + intent.getStringExtra("InvoicefromPage")
 
         }
         setSupportActionBar(binding.toolBarTitle)
@@ -143,14 +237,18 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
 
 
         println("fromPage == $fromPage")
-        if (fromPage == "Expense"){
+        if (fromPage == "Expense") {
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getExpenses"
                 InputMap["user_id"] = "1227994"
 
                 println("InvoiceRequest - $_TAG == $InputMap")
-                InvoiceUtils.loadingProgress(this@InvoiceBusinessAndCustomerActivity,InvoiceUtils.messageLoading,false).show()
+                InvoiceUtils.loadingProgress(
+                    this@InvoiceBusinessAndCustomerActivity,
+                    InvoiceUtils.messageLoading,
+                    false
+                ).show()
                 viewModel.getExpenseList(InputMap)
             } else {
                 Toast.makeText(
@@ -159,14 +257,18 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }else{
+        } else {
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getMaster"
                 InputMap["user_id"] = "1227994"
 
                 println("InvoiceRequest - $_TAG == $InputMap")
-                InvoiceUtils.loadingProgress(this@InvoiceBusinessAndCustomerActivity,InvoiceUtils.messageLoading,false).show()
+                InvoiceUtils.loadingProgress(
+                    this@InvoiceBusinessAndCustomerActivity,
+                    InvoiceUtils.messageLoading,
+                    false
+                ).show()
                 viewModel.getOverAllMasterDetail(InputMap)
             } else {
                 Toast.makeText(
@@ -177,21 +279,23 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             }
         }
 
-   viewModel.getExpenseList.observe(this@InvoiceBusinessAndCustomerActivity){getList ->
-       InvoiceUtils.loadingDialog.dismiss()
-       if (getList.status.equals("success")){
-           binding.swipeRefresh.isRefreshing = false
-           getList.data?.let { listOfExpenses.addAll(it) }
-           println("listEx == ${listOfExpenses[0].itemName}")
-           setAdapter<InvoiceGetExpenseDataList.DataList>(3, listOfExpenses)
-       }else{
-         //  InvoiceUtils.loadingProgress(this@InvoiceBusinessAndCustomerActivity,InvoiceUtils.errorMessage,false).show()
-       }
-   }
-
-        viewModel.errorMessage.observe(this@InvoiceBusinessAndCustomerActivity){
-            Toast.makeText(this@InvoiceBusinessAndCustomerActivity, ""+it, Toast.LENGTH_SHORT).show()
+        viewModel.getExpenseList.observe(this@InvoiceBusinessAndCustomerActivity) { getList ->
+            InvoiceUtils.loadingDialog.dismiss()
+            if (getList.status.equals("success")) {
+                binding.swipeRefresh.isRefreshing = false
+                getList.data?.let { listOfExpenses.addAll(it) }
+                println("listEx == ${listOfExpenses[0].itemName}")
+                setAdapter<InvoiceGetExpenseDataList.DataList>(3, listOfExpenses)
+            } else {
+                //  InvoiceUtils.loadingProgress(this@InvoiceBusinessAndCustomerActivity,InvoiceUtils.errorMessage,false).show()
+            }
         }
+
+        viewModel.errorMessage.observe(this@InvoiceBusinessAndCustomerActivity) {
+            Toast.makeText(this@InvoiceBusinessAndCustomerActivity, "" + it, Toast.LENGTH_SHORT)
+                .show()
+        }
+
 
         binding.swipeRefresh.setOnRefreshListener {
             listOfCompany.clear()
@@ -199,7 +303,8 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             listOfClients.clear()
             listOfExpenses.clear()
 
-            if (fromPage == "Expense"){
+            println("fromPage swipe == $fromPage")
+            if (fromPage == "Expense") {
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getExpenses"
@@ -214,7 +319,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }else{
+            } else {
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getMaster"
@@ -233,28 +338,106 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         }
 
 
-        viewModel.getMasterDetail.observe(this) { getMasterArray ->
+        viewModel.getMasterDetail.observe(this@InvoiceBusinessAndCustomerActivity) { getMasterArray ->
             println("getMastr == ${getMasterArray.companyDetails!!.size}")
             InvoiceUtils.loadingDialog.dismiss()
             if (getMasterArray.status.equals("success")) {
+                binding.NoDataLay.visibility = View.GONE
+                binding.recyclerCustomers.visibility = View.VISIBLE
                 binding.swipeRefresh.isRefreshing = false
                 listOfCompany.addAll(getMasterArray.companyDetails!!)
                 listOfClients.addAll(getMasterArray.clientDetails!!)
                 listOfItems.addAll(getMasterArray.itemList!!)
+                println("fromPage == $fromPage")
                 if (fromPage == "Business") {
+                    println("companyDet111 == ${getMasterArray.companyDetails!![0].status}")
+                    if (getMasterArray.companyDetails!![0].status.equals("failure")) {
+                        binding.NoDataLay.visibility = View.VISIBLE
+                        binding.recyclerCustomers.visibility = View.GONE
+                    } else {
+                        println("companyDet == ${getMasterArray.companyDetails!![0].status}")
+
+                        binding.NoDataLay.visibility = View.GONE
+                        binding.recyclerCustomers.visibility = View.VISIBLE
+                    }
                     setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompany)
+
                 } else if (fromPage == "Customers") {
+                    if (getMasterArray.clientDetails!![0].status.equals("failure")) {
+                        binding.NoDataLay.visibility = View.VISIBLE
+                        binding.recyclerCustomers.visibility = View.GONE
+                    } else {
+                        binding.NoDataLay.visibility = View.GONE
+                        binding.recyclerCustomers.visibility = View.VISIBLE
+                    }
                     setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClients)
-                } else if (fromPage == "Items"){
+
+                } else if (fromPage == "Items") {
+                    if (getMasterArray.itemList!![0].status.equals("failure")) {
+                        binding.NoDataLay.visibility = View.VISIBLE
+                        binding.recyclerCustomers.visibility = View.GONE
+                    } else {
+                        binding.NoDataLay.visibility = View.GONE
+                        binding.recyclerCustomers.visibility = View.VISIBLE
+                    }
                     setAdapter<InvoiceGetDataMasterArray.GetItemList>(2, listOfItems)
                 }
+            } else {
+                binding.NoDataLay.visibility = View.VISIBLE
+                binding.recyclerCustomers.visibility = View.GONE
             }
+        }
+
+        viewModel.getDelete.observe(this@InvoiceBusinessAndCustomerActivity) {
+            if (it.isNotEmpty()) {
+                if (it["status"].toString().equals("success")) {
+                    Toast.makeText(
+                        this@InvoiceBusinessAndCustomerActivity,
+                        "" + it["msg"],
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    actionName = ""
+                    println("listOfPo=== $ListPosition")
+                    adapter.DeleteNotify(ListPosition)
+                    println("list Data delete size == ${adapter.itemCount}")
+                    if (adapter.itemCount == 0) {
+                        if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
+                            val InputMap = HashMap<String, Any>()
+                            InputMap["action"] = "getMaster"
+                            InputMap["user_id"] = "1227994"
+
+                            println("InvoiceRequest - $_TAG == $InputMap")
+                            InvoiceUtils.loadingProgress(
+                                this@InvoiceBusinessAndCustomerActivity,
+                                InvoiceUtils.messageLoading,
+                                false
+                            ).show()
+                            viewModel.getOverAllMasterDetail(InputMap)
+                        } else {
+                            Toast.makeText(
+                                this@InvoiceBusinessAndCustomerActivity,
+                                "Check Your Internet Connection",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(
+                        this@InvoiceBusinessAndCustomerActivity,
+                        "" + it["msg"],
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    actionName = ""
+                    ShowDialogUsedBusiness("" + it["msg"], 0, "")
+                }
+            }
+
         }
 
     }
 
     private fun <T> setAdapter(fromCLick: Int, GetList: MutableList<T>) {
-         adapter = InvoiceMasterAdapter(
+        adapter = InvoiceMasterAdapter(
             this@InvoiceBusinessAndCustomerActivity,
             GetList,
             "",
@@ -265,16 +448,105 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 val resultIntent = Intent()
                 val selectedItemJson = Gson().toJson(selectedItem)
                 println("selected Json == ${selectedItemJson}")
-                preference.putString(this@InvoiceBusinessAndCustomerActivity,"INVOICE_SELECTED_ITEMS",selectedItemJson)
+                preference.putString(
+                    this@InvoiceBusinessAndCustomerActivity,
+                    "INVOICE_SELECTED_ITEMS",
+                    selectedItemJson
+                )
                 setResult(Activity.RESULT_OK, resultIntent)
                 finish()
             },
-             onDeleteItem ={
-
-             }
+            onDeleteItem = { deleteId, pos, actionNameServer ->
+                println("swipe == $fromPage")
+                ListPosition = pos
+                actionName = actionNameServer
+                ShowDialogUsedBusiness("Do you want to delete this item?", deleteId, actionName)
+            }
         )
         binding.recyclerCustomers.layoutManager = LinearLayoutManager(this)
         binding.recyclerCustomers.adapter = adapter
+
+    }
+
+    private fun ShowDialogUsedBusiness(confirmTxt: String, deleteId: Int, actionName: String) {
+        val builder = AlertDialog.Builder(this@InvoiceBusinessAndCustomerActivity)
+
+        val titleView = TextView(this@InvoiceBusinessAndCustomerActivity)
+        titleView.text = "Alert!"
+        titleView.gravity = Gravity.START
+        titleView.textSize = 18f
+        val typeface1 =
+            ResourcesCompat.getFont(this@InvoiceBusinessAndCustomerActivity, R.font.lexend_medium)
+        titleView.typeface = typeface1
+        titleView.setPadding(20, 20, 20, 5)
+        titleView.setTextColor(
+            ContextCompat.getColor(
+                this@InvoiceBusinessAndCustomerActivity,
+                R.color.invoice_red
+            )
+        )
+        // Custom message with font
+        val messageView = TextView(this@InvoiceBusinessAndCustomerActivity)
+        messageView.text = "" + confirmTxt
+        messageView.textSize = 15f
+        val typeface =
+            ResourcesCompat.getFont(this@InvoiceBusinessAndCustomerActivity, R.font.lexend_medium)
+        messageView.typeface = typeface
+        messageView.setPadding(20, 10, 20, 5)
+        messageView.setTextColor(
+            ContextCompat.getColor(
+                this@InvoiceBusinessAndCustomerActivity,
+                R.color.invoice_black
+            )
+        )
+        if (actionName.isNotEmpty()) {
+            builder.setCustomTitle(titleView)
+                .setView(messageView)
+                .setNegativeButton("No", null)
+                .setPositiveButton("Yes", null)
+        } else {
+            builder.setCustomTitle(titleView)
+                .setView(messageView)
+                .setPositiveButton("Ok", null)
+        }
+
+        val dialog = builder.create() // Create the dialog
+        dialog.show() // Show the dialog first
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            if (!InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
+                Toast.makeText(
+                    this@InvoiceBusinessAndCustomerActivity, "" + InvoiceUtils.messageNetCheck,
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+            if (actionName.isNotEmpty()) {
+                deleteFun(deleteId, actionName)
+            }
+            dialog.dismiss()
+        }
+    }
+
+    private fun deleteFun(deleteId: Int, actionName: String) {
+        if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
+            val InputMap = HashMap<String, Any>()
+            InputMap["action"] = actionName
+            InputMap["id"] = "" + deleteId
+
+            println("InvoiceRequest - $_TAG == $InputMap")
+            viewModel.getDeleteData(InputMap)
+        } else {
+            Toast.makeText(
+                this@InvoiceBusinessAndCustomerActivity,
+                "Check Your Internet Connection",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onItemClick(item: String, clickId: Int, fromClick: Int, position: Int) {
@@ -304,7 +576,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             )
             intent.putExtra("clickDataId", clickId)
             intent.putExtra("clickPosition", position)
-            intent.putExtra("fromInvoicePage","InvoiceBusinessAndCustomerActivity_Item")
+            intent.putExtra("fromInvoicePage", "InvoiceBusinessAndCustomerActivity_Item")
             editLauncher.launch(intent)
         }
     }
@@ -313,6 +585,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         menuInflater.inflate(R.menu.invoice_add_item, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.add_icon -> {
@@ -321,21 +594,27 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         this@InvoiceBusinessAndCustomerActivity,
                         InvoiceBusinessDetailFormActivity::class.java
                     )
-                    intent.putExtra("fromInvoicePage","InvoiceBusinessAndCustomerActivity_Business")
+                    intent.putExtra(
+                        "fromInvoicePage",
+                        "InvoiceBusinessAndCustomerActivity_Business"
+                    )
                     addItemLauncher.launch(intent)
                 } else if (fromPage == "Customers") {
                     val intent = Intent(
                         this@InvoiceBusinessAndCustomerActivity,
                         InvoiceNewCustomerFormActivity::class.java
                     )
-                    intent.putExtra("fromInvoicePage","InvoiceBusinessAndCustomerActivity_Customers")
+                    intent.putExtra(
+                        "fromInvoicePage",
+                        "InvoiceBusinessAndCustomerActivity_Customers"
+                    )
                     addItemLauncher.launch(intent)
                 } else {
                     val intent = Intent(
                         this@InvoiceBusinessAndCustomerActivity,
                         InvoiceAddItemFormActivity::class.java
                     )
-                    intent.putExtra("fromInvoicePage","InvoiceBusinessAndCustomerActivity_Item")
+                    intent.putExtra("fromInvoicePage", "InvoiceBusinessAndCustomerActivity_Item")
                     addItemLauncher.launch(intent)
                 }
                 true
@@ -345,7 +624,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         }
     }
 
-    companion object{
-        var _TAG ="InvoiceBusinessAndCustomerActivity"
+    companion object {
+        var _TAG = "InvoiceBusinessAndCustomerActivity"
     }
 }

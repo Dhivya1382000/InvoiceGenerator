@@ -43,7 +43,7 @@ tools:openDrawer="start">
                     android:id="@+id/InvoiceUserName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Good Morning, Dhivya"
+                    android:text=""
                     android:fontFamily="@font/lexend_medium"
                     android:textColor="@color/invoice_black"
                     android:textSize="17dp"
@@ -201,29 +201,58 @@ tools:openDrawer="start">
                     android:padding="7dp" />
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/businessReport"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/invoice_white"
-                android:layout_marginTop="5dp">
-                <TextView
+                android:visibility="gone">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="My Business Report"
-                    android:fontFamily="@font/lexend_medium"
-                    android:textColor="@color/invoice_black"
-                    android:textSize="15dp"
-                    android:padding="10dp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:background="@color/invoice_white"
+                    android:layout_marginTop="5dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="My Business Report"
+                        android:fontFamily="@font/lexend_medium"
+                        android:textColor="@color/invoice_black"
+                        android:textSize="15dp"
+                        android:padding="10dp"
+                        android:textStyle="bold" />
 
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="15dp">
+
+
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="15dp">
+                    app:cardCornerRadius="7dp"
+                    android:layout_margin="10dp"
+                    app:cardBackgroundColor="@color/invoice_white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <androidx.compose.ui.platform.ComposeView
+                            android:id="@+id/chartComposeView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
 
                 </androidx.cardview.widget.CardView>
-
             </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

@@ -6,6 +6,7 @@ import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
 import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
 import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseList
+import com.nithra.invoice_generator_tool.model.InvoiceGetHomeReport
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
@@ -51,5 +52,11 @@ class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface
 
     suspend fun getPieChart(requestInputMap: HashMap<String, Any>): InvoicePieChart {
         return api.pieChart(requestInputMap)
+    }
+    suspend fun getDeleteData(requestInputMap: HashMap<String, Any>): Map<String,Any> {
+        return api.deleteData(requestInputMap)
+    }
+    suspend fun getHomeReportData(requestInputMap: HashMap<String, Any>): InvoiceGetHomeReport {
+        return api.homeReport(requestInputMap)
     }
 }

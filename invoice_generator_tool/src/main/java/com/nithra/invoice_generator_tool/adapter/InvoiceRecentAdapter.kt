@@ -29,8 +29,11 @@ class InvoiceRecentAdapter(
             InvoiceCusName.text = listOfGetInvoicelist[position].clientName
             InvoiceNo.text = "." + listOfGetInvoicelist[position].invoiceNumber
             InvoiceAmount.text = ""+listOfGetInvoicelist[position].paidAmt
-            val createDate = formatDate("" + listOfGetInvoicelist[position].invoiceDate)
-            createdDate.text = "created on " + createDate
+            if (listOfGetInvoicelist[position].invoiceDate != null){
+                val createDate = formatDate("" + listOfGetInvoicelist[position].invoiceDate)
+                createdDate.text = "created on " + createDate
+
+            }
         }
     }
 

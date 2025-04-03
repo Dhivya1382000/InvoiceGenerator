@@ -63,6 +63,7 @@ dependencies {
 
     //hilt dagger
     implementation(libs.hilt.android)
+  //  implementation(libs.itextg)
     kapt("com.google.dagger:hilt-compiler:2.55")
 
 

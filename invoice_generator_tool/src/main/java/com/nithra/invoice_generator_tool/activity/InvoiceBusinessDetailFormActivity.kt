@@ -23,6 +23,7 @@ import com.google.gson.Gson
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceBusinessDetailFormBinding
+import com.nithra.invoice_generator_tool.model.InvoiceGetBusinessDetail
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
@@ -83,6 +84,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         }
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
+            InvoiceUtils.loadingProgress(this@InvoiceBusinessDetailFormActivity,""+InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
             InputMap["user_id"] = "1227994"
@@ -97,11 +99,16 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             ).show()
         }
 
-        viewModel.errorMessage.observe(this@InvoiceBusinessDetailFormActivity){
-            Toast.makeText(this@InvoiceBusinessDetailFormActivity, ""+it, Toast.LENGTH_SHORT).show()
+        viewModel.errorMessage.observe(this@InvoiceBusinessDetailFormActivity) {
+            InvoiceUtils.loadingDialog.dismiss()
+            binding.mainFormLay.visibility = View.VISIBLE
+            Toast.makeText(this@InvoiceBusinessDetailFormActivity, "" + it, Toast.LENGTH_SHORT)
+                .show()
         }
 
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
+            InvoiceUtils.loadingDialog.dismiss()
+            binding.mainFormLay.visibility = View.VISIBLE
             if (getMasterArray.status.equals("success")) {
                 listOfState.addAll(getMasterArray.state!!)
                 listOfIndustrial.addAll(getMasterArray.industrial!!)
@@ -297,12 +304,14 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         val map = HashMap<String, Any>()
                         map["action"] = "addCompanyDetails"
                         map["user_id"] = "1227994"
-                        if (invoiceClickId != 0){
+                        if (invoiceClickId != 0) {
                             map["id"] = invoiceClickId
                         }
-                        map["bussiness_name"] = "" + binding.InvoiceBusinessName.text.toString().trim()
+                        map["bussiness_name"] =
+                            "" + binding.InvoiceBusinessName.text.toString().trim()
                         map["email"] = "" + binding.InvoiceBusinessEmail.text.toString().trim()
-                        map["bussiness_mobile"] = "" + binding.InvoiceBusinessMobile1.text.toString().trim()
+                        map["bussiness_mobile"] =
+                            "" + binding.InvoiceBusinessMobile1.text.toString().trim()
                         map["billing_address_1"] =
                             "" + binding.InvoiceBillingAddress1.text.toString().trim()
                         map["billing_address_2"] = ""
@@ -336,16 +345,17 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     "" + getBusinessDetail.msg,
                     Toast.LENGTH_SHORT
                 ).show()
-                if (invoiceClickId != 0){
+                if (invoiceClickId != 0) {
                     val resultIntent = Intent()
                     val addedData = Gson().toJson(getBusinessDetail.data)
                     resultIntent.putExtra("INVOICE_FORM_DATA_UPDATE", addedData)
                     resultIntent.putExtra("INVOICE_FORM_CLICK_POS", clickPosition)
                     setResult(Activity.RESULT_OK, resultIntent)
                     finish()
-                }else{
+                } else {
                     if (fromInvoicePage == "InvoiceBusinessAndCustomerActivity_Business") {
                         val resultIntent = Intent()
+                        getBusinessDetail.data!![0].status = getBusinessDetail.status
                         val addedData = Gson().toJson(getBusinessDetail.data)
                         resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
                         setResult(Activity.RESULT_OK, resultIntent)
@@ -426,6 +436,9 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 resultIntent.putExtra("selectedItem", selectedItem)
                 setResult(Activity.RESULT_OK, resultIntent)
                 finish()*/
+            },
+            onDeleteItem = { deleteId, pos, actionName ->
+
             }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -513,6 +526,8 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             this,
             fromInvoice,
             fromSpinner, onAddItemClick = {
+
+            }, onDeleteItem = { deleteId, pos,actionName ->
 
             }
         ) // Pass the query

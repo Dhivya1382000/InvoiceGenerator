@@ -6,6 +6,7 @@ import com.nithra.invoice_generator_tool.model.InvoiceGetClientDetails
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
 import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
 import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseList
+import com.nithra.invoice_generator_tool.model.InvoiceGetHomeReport
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceGetItemData
 import com.nithra.invoice_generator_tool.model.InvoiceIndustrialAdd
@@ -15,6 +16,7 @@ import retrofit2.http.Body
 import retrofit2.http.FieldMap
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 
 interface InvoiceApiInterface {
@@ -36,6 +38,7 @@ interface InvoiceApiInterface {
     @POST("invoiceData")
     suspend fun getInvoiceList(@Body requestMap: HashMap<String, Any>): MutableList<InvoiceGetInvoiceList>
 
+    @Multipart
     @POST("invoiceData")
     suspend fun addedList(@Body requestMap: HashMap<String, Any>): InvoiceAddedList
 
@@ -47,4 +50,10 @@ interface InvoiceApiInterface {
 
     @POST("invoiceData")
     suspend fun pieChart(@Body requestMap: HashMap<String, Any>): InvoicePieChart
+
+    @POST("invoiceData")
+    suspend fun deleteData(@Body requestMap: HashMap<String, Any>): Map<String,Any>
+
+    @POST("invoiceData")
+    suspend fun homeReport(@Body requestMap: HashMap<String, Any>): InvoiceGetHomeReport
 }

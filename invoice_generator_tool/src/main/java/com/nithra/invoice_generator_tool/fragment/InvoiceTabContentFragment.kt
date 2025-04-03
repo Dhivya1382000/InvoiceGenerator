@@ -41,7 +41,7 @@ class InvoiceTabContentFragment : Fragment() {
         if (InvoiceUtils.isNetworkAvailable(requireContext())) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getInvoiceList"
-            InputMap["user_id"] = "3"
+            InputMap["user_id"] = "1227994"
             InputMap["type"] = "" + tabId
             println("InvoiceRequest - $_TAG == $InputMap")
             InvoiceUtils.loadingProgress(requireContext(), "Loading please wait....", false)

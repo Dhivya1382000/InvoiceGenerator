@@ -83,6 +83,8 @@ class InvoiceGetClientDetails {
         @SerializedName("remark")
         @Expose
         val remark: String? = null
+
+         var status : String = ""
     }
 
 }

@@ -66,4 +66,6 @@ class DataBusiness {
     @SerializedName("bussiness_id")
     @Expose
     var bussinessId: String? = null
+
+    var status: String? = ""
 }

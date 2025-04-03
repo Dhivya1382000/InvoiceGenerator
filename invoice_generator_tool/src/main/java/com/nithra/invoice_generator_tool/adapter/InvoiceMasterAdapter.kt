@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.nithra.invoice_generator_tool.R
@@ -28,10 +27,10 @@ class InvoiceMasterAdapter<T>(
     var filteredList: MutableList<T>,
     var updatedSearchText: String,
     var invoicemasterclick: InvoicemasterClick,
-    var fromInvoice:Int,
+    var fromInvoice: Int,
     var fromClick: Int,
-   var onAddItemClick: (T) -> Unit,
-    var onDeleteItem:(T) ->Unit
+    var onAddItemClick: (T) -> Unit,
+    var onDeleteItem: (Int, Int, String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -63,18 +62,21 @@ class InvoiceMasterAdapter<T>(
                     .inflate(android.R.layout.simple_list_item_1, parent, false)
                 ViewHolder(view)
             }
+
             VIEW_TYPE_COMPANY -> {
                 val binding = ActivityInvoiceBusinessItemlistBinding.inflate(
                     LayoutInflater.from(activity), parent, false
                 )
                 BusinessViewHolder(binding)
             }
+
             VIEW_TYPE_EXPENSE -> {
                 val binding = ActivityInvoiceExpenseItemlistBinding.inflate(
                     LayoutInflater.from(activity), parent, false
                 )
                 ExpenseViewHolder(binding)
             }
+
             else -> throw IllegalArgumentException("Unknown View Type")
         }
     }
@@ -95,6 +97,7 @@ class InvoiceMasterAdapter<T>(
                     clikStateName = item.english ?: "" // Cast your POJO to the expected type
                     clikStateId = item.id!!
                 }
+
                 is InvoiceGetDataMasterArray.GetIndustrialList -> {
                     clikStateName = item.industrial ?: "" // Cast your POJO to the expected type
                     clikStateId = item.id!!
@@ -113,51 +116,57 @@ class InvoiceMasterAdapter<T>(
             holder.textView.text = getHighlightedText(clikStateName, updatedSearchText)
 
             holder.itemView.setOnClickListener {
-                invoicemasterclick.onItemClick(clikStateName, clikStateId, fromClick,position)
+                invoicemasterclick.onItemClick(clikStateName, clikStateId, fromClick, position)
             }
 
         } else if (holder is BusinessViewHolder) {
             var clickDataId = 0
+            var clickDeleteDataAction = ""
             when (item) {
                 is InvoiceGetDataMasterArray.GetCompanyDetailList -> {
                     clickDataId = item.companyId!!
                     clikStateName = item.bussinessName!!
+                    clickDeleteDataAction = "deleteCompanyDetails"
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.bussinessName
                     holder.binding.invoiceCustomerMobile.text = item.mobile
-                    if (fromInvoice == 1){
+                    if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
-                    }else if (fromInvoice == 2){
+                    } else if (fromInvoice == 2) {
                         holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.GONE
-                    }else{
+                    } else {
                         holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.VISIBLE
                     }
                 }
+
                 is InvoiceGetDataMasterArray.GetClientDetails -> {
                     clickDataId = item.clientId!!
+                    clickDeleteDataAction = "deleteClientDetails"
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.name
                     holder.binding.invoiceCustomerMobile.text = item.mobile
-                    if (fromInvoice == 1){
+                    if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
-                    }else{
+                    } else {
                         holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.VISIBLE
                     }
                 }
+
                 is InvoiceGetDataMasterArray.GetItemList -> {
                     clickDataId = item.itemId!!
+                    clickDeleteDataAction = "deleteItemDetails"
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text = item.itemName
                     holder.binding.invoiceCustomerMobile.text = item.amount
-                    if (fromInvoice == 1){
+                    if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
-                    }else{
+                    } else {
                         holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.VISIBLE
                     }
@@ -170,21 +179,21 @@ class InvoiceMasterAdapter<T>(
                 invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick, position)
             }
             holder.binding.menuIcon.setOnClickListener {
-                showPopupMenu(it, position,clikStateName,clickDataId)
+                showPopupMenu(it, position, clikStateName, clickDataId, clickDeleteDataAction)
             }
 
-        }else if(holder is ExpenseViewHolder){
+        } else if (holder is ExpenseViewHolder) {
             var clickDataId = 0
-            when(item){
+            when (item) {
                 is InvoiceGetExpenseDataList.DataList -> {
                     clickDataId = item.invoiceId!!
                     val createDate = formatDate("" + item.date)
 
                     holder.binding.ExpItemName.text = item.itemName
                     holder.binding.ExpInvoiceNo.text = item.invNumber
-                    holder.binding.ExpCreateDate.text = ""+createDate
-                    holder.binding.ExpAmount.text = " ₹ "+item.amount
-                    holder.binding.ExpSellerName.text = " ₹ "+item.sellerName
+                    holder.binding.ExpCreateDate.text = "" + createDate
+                    holder.binding.ExpAmount.text = " ₹ " + item.amount
+                    holder.binding.ExpSellerName.text = " ₹ " + item.sellerName
 
                 }
             }
@@ -195,7 +204,13 @@ class InvoiceMasterAdapter<T>(
 
     }
 
-    private fun showPopupMenu(view: View?, position: Int, clikStateName: String, clickDataId: Int) {
+    private fun showPopupMenu(
+        view: View?,
+        position: Int,
+        clikStateName: String,
+        clickDataId: Int,
+        clickDeleteDataAction: String
+    ) {
         val popupMenu = PopupMenu(view!!.context, view)
         popupMenu.inflate(R.menu.invoice_list_pop)
 
@@ -206,10 +221,14 @@ class InvoiceMasterAdapter<T>(
                     invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick, position)
                     true
                 }
+
                 R.id.delete -> {
-                    Toast.makeText(view.context, "Delete item $position", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(view.context, "Delete item $position", Toast.LENGTH_SHORT).show()
+                    println("dele === $clickDataId")
+                    onDeleteItem(clickDataId, position, clickDeleteDataAction)
                     true
                 }
+
                 else -> false
             }
         }
@@ -217,9 +236,16 @@ class InvoiceMasterAdapter<T>(
 
     }
 
+    fun DeleteNotify(position: Int) {
+        filteredList.removeAt(position) // Remove from list
+        notifyItemRemoved(position) // Notify adapter
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount(): Int {
         return filteredList.size
     }
+
     fun formatDate(inputDate: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
@@ -227,6 +253,7 @@ class InvoiceMasterAdapter<T>(
         val date = inputFormat.parse(inputDate)
         return outputFormat.format(date!!)
     }
+
     private fun getHighlightedText(fullText: String, updatedSearchText: String): SpannableString? {
         val spannableString = SpannableString(fullText)
         val startIndex = fullText.indexOf(updatedSearchText, ignoreCase = true)

@@ -60,5 +60,7 @@ class InvoiceGetItemData {
         @SerializedName("discount")
         @Expose
         var discount: Int? = null
+
+        var status: String? = ""
     }
 }

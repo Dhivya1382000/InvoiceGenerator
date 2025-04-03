@@ -86,7 +86,7 @@
                             android:paddingTop="7dp"
                             android:paddingEnd="5dp"
                             android:paddingBottom="7dp"
-                            android:text="Change"
+                            android:text="Select"
                             android:textColor="@color/invoice_pink"
                             android:textSize="12dp" />
 
@@ -145,7 +145,7 @@
                             android:paddingTop="7dp"
                             android:paddingEnd="5dp"
                             android:paddingBottom="7dp"
-                            android:text="Add"
+                            android:text="Select"
                             android:textColor="@color/invoice_pink"
                             android:textSize="12dp" />
 
@@ -830,7 +830,7 @@
                     android:paddingTop="10dp"
                     android:paddingEnd="35dp"
                     android:paddingBottom="10dp"
-                    android:text="Save"
+                    android:text="Generate"
                     android:textColor="@color/invoice_white"
                     android:textSize="15dp" />
 

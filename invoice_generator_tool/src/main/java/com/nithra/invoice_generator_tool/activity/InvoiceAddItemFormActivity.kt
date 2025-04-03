@@ -116,6 +116,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                     }
                 } else {
                     val resultIntent = Intent()
+                    getItemList.data!![0].status = getItemList.status!!
                     val addedData = Gson().toJson(getItemList.data)
                     resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
                     setResult(Activity.RESULT_OK, resultIntent)
