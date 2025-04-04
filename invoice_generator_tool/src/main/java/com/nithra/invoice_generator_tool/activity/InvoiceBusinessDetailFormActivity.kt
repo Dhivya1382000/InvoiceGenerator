@@ -298,6 +298,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     ).show()
                     return@setOnClickListener
                 }
+
                 binding.InvoiceTaxId.text.toString().trim().isNotEmpty()->{
                     if (!isValidGST(binding.InvoiceTaxId.text.toString())) {
                         Toast.makeText(
