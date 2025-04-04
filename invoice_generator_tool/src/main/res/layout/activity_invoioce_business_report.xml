@@ -355,7 +355,7 @@
                             android:layout_height="10dp"
                             android:layout_gravity="center"
                             app:cardCornerRadius="50dp"
-                            app:cardBackgroundColor="@color/invoice_red_mild"/>
+                            app:cardBackgroundColor="@color/invoice_red"/>
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -366,6 +366,32 @@
                             android:text="Un Paid"/>
 
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_gravity="center"
+                            app:cardCornerRadius="50dp"
+                            app:cardBackgroundColor="@color/invoice_peack_green"/>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12dp"
+                            android:layout_marginStart="5dp"
+                            android:fontFamily="@font/lexend_medium"
+                            android:textColor="@color/invoice_black"
+                            android:text="Partially Paid"/>
+
+                    </LinearLayout>
+
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -376,7 +402,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center" />
         </LinearLayout>
     </ScrollView>
 

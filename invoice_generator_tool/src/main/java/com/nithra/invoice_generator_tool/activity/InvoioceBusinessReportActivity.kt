@@ -3,7 +3,6 @@ package com.nithra.invoice_generator_tool.activity
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
@@ -36,7 +35,6 @@ import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoioceBusinessReportBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
-import com.nithra.invoice_generator_tool.model.InvoiceGetExpenseDataList
 import com.nithra.invoice_generator_tool.model.InvoiceOfflineDynamicData
 import com.nithra.invoice_generator_tool.model.InvoicePieChart
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
@@ -108,10 +106,10 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
         viewmodel.getMasterDetail.observe(this) { getMasterArray ->
             listOfCompanyDetails.addAll(getMasterArray.companyDetails!!)
-            if ( listOfCompanyDetails[0].bussinessName!!.isNotEmpty()){
+            if (listOfCompanyDetails[0].bussinessName!!.isNotEmpty()) {
                 binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
                 clickDataId = listOfCompanyDetails[0].companyId!!
-                if (clickDataId != 0){
+                if (clickDataId != 0) {
                     listOfGetInvoicePieChart.clear()
                     loadPiechart()
                 }
@@ -127,7 +125,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 ).show()
                 return@setOnClickListener
             }
-            if (binding.InvoiceBusinessTypeText.text.isEmpty()){
+            if (binding.InvoiceBusinessTypeText.text.isEmpty()) {
                 val intent = Intent(
                     this@InvoioceBusinessReportActivity,
                     InvoiceBusinessAndCustomerActivity::class.java
@@ -135,7 +133,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 intent.putExtra("fromInvoice", 1)
                 intent.putExtra("InvoicefromPage", "Business")
                 selectItemLauncher.launch(intent)
-            }else{
+            } else {
                 showSearchableDialog<InvoiceGetDataMasterArray.GetCompanyDetailList>(
                     0,
                     listOfCompanyDetails
@@ -147,26 +145,59 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
         viewmodel.getPiechartList.observe(this@InvoioceBusinessReportActivity) { pieChartList ->
             InvoiceUtils.loadingDialog.dismiss()
+            println("pieChartList st== ${pieChartList.status}")
             if (pieChartList.status.equals("success")) {
+                listOfGetInvoicePieChart.clear()
                 listOfGetInvoicePieChart.addAll(pieChartList.data!!)
                 listOfGetInvoiceExpense = pieChartList.expenses!!
-//                println("chart amount == " + pieChartList.expenses!!.data!!.totalAmount)
-                if (!pieChartList.expenses!!.status.equals("failure")){
-                    binding.ExpensesAmount.text = " ₹ "  + pieChartList.expenses!!.data!!.totalAmount
-                }else{
+                if (!pieChartList.expenses!!.status.equals("failure")) {
+                    binding.ExpensesAmount.text = " ₹ " + pieChartList.expenses!!.data!!.totalAmount
+                } else {
                     binding.ExpensesAmount.text = "NIL"
                 }
-                binding.TotalPaidAmount.text = " ₹ "  + pieChartList.total_amount
-                val totalPaid = listOfGetInvoicePieChart.filter { it.amtType == 1 }
+                binding.TotalPaidAmount.text = " ₹ " + pieChartList.total_amount
+                var totalPaidnew = listOfGetInvoicePieChart.filter { it.amtType == 1 }
                     .sumOf { it.totalPaid!! } //paid
                 val totalUnpaid = listOfGetInvoicePieChart.filter { it.amtType == 2 }
                     .sumOf { it.totalPaid!! } //un paid
-                binding.PaidAmount.text = " ₹ " + totalPaid
+                binding.PaidAmount.text = " ₹ " + totalPaidnew
                 binding.UnPaidAmount.text = " ₹ " + totalUnpaid
                 val composeView = findViewById<ComposeView>(R.id.pieChartComposeView)
-                composeView.setContent {
-                    PieChart(listOfGetInvoicePieChart, pieChartList.total_amount!!)
+                var expenseAmount = 0
+                if (pieChartList.status.equals("success")) {
+                    val currentChartData = pieChartList.data?.toMutableList() ?: mutableListOf()
+                    composeView.visibility = View.VISIBLE
+                    composeView.setContent {
+                        if (!pieChartList.expenses!!.status.equals("failure")) {
+                            expenseAmount = pieChartList.expenses!!.data!!.totalAmount!!
+                           /* pieChartList.data!![0].amtType = 4
+                            pieChartList.data!![0].totalPaid = listOfGetInvoiceExpense.data!!.totalAmoun*/
+                            currentChartData.add(
+                                InvoicePieChart.InvoiceDataList().apply {
+                                    count =  pieChartList.expenses!!.data!!.totalCount!!
+                                    amtType = 4  // New type for expenses
+                                    totalPaid =  pieChartList.expenses!!.data!!.totalAmount!! // Expense amount
+                                }
+                            )
+
+                        }
+                        println(" Expens == ==$expenseAmount")
+                        PieChart(
+                            currentChartData,expenseAmount,
+                            pieChartList.status!!,
+                        )
+                    }
+                } else {
+                    composeView.visibility = View.GONE
                 }
+
+            }else{
+                println("pieChartList == ${pieChartList.status}")
+                binding.PaidAmount.text = "NIL"
+                binding.UnPaidAmount.text = "NIL"
+                binding.TotalPaidAmount.text = "NIL"
+                binding.ExpensesAmount.text = "NIL"
+                findViewById<ComposeView>(R.id.pieChartComposeView).visibility = View.GONE
             }
         }
 
@@ -176,7 +207,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = "" + InvoiceUtils.userId
 
             println("InvoiceRequest - ${InvoiceBusinessDetailFormActivity._TAG} == $InputMap")
             viewmodel.getOverAllMasterDetail(InputMap)
@@ -193,8 +224,8 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "picChartReport"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
-            InputMap["company_id"] = ""+clickDataId
+            InputMap["user_id"] = "" + InvoiceUtils.userId
+            InputMap["company_id"] = "" + clickDataId
 
             println("InvoiceRequest - $_TAG == $InputMap")
             InvoiceUtils.loadingProgress(
@@ -239,7 +270,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             this,
             2,
             fromSpinner, onAddItemClick = {
-            },  onDeleteItem ={deleteId ,pos,actionName->
+            }, onDeleteItem = { deleteId, pos, actionName ->
 
             }
         )
@@ -268,7 +299,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (s!!.isEmpty()){
+                if (s!!.isEmpty()) {
                     recyclerView.visibility = View.VISIBLE
                     NoDataLay.visibility = View.GONE
                 }
@@ -318,7 +349,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 fromSpinner, onAddItemClick = {
 
                 },
-                onDeleteItem ={deleteId ,pos,actionName->
+                onDeleteItem = { deleteId, pos, actionName ->
 
                 }
             ) // Pass the query
@@ -328,11 +359,11 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 // Display a message or take action if no results were found
                 println("filterSize 11  == ${filteredList.size}")
                 NoDataLay.visibility = View.VISIBLE
-                recyclerView.visibility =View.GONE
+                recyclerView.visibility = View.GONE
             } else {
                 println("filterSize 12  == ${filteredList.size}")
                 NoDataLay.visibility = View.GONE
-                recyclerView.visibility =View.VISIBLE
+                recyclerView.visibility = View.VISIBLE
             }
             adapter.notifyDataSetChanged()
 
@@ -340,21 +371,25 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
     }
 
-    @Composable
-    fun PieChart(data: MutableList<InvoicePieChart.InvoiceDataList>, expensesTotal: Int) {
+    /*@Composable
+    fun PieChart(
+        data: MutableList<InvoicePieChart.InvoiceDataList>,
+        totalAmount: Int,
+        status: String,
+        expenseAmount: Double
+    ) {
         val filteredData = data.filter { it.amtType != null }
 
-        if (filteredData.isEmpty() && expensesTotal <= 0) {
+        if (filteredData.isEmpty() && totalAmount <= 0) {
             Log.e("PieChart", "No data to show!")
             return
         }
 
-        val totalCount = filteredData.sumOf { it.totalPaid ?: 0 } + expensesTotal
+        val totalCount = filteredData.sumOf { it.totalPaid ?: 0 } + totalAmount
         if (totalCount == 0) {
             Log.e("PieChart", "Total count is zero!")
             return
         }
-
         // Prepare Data for Pie Chart
         val dataWithPercentage = mutableListOf<Double>()
 
@@ -367,7 +402,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         }
 
         val sweepAngles = dataWithPercentage.map { percentage -> (360 * (percentage / 100)).toFloat() }
-        val colors = listOf(colorResource(R.color.invoice_green_mild), colorResource(R.color.invoice_red_mild), colorResource(R.color.invoice_blue),colorResource(R.color.invoice_pink))
+        val colors = listOf(colorResource(R.color.invoice_green_mild), colorResource(R.color.invoice_red_mild), colorResource(R.color.invoice_blue))
 
         Canvas(modifier = Modifier.size(250.dp)) {
             var startAngle = 0f
@@ -408,8 +443,262 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 startAngle += sweepAngle
             }
         }
-    }
+    }*/
+    /*    @Composable
+        fun PieChart(data: MutableList<InvoicePieChart.InvoiceDataList>, expensesTotal: Int, status: String) {
+            println("staus == $status")
+            if (status != "success") {
+                Log.e("PieChart", "Status is failure. Hiding chart.")
+                return
+            }
 
+            val filteredData = data.filter { it.amtType != null }
+
+            if (filteredData.isEmpty() && expensesTotal <= 0) {
+                Log.e("PieChart", "No data to show!")
+                return
+            }
+
+            val totalCount = filteredData.sumOf { it.totalPaid ?: 0 } + expensesTotal
+            if (totalCount == 0) {
+                Log.e("PieChart", "Total count is zero!")
+                return
+            }
+            // Prepare Data for Pie Chart
+            val dataWithPercentage = mutableListOf<Double>()
+            filteredData.forEach {
+                dataWithPercentage.add((it.totalPaid!!.toDouble() / totalCount) * 100)
+            }
+
+            if (expensesTotal > 0) {
+                dataWithPercentage.add((expensesTotal.toDouble() / totalCount) * 100)
+            }
+
+            val sweepAngles = dataWithPercentage.map { percentage -> (360 * (percentage / 100)).toFloat() }
+            val colors = listOf(
+                colorResource(R.color.invoice_green_mild),
+                colorResource(R.color.invoice_red_mild),
+                colorResource(R.color.invoice_blue)
+            )
+
+            Canvas(modifier = Modifier.size(250.dp)) {
+                var startAngle = 0f
+                val radius = size.minDimension / 2
+
+                dataWithPercentage.forEachIndexed { index, percentage ->
+                    val colornew = colors[index % colors.size]
+                    val sweepAngle = sweepAngles[index]
+
+                    // Draw Pie Slice
+                    drawArc(
+                        color = colornew,
+                        startAngle = startAngle,
+                        sweepAngle = sweepAngle,
+                        useCenter = true
+                    )
+
+                    // Calculate Text Position
+                    val middleAngle = Math.toRadians((startAngle + sweepAngle / 2).toDouble())
+                    val textX = radius + (radius / 1.7f) * cos(middleAngle).toFloat()
+                    val textY = radius + (radius / 1.7f) * sin(middleAngle).toFloat()
+
+                    // Draw Only Percentage Text
+                    drawContext.canvas.nativeCanvas.drawText(
+                        "${percentage.toInt()}%",
+                        textX,
+                        textY,
+                        Paint().apply {
+                            color = Color.White.toArgb()
+                            textSize = 25f
+                            textAlign = Paint.Align.CENTER
+                            isFakeBoldText = true
+                            typeface = Typeface.create("sans-serif", Typeface.BOLD)
+                        }
+                    )
+
+                    startAngle += sweepAngle
+                }
+            }
+        }*/
+
+ /*   @Composable
+    fun PieChart(
+        data: List<InvoicePieChart.InvoiceDataList>,
+        totalAmount: Int,
+        status: String,
+        expenseAmount: Int
+    ) {
+        println("Status == $status")
+
+        if (status != "success") {
+            Log.e("PieChart", "Status is failure. Hiding chart.")
+            return
+        }
+
+        // Filter out data with valid amtType
+        val filteredData = data.filter { it.amtType != null }
+
+        if (filteredData.isEmpty() && totalAmount <= 0) {
+            Log.e("PieChart", "No data to show!")
+            return
+        }
+
+        // Calculate total count
+        val totalCount = filteredData.sumOf { it.totalPaid ?: 0 } + totalAmount
+        if (totalCount == 0) {
+            Log.e("PieChart", "Total count is zero!")
+            return
+        }
+
+        // Prepare Data for Pie Chart
+        val dataWithPercentage = mutableListOf<Double>()
+        val labels = mutableListOf<String>()
+
+        filteredData.forEach { item ->
+            val percentage = (item.totalPaid!!.toDouble() / totalCount) * 100
+            dataWithPercentage.add(percentage)
+            labels.add("Type ${item.amtType}")
+        }
+
+        if (expenseAmount > 0) {
+            dataWithPercentage.add((expenseAmount.toDouble() / totalCount) * 100)
+            labels.add("Expenses")
+        }
+
+        // Ensure we have exactly 4 slices, even if data is missing
+        while (dataWithPercentage.size < 4) {
+            dataWithPercentage.add(0.0)  // Fill missing parts with 0
+            labels.add("N/A")  // Placeholder label
+        }
+
+        val sweepAngles = dataWithPercentage.map { (it / 100) * 360f }
+        val colors = listOf(
+            colorResource(R.color.invoice_green_mild), // Green
+            colorResource(R.color.invoice_peack_green), // Orange
+            colorResource(R.color.invoice_red),  // Pink
+            colorResource(R.color.invoice_blue), // Blue
+        )
+
+        Canvas(modifier = Modifier.size(250.dp)) {
+            var startAngle = 0f
+            val radius = size.minDimension / 2
+
+            dataWithPercentage.forEachIndexed { index, percentage ->
+                val color1 = colors[index % colors.size]
+                val sweepAngle = sweepAngles[index].toFloat()
+
+                if (percentage > 0) { // Only draw if value is greater than 0
+                    drawArc(
+                        color = color1,
+                        startAngle = startAngle,
+                        sweepAngle = sweepAngle,
+                        useCenter = true
+                    )
+
+                    // Calculate Text Position
+                    val middleAngle = Math.toRadians((startAngle + sweepAngle / 2).toDouble())
+                    val textX = radius + (radius / 1.7f) * cos(middleAngle).toFloat()
+                    val textY = radius + (radius / 1.7f) * sin(middleAngle).toFloat()
+
+                    // Draw Percentage Text
+                    drawContext.canvas.nativeCanvas.drawText(
+                        "${percentage.toInt()}%",
+                        textX,
+                        textY,
+                        Paint().apply {
+                            color = Color.White.toArgb()
+                            textSize = 25f
+                            textAlign = Paint.Align.CENTER
+                            isFakeBoldText = true
+                            typeface = Typeface.create("sans-serif", Typeface.BOLD)
+                        }
+                    )
+                }
+                startAngle += sweepAngle
+            }
+        }
+    }*/
+
+    @Composable
+    fun PieChart(
+        data: List<InvoicePieChart.InvoiceDataList>,
+        expensesTotal: Int,
+        status: String
+    ) {
+        if (status != "success") {
+            Log.e("PieChart", "Status is failure. Hiding chart.")
+            return
+        }
+
+        // Define fixed colors
+        val fixedColors = mapOf(
+            1 to Color(0xFF00CB1C), // Green //paid
+            2 to Color(0xFFFD3A3A), //  //unpaid
+            3 to Color( 0xFF008999), //  // partially
+            4 to Color(0xFF2196F3)  // Blue (for expenses)
+        )
+
+        // Prepare valid chart entries
+        val chartEntries = mutableListOf<Pair<Int, Int>>() // (amt_type, totalPaid)
+        data.filter { it.totalPaid != null && it.totalPaid!! > 0 }.forEach {
+            chartEntries.add(it.amtType!! to it.totalPaid!!)
+        }
+
+        if (expensesTotal > 0) {
+            chartEntries.add(4 to expensesTotal) // Treat expenses as type 4
+        }
+
+        if (chartEntries.isEmpty()) {
+            Log.e("PieChart", "No valid data to draw pie.")
+            return
+        }
+
+        // Calculate total count from valid entries
+        val totalCount = chartEntries.sumOf { it.second }
+
+        // Compute angles for valid data only
+        val dataWithAngles = chartEntries.map { (type, amount) ->
+            type to (360f * (amount.toFloat() / totalCount))
+        }
+
+        // Draw Pie Chart
+        Canvas(modifier = Modifier.size(250.dp)) {
+            var startAngle = 0f
+            val radius = size.minDimension / 2
+
+            dataWithAngles.forEach { (type, sweepAngle) ->
+                val color1 = fixedColors[type] ?: Color.Gray // Fallback color
+
+                drawArc(
+                    color = color1,
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle,
+                    useCenter = true
+                )
+
+                // Calculate Text Position
+                val middleAngle = Math.toRadians((startAngle + sweepAngle / 2).toDouble())
+                val textX = radius + (radius / 1.7f) * cos(middleAngle).toFloat()
+                val textY = radius + (radius / 1.7f) * sin(middleAngle).toFloat()
+
+                // Draw percentage text
+                drawContext.canvas.nativeCanvas.drawText(
+                    "${(sweepAngle / 3.6).toInt()}%",
+                    textX,
+                    textY,
+                    Paint().apply {
+                        color = Color.White.toArgb()
+                        textSize = 25f
+                        textAlign = Paint.Align.CENTER
+                        isFakeBoldText = true
+                        typeface = Typeface.create("sans-serif", Typeface.BOLD)
+                    }
+                )
+
+                startAngle += sweepAngle
+            }
+        }
+    }
 
 
 
@@ -421,7 +710,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         binding.InvoiceBusinessTypeText.text = "" + item
         clickDataId = clikId
         stateDialog.dismiss()
-        if (clickDataId != 0){
+        if (clickDataId != 0) {
             listOfGetInvoicePieChart.clear()
             loadPiechart()
         }

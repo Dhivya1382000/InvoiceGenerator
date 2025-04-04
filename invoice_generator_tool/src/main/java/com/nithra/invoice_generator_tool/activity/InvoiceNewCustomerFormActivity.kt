@@ -392,6 +392,16 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         ).show()
                         return@setOnClickListener
                     }
+                    binding.InvoiceCusTaxId.text.toString().trim().isNotEmpty()->{
+                        if (!isValidGST(binding.InvoiceCusTaxId.text.toString())) {
+                            Toast.makeText(
+                                this@InvoiceNewCustomerFormActivity,
+                                "Enter valid GST number",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@setOnClickListener
+                        }
+                    }
 
                     else -> {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
@@ -611,6 +621,10 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         }
     }
 
+    fun isValidGST(gstNumber: String): Boolean {
+        val gstRegex = "^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+        return gstNumber.matches(Regex(gstRegex))
+    }
     fun isValidEmail(email: String): Boolean {
         val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
         return email.matches(emailPattern.toRegex())

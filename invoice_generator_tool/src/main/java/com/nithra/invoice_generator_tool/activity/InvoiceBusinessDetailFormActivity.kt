@@ -293,10 +293,20 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 binding.InvoiceTaxId.text.toString().trim().isEmpty() -> {
                     Toast.makeText(
                         this@InvoiceBusinessDetailFormActivity,
-                        "Enter your Gst number",
+                        "Enter your GST number",
                         Toast.LENGTH_SHORT
                     ).show()
                     return@setOnClickListener
+                }
+                binding.InvoiceTaxId.text.toString().trim().isNotEmpty()->{
+                    if (!isValidGST(binding.InvoiceTaxId.text.toString())) {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter valid GST number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
                 }
 
                 else -> {
@@ -403,6 +413,12 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             }
         }
     }
+
+    fun isValidGST(gstNumber: String): Boolean {
+        val gstRegex = "^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+        return gstNumber.matches(Regex(gstRegex))
+    }
+
 
     private fun <T> showSearchableDialog(
         fromSpinner: Int,
