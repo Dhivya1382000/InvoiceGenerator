@@ -1,9 +1,15 @@
 package com.nithra.invoice_generator_tool.activity
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -45,6 +51,10 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
     lateinit var adapter: InvoiceMasterAdapter<*>
     var ListPosition = 0
     var actionName = ""
+    private var isAnimationRunning = true // Track animation state
+    private val handler = Handler(Looper.getMainLooper())
+    var hintTexts : ArrayList<String> = arrayListOf()
+    private var currentIndex = 0
 
 
     val addItemLauncher =
@@ -98,6 +108,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                                 adapter.notifyDataSetChanged()
                             }
                         }
+
                         "Items" -> {
                             if (listOfItems[0].status.equals("failure")) {
                                 listOfItems.clear()
@@ -122,8 +133,8 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         }
 
                         "Expense" -> {
-                          /*  val newItem = Gson().fromJson(it, InvoiceGetExpenseDataList.DataList::class.java)
-                            listOfExpenses.add(0, newItem)*/
+                            /*  val newItem = Gson().fromJson(it, InvoiceGetExpenseDataList.DataList::class.java)
+                              listOfExpenses.add(0, newItem)*/
                             val type = object :
                                 TypeToken<List<InvoiceGetExpenseDataList.DataList>>() {}.type
                             val itemList: List<InvoiceGetExpenseDataList.DataList> =
@@ -221,11 +232,12 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         binding = ActivityInvoiceRecyclerviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         if (intent != null) {
             fromInvoice = intent.getIntExtra("fromInvoice", 0)
             fromPage = "" + intent.getStringExtra("InvoicefromPage")
-
         }
+
         setSupportActionBar(binding.toolBarTitle)
 
         // Enable Navigation Icon (Hamburger Menu)
@@ -233,18 +245,30 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.invoice_back_arrow) // Custom Image
 
-
         binding.toolBarTitle.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-
+        when{
+            fromPage == "Business"->{
+               hintTexts.add("Search Name...")
+               hintTexts.add("Find Business Name...")
+            }
+            fromPage == "Customers"->{
+                hintTexts.add("Search Name...")
+                hintTexts.add("Find Customer Name...")
+            }
+            fromPage == "Items"->{
+                hintTexts.add("Search Name...")
+                hintTexts.add("Find Item Name...")
+            }
+        }
         println("fromPage == $fromPage")
         if (fromPage == "Expense") {
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getExpenses"
-                InputMap["user_id"] = ""+InvoiceUtils.userId
+                InputMap["user_id"] = "" + InvoiceUtils.userId
 
                 println("InvoiceRequest - $_TAG == $InputMap")
                 InvoiceUtils.loadingProgress(
@@ -264,7 +288,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getMaster"
-                InputMap["user_id"] = ""+InvoiceUtils.userId
+                InputMap["user_id"] = "" + InvoiceUtils.userId
 
                 println("InvoiceRequest - $_TAG == $InputMap")
                 InvoiceUtils.loadingProgress(
@@ -317,7 +341,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getExpenses"
-                    InputMap["user_id"] = ""+InvoiceUtils.userId
+                    InputMap["user_id"] = "" + InvoiceUtils.userId
 
                     println("InvoiceRequest - $_TAG == $InputMap")
                     viewModel.getExpenseList(InputMap)
@@ -332,7 +356,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getMaster"
-                    InputMap["user_id"] = ""+InvoiceUtils.userId
+                    InputMap["user_id"] = "" + InvoiceUtils.userId
 
                     println("InvoiceRequest - $_TAG == $InputMap")
                     viewModel.getOverAllMasterDetail(InputMap)
@@ -412,7 +436,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                             val InputMap = HashMap<String, Any>()
                             InputMap["action"] = "getMaster"
-                            InputMap["user_id"] = ""+InvoiceUtils.userId
+                            InputMap["user_id"] = "" + InvoiceUtils.userId
 
                             println("InvoiceRequest - $_TAG == $InputMap")
                             InvoiceUtils.loadingProgress(
@@ -439,9 +463,89 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     ShowDialogUsedBusiness("" + it["msg"], 0, "")
                 }
             }
-
         }
+        changeHintWithAnimation()
 
+       /* binding.editTextSearch.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                stopHintAnimation() // Stop animation when user types
+                binding.animatedHint.text = "" // Hide hint
+            } else {
+                resumeHintAnimation() // Resume animation when focus is lost
+            }
+        }*/
+        binding.editTextSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty()) {
+                    stopHintAnimation() // User is typing → stop animation
+                    binding.animatedHint.text = "" // Hide hint while typing
+                    val query = s.toString().trim().lowercase()
+                  /*  // Filter the list
+                    filteredList.clear()
+                    filteredList.addAll(
+                        fruitList.filter {
+                            it.lowercase().contains(query)
+                        }
+                    )
+                    // Update your adapter here (e.g., RecyclerView)
+                    adapter.updateList(filteredList)*/
+                } else {
+                    resumeHintAnimation() // No input → resume animation
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+
+    }
+    private fun stopHintAnimation() {
+        isAnimationRunning = false
+        handler.removeCallbacksAndMessages(null) // Stop scheduled animations
+    }
+
+    private fun resumeHintAnimation() {
+        if (!isAnimationRunning) {
+            isAnimationRunning = true
+            changeHintWithAnimation() // Restart animation loop
+        }
+    }
+
+    private fun animateHintChange(newHint: String) {
+        // Move the current hint up and fade out
+        ObjectAnimator.ofFloat(binding.animatedHint, "translationY", 0f, -50f).apply {
+            duration = 300
+            start()
+        }.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationEnd(animation: Animator) {
+                if (isAnimationRunning) {
+                    binding.animatedHint.text = newHint
+                    // Reset position from below and fade in
+                    ObjectAnimator.ofFloat(binding.animatedHint, "translationY", 50f, 0f).apply {
+                        duration = 300
+                        start()
+                    }
+                }
+            }
+
+            override fun onAnimationStart(animation: Animator) {}
+            override fun onAnimationCancel(animation: Animator) {}
+            override fun onAnimationRepeat(animation: Animator) {}
+        })
+    }
+
+    private fun changeHintWithAnimation() {
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                if (isAnimationRunning) { // Only animate if allowed
+                    animateHintChange(hintTexts[currentIndex])
+                    currentIndex = (currentIndex + 1) % hintTexts.size // Loop through hints
+                }
+                handler.postDelayed(this, 3000) // Change every 3 seconds
+            }
+        }, 3000)
     }
 
     private fun <T> setAdapter(fromCLick: Int, GetList: MutableList<T>) {
@@ -635,7 +739,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }else {
+                } else {
                     val intent = Intent(
                         this@InvoiceBusinessAndCustomerActivity,
                         InvoiceAddItemFormActivity::class.java

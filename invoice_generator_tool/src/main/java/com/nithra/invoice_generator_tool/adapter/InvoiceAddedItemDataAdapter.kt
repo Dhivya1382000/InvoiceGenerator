@@ -10,7 +10,7 @@ class InvoiceAddedItemDataAdapter(
     var listOfGetInvoicelist: MutableList<InvoiceOfflineDynamicData>,
     var onItemClick: (InvoiceOfflineDynamicData,Int) -> Unit,
     var onShowItem: (ActivityInvoiceDynamicItemBinding,InvoiceOfflineDynamicData) -> Unit,
-    var OnEditClick :(InvoiceOfflineDynamicData,Int) -> Unit,
+    var OnEditClick :(InvoiceOfflineDynamicData,Int,MutableList<InvoiceOfflineDynamicData>) -> Unit,
 ) : RecyclerView.Adapter<InvoiceAddedItemDataAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -36,7 +36,7 @@ class InvoiceAddedItemDataAdapter(
                 onItemClick(listOfGetInvoicelist[position],position)
             }
             itemEdit.setOnClickListener {
-                OnEditClick(listOfGetInvoicelist[position]!!,position,)
+                OnEditClick(listOfGetInvoicelist[position]!!,position,listOfGetInvoicelist)
             }
         }
     }

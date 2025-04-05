@@ -571,7 +571,7 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
 
                 }
 
-            }, OnEditClick = { clickId, pos ->
+            }, OnEditClick = { clickId, pos ,listOfDynamic->
                 val intent = Intent(
                     this@InvoiceCreateFormActivity,
                     InvoiceAddItemFormActivity::class.java
@@ -580,10 +580,10 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                 intent.putExtra("clickDataId", clickId.item_id)
                 positionOfEDit = pos
                 clickEditId = clickId.item_id!!
+                println("dynamicList --Sze ${DynamicitemList.size}")
                 val addedData = Gson().toJson(DynamicitemList)
                 println("DynamicList == $addedData")
                 preference.putString(this@InvoiceCreateFormActivity,"INVOICE_SET_LIST",addedData)
-                intent.putExtra("InvoiceCickPosition",pos)
            //     intent.putExtra("INVOICE_SET_LIST", addedData)
                 selectItemEditLauncher.launch(intent)
             })

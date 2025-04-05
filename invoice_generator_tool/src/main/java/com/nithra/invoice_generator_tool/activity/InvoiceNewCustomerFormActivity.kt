@@ -392,15 +392,13 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         ).show()
                         return@setOnClickListener
                     }
-                    binding.InvoiceCusTaxId.text.toString().trim().isNotEmpty()->{
-                        if (!isValidGST(binding.InvoiceCusTaxId.text.toString())) {
-                            Toast.makeText(
-                                this@InvoiceNewCustomerFormActivity,
-                                "Enter valid GST number",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
+                    !isValidGST(binding.InvoiceCusTaxId.text.toString().trim()) -> {
+                        Toast.makeText(
+                            this@InvoiceNewCustomerFormActivity,
+                            "Enter valid GST number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
                     }
 
                     else -> {
@@ -429,7 +427,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             map["tax_id"] = "" + binding.InvoiceCusTaxId.text.toString().trim()
 
                             println("InvoiceRequest - $_TAG == $map")
-                            InvoiceUtils.loadingProgress(this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
+                            InvoiceUtils.loadingProgress(   this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
                             viewModel.getCustomerDetail(map)
                         } else {
                             Toast.makeText(
@@ -565,6 +563,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         Toast.LENGTH_SHORT
                     ).show()
                     println("fromInvoicePage == $fromInvoicePage")
+                    println("gstNume == ${getCustomerDetail.data!![0].taxId}")
                     if (invoiceClickId != 0) {
                         val resultIntent = Intent()
                         val addedData = Gson().toJson(getCustomerDetail.data)
@@ -579,6 +578,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             val addedData = Gson().toJson(getCustomerDetail.data)
                             resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
                             setResult(Activity.RESULT_OK, resultIntent)
+                            finish()
+                        }else{
                             finish()
                         }
                     }

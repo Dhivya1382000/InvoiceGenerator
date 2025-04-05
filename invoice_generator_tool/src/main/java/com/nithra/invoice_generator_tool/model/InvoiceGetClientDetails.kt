@@ -84,6 +84,10 @@ class InvoiceGetClientDetails {
         @Expose
         val remark: String? = null
 
+        @SerializedName("tax_id")
+        @Expose
+        val taxId: String? = null
+
          var status : String = ""
     }
 

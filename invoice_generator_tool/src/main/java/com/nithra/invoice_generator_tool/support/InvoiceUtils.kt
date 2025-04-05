@@ -22,7 +22,7 @@ object InvoiceUtils {
     val messageUnfav = "பிடித்தவற்றிலிருந்து நீக்கப்பட்டது"
     val errorMessage = "Something went wrong..."
   var userId = "1227994" //1227994
-    //1127987
+    //1127987 mohan //989015 kani
     fun isNetworkAvailable(context: Context?): Boolean {
         val connectivityManager =
             context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

@@ -299,15 +299,13 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     return@setOnClickListener
                 }
 
-                binding.InvoiceTaxId.text.toString().trim().isNotEmpty()->{
-                    if (!isValidGST(binding.InvoiceTaxId.text.toString())) {
-                        Toast.makeText(
-                            this@InvoiceBusinessDetailFormActivity,
-                            "Enter valid GST number",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@setOnClickListener
-                    }
+                !isValidGST(binding.InvoiceTaxId.text.toString().trim()) -> {
+                    Toast.makeText(
+                        this@InvoiceBusinessDetailFormActivity,
+                        "Enter valid GST number",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
                 }
 
                 else -> {

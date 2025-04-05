@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/invoice_white"
     android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:background="@color/invoice_white">
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBarTitle"
@@ -18,39 +18,156 @@
         app:title=""
         app:titleTextAppearance="@style/ToolbarTitleStyle" />
 
+  <!--  <androidx.cardview.widget.CardView
+        android:id="@+id/searchLay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/toolBarTitle"
+        android:layout_marginEnd="10dp"
+        app:cardBackgroundColor="@color/invoice_white"
+        app:cardCornerRadius="25dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingStart="5dp"
+            android:orientation="horizontal">
+
+            &lt;!&ndash; Search Icon &ndash;&gt;
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/searchIcon"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_centerVertical="true"
+                android:padding="4dp"
+                android:src="@android:drawable/ic_menu_search" />
+
+            &lt;!&ndash; Animated Hint Text &ndash;&gt;
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/animatedHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:hint="Search here..."
+                android:layout_toEndOf="@+id/searchIcon"
+                android:textSize="16sp" />
+
+            &lt;!&ndash; EditText (no hint to avoid overlap) &ndash;&gt;
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/editTextSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/searchIcon"
+                android:layout_centerVertical="true"
+                android:background="@null"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>-->
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/searchLay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_below="@+id/toolBarTitle"
+        app:cardBackgroundColor="@color/invoice_white"
+        app:cardCornerRadius="25dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp">
+
+            <!-- Search Icon -->
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/searchIcon"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:padding="4dp"
+                android:src="@android:drawable/ic_menu_search" />
+
+            <!-- FrameLayout to overlay hint and EditText -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/searchIcon"
+                android:layout_marginStart="8dp"
+                android:layout_centerVertical="true">
+
+                <!-- Animated Hint Text -->
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/animatedHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Search here..."
+                    android:textColor="#888"
+                    android:textSize="16sp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp" />
+
+                <!-- EditText -->
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/editTextSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="16sp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp" />
+            </FrameLayout>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toolBarTitle">
+        android:layout_below="@+id/searchLay"
+        android:layout_marginTop="5dp">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerCustomers"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:id="@+id/NoDataLay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_centerInParent="true"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="250dp"
             android:layout_height="250dp"
-            android:src="@drawable/invoice_nodata_icon"/>
+            android:src="@drawable/invoice_nodata_icon" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No Data"
-            android:fontFamily="@font/lexend_medium"
-            android:textColor="@color/invoice_black"
             android:layout_gravity="center"
-            android:textSize="18dp"/>
+            android:fontFamily="@font/lexend_medium"
+            android:text="No Data"
+            android:textColor="@color/invoice_black"
+            android:textSize="18dp" />
 
     </LinearLayout>
 
@@ -60,17 +177,17 @@
         android:id="@+id/InvoiceFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/invoice_navy_blue"
-        app:tint="@android:color/white"
-        app:layout_anchorGravity="bottom|end"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="15dp"
+        android:contentDescription="Floating Action Button"
+        android:src="@android:drawable/ic_input_add"
         android:visibility="gone"
-        android:contentDescription="Floating Action Button" />
+        app:backgroundTint="@color/invoice_navy_blue"
+        app:layout_anchorGravity="bottom|end"
+        app:tint="@android:color/white" />
 
 
 </RelativeLayout>
