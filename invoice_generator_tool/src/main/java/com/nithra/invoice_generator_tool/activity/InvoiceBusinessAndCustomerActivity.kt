@@ -477,26 +477,17 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         binding.editTextSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!s.isNullOrEmpty()) {
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!text.isNullOrEmpty()) {
                     stopHintAnimation() // User is typing → stop animation
                     binding.animatedHint.text = "" // Hide hint while typing
-                    val query = s.toString().trim().lowercase()
-                  /*  // Filter the list
-                    filteredList.clear()
-                    filteredList.addAll(
-                        fruitList.filter {
-                            it.lowercase().contains(query)
-                        }
-                    )
-                    // Update your adapter here (e.g., RecyclerView)
-                    adapter.updateList(filteredList)*/
                 } else {
                     resumeHintAnimation() // No input → resume animation
                 }
             }
-
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                (binding.recyclerCustomers.adapter as InvoiceMasterAdapter<*>).filter.filter(s.toString())
+            }
         })
 
 
@@ -529,7 +520,6 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     }
                 }
             }
-
             override fun onAnimationStart(animation: Animator) {}
             override fun onAnimationCancel(animation: Animator) {}
             override fun onAnimationRepeat(animation: Animator) {}
@@ -573,6 +563,16 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 ListPosition = pos
                 actionName = actionNameServer
                 ShowDialogUsedBusiness("Do you want to delete this item?", deleteId, actionName)
+            },
+            onSearchResult = {
+                if (it) {
+                    binding.recyclerCustomers.visibility = View.GONE
+                    binding.NoDataLay.visibility = View.VISIBLE
+                    binding.NoDataLayText.text = "No search data"
+                } else {
+                    binding.recyclerCustomers.visibility = View.VISIBLE
+                    binding.NoDataLay.visibility = View.GONE
+                }
             }
         )
         binding.recyclerCustomers.layoutManager = LinearLayoutManager(this)

@@ -3,8 +3,6 @@ package com.nithra.invoice_generator_tool.model
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-
-
 class InvoiceGetExpenseDataList {
 
     @SerializedName("status")

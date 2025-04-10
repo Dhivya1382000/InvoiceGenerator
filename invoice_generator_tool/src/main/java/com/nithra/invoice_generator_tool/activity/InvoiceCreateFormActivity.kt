@@ -69,6 +69,10 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
     var selectedBusinessId = 0
     var selectedCustomerId = 0
     var selectedBusinessState = ""
+    var invoiceBusinesname = ""
+    var invoiceBusinesEmail = ""
+    var invoiceBusinesGst = ""
+    var invoiceBusinesMobile = ""
     var selectedCustomerState = ""
     var selectedDate = ""
     var TotalAmount = 0.0
@@ -117,6 +121,10 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
                     selectedBusinessId = itemList.company_id!!
                     selectedBusinessState = itemList.state!!
                     invoiceBillingAddress = itemList.billing_address_1!!
+                    invoiceBusinesname = itemList.bussiness_name!!
+                    invoiceBusinesGst = itemList.tax_id!!
+                    invoiceBusinesMobile = itemList.mobile1!!
+                    invoiceBusinesEmail = itemList.email!!
                     binding.InvoiceBusinessTypeText.text = itemList.bussiness_name
                 } else {
                     println("iTemLit === ${itemList.invoice_id}")
@@ -951,6 +959,127 @@ class InvoiceCreateFormActivity : AppCompatActivity() {
         </html>
         """.trimIndent()
         )
+      /*  val htmlContent = """
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 10px; }
+                    .invoice-box {
+                        border: 1px solid #000;
+                        width: 100%;
+                    }
+                    .header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    }
+                    .logo {
+                        width: 80px;
+                    }
+                    .title {
+                        font-size: 28px;
+                        font-weight: bold;
+                        text-align: right;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 10px;
+                    }
+                    th, td {
+                        border: 1px solid #000;
+                        padding: 5px;
+                        text-align: center;
+                        font-size: 14px;
+                    }
+                    .total-box {
+                        text-align: right;
+                        font-size: 16px;
+                        font-weight: bold;
+                        margin-top: 10px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="invoice-box">
+                    <div class="header">
+
+                        <div class="title">TAX INVOICE</div>
+                    </div>
+                    <p><b>$invoiceBusinesname</b><br/>
+                   $invoiceBillingAddress,<br/>
+                    $invoiceBusinesGst<br/>
+                    $invoiceBusinesMobile<br/>
+                    $invoiceBusinesEmail</p>
+
+                    <table>
+                        <tr>
+                            <td><b>Invoice</b><br/>INV-000019</td>
+                            <td><b>Invoice Date</b><br/>04/03/2025</td>
+                            <td><b>Place of Supply</b><br/>Tamil Nadu (33)</td>
+                        </tr>
+                    </table>
+
+                    <table>
+                        <tr>
+                            <th colspan="2">Bill To</th>
+                            <th colspan="2">Ship To</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Chakkaravarthy<br/>Salem, Tamil Nadu - 636003</td>
+                            <td colspan="2">Chakkaravarthy<br/>Salem, Tamil Nadu - 636003</td>
+                        </tr>
+                    </table>
+
+                    <table>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Item</th>
+                            <th>HSN/SAC</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                            <th>Taxable Amount</th>
+                            <th>CGST %</th>
+                            <th>CGST Amt</th>
+                            <th>SGST %</th>
+                            <th>SGST Amt</th>
+                            <th>Total</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Mixed cup sambrani combo box</td>
+                            <td>33074100</td>
+                            <td>1.00</td>
+                            <td>80.00</td>
+                            <td>80.00</td>
+                            <td>2.5%</td>
+                            <td>2.00</td>
+                            <td>2.5%</td>
+                            <td>2.00</td>
+                            <td>84.00</td>
+                        </tr>
+                    </table>
+
+                    <div class="total-box">Total Amount: ₹84.00</div>
+
+                    <p><b>Total In Words</b><br/><i>Indian Rupee Eighty-Four Only</i></p>
+
+                    <p><b>Bank Details</b><br/>
+                    Name : Disha Enterprises<br/>
+                    Bank : City Union Bank<br/>
+                    Account No : 510909010289150<br/>
+                    IFSC : CIUB0000143<br/>
+                    MICR : 520054104<br/>
+                    Branch : Tiruchengode</p>
+
+                    <p style="text-align:right; margin-top: 30px;">
+                        <b>V. Babyshalini</b><br/>
+                        For DISHA ENTERPRISES
+                    </p>
+                </div>
+            </body>
+            </html>
+        """.trimIndent()*/
 
         return htmlBuilder.toString()
     }

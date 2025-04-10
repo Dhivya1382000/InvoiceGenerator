@@ -10,6 +10,8 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
@@ -30,8 +32,12 @@ class InvoiceMasterAdapter<T>(
     var fromInvoice: Int,
     var fromClick: Int,
     var onAddItemClick: (T) -> Unit,
-    var onDeleteItem: (Int, Int, String) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var onDeleteItem: (Int, Int, String) -> Unit,
+    var onSearchResult: (searchData: Boolean) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
+
+    private var searchFilterList: MutableList<T> = filteredList.toMutableList()
+    private var lastQuery: String = ""
 
     companion object {
         const val VIEW_TYPE_STATE = 0
@@ -96,6 +102,7 @@ class InvoiceMasterAdapter<T>(
                 is InvoiceGetDataMasterArray.GetStateList -> {
                     clikStateName = item.english ?: "" // Cast your POJO to the expected type
                     clikStateId = item.id!!
+
                 }
 
                 is InvoiceGetDataMasterArray.GetIndustrialList -> {
@@ -128,8 +135,9 @@ class InvoiceMasterAdapter<T>(
                     clikStateName = item.bussinessName!!
                     clickDeleteDataAction = "deleteCompanyDetails"
                     holder.binding.listOfNumbers.text = listCount
-                    holder.binding.invoiceCustomerName.text = item.bussinessName
-                    holder.binding.invoiceCustomerMobile.text = item.mobile
+                    holder.binding.invoiceCustomerName.text =
+                        getHighlightedText(item.bussinessName!!, lastQuery)
+                    holder.binding.invoiceCustomerMobile.text = item.bussinessMobile
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
@@ -146,8 +154,9 @@ class InvoiceMasterAdapter<T>(
                     clickDataId = item.clientId!!
                     clickDeleteDataAction = "deleteClientDetails"
                     holder.binding.listOfNumbers.text = listCount
-                    holder.binding.invoiceCustomerName.text = item.name
-                    holder.binding.invoiceCustomerMobile.text = item.mobile
+                    holder.binding.invoiceCustomerName.text =
+                        getHighlightedText(item.name!!, lastQuery)
+                    holder.binding.invoiceCustomerMobile.text = item.mobile1
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
@@ -161,8 +170,9 @@ class InvoiceMasterAdapter<T>(
                     clickDataId = item.itemId!!
                     clickDeleteDataAction = "deleteItemDetails"
                     holder.binding.listOfNumbers.text = listCount
-                    holder.binding.invoiceCustomerName.text = item.itemName
-                    holder.binding.invoiceCustomerMobile.text = " ₹ "+item.amount
+                    holder.binding.invoiceCustomerName.text =
+                        getHighlightedText(item.itemName!!, lastQuery)
+                    holder.binding.invoiceCustomerMobile.text = " ₹ " + item.totalAmt
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
@@ -172,11 +182,14 @@ class InvoiceMasterAdapter<T>(
                     }
                 }
             }
+
+
             holder.binding.AddInvoice.setOnClickListener {
                 onAddItemClick(item)
             }
             holder.itemView.setOnClickListener {
-                invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick, position)
+                if (fromInvoice == 0)
+                    invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick, position)
             }
             holder.binding.menuIcon.setOnClickListener {
                 showPopupMenu(it, position, clikStateName, clickDataId, clickDeleteDataAction)
@@ -284,4 +297,46 @@ class InvoiceMasterAdapter<T>(
 
     class ExpenseViewHolder(var binding: ActivityInvoiceExpenseItemlistBinding) :
         RecyclerView.ViewHolder(binding.root)
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence?): FilterResults {
+                lastQuery = charSequence.toString().lowercase()
+                val result = if (lastQuery.isEmpty()) {
+                    searchFilterList
+                } else {
+                    searchFilterList.filter {
+
+                        when (it) {
+                            is InvoiceGetDataMasterArray.GetCompanyDetailList -> {
+                                it.bussinessName!!.lowercase().contains(lastQuery)
+                            }
+
+                            is InvoiceGetDataMasterArray.GetClientDetails -> {
+                                it.name!!.lowercase().contains(lastQuery)
+                            }
+
+                            is InvoiceGetDataMasterArray.GetItemList -> {
+                                it.itemName!!.lowercase().contains(lastQuery)
+                            }
+
+                            else -> {
+                                false
+                            }
+                        }
+                    }.toMutableList()
+                }
+
+                return FilterResults().apply {
+                    values = result
+                }
+            }
+
+            override fun publishResults(charSequence: CharSequence?, results: FilterResults?) {
+                filteredList = results?.values as MutableList<T>
+                notifyDataSetChanged()
+                onSearchResult(filteredList.isEmpty())
+            }
+        }
+    }
 }

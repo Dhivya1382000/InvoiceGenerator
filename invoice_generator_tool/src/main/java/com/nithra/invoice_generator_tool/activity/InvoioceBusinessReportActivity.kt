@@ -272,6 +272,9 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             fromSpinner, onAddItemClick = {
             }, onDeleteItem = { deleteId, pos, actionName ->
 
+            },
+            onSearchResult = {
+
             }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -350,6 +353,9 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
                 },
                 onDeleteItem = { deleteId, pos, actionName ->
+
+                },
+                onSearchResult = {
 
                 }
             ) // Pass the query

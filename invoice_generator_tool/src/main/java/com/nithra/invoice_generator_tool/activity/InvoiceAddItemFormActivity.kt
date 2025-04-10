@@ -193,8 +193,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                                 selectedDiscount = listOfitemList[i].discountType!!.toInt()
                                 println("qtyType == ${listOfitemList[i].qtyType!!}")
 
-                                val MeasuresId =
-                                    listOfMeasures.indexOfFirst { it.id == selectedMeasuresId }
+                                val MeasuresId = listOfMeasures.indexOfFirst { it.id == selectedMeasuresId }
                                 itemFormBinding.itemQtySpinner.setSelection(MeasuresId)
 
                                 itemFormBinding.InvoiceItemRate.setText(listOfitemList[i].amount!!)

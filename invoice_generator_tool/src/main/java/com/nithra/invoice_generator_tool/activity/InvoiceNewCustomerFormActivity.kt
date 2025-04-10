@@ -663,6 +663,9 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
             },  onDeleteItem ={deleteId ,pos,actionName->
 
+            },
+            onSearchResult = {
+
             }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -749,6 +752,9 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             this, fromInvoice, fromSpinner, onAddItemClick = {
 
             },  onDeleteItem ={deleteId ,pos,actionName->
+
+            },
+            onSearchResult = {
 
             }
         ) // Pass the query
