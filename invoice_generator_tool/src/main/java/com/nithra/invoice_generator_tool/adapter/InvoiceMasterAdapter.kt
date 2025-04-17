@@ -140,6 +140,7 @@ class InvoiceMasterAdapter<T>(
                     holder.binding.invoiceCustomerState.visibility = View.VISIBLE
                     holder.binding.invoiceCustomerMobile.text = item.bussinessMobile
                     holder.binding.invoiceCustomerState.text = item.state
+
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE

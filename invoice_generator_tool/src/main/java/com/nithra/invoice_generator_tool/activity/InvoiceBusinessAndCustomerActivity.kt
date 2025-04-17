@@ -72,18 +72,37 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                                 TypeToken<List<InvoiceGetDataMasterArray.GetCompanyDetailList>>() {}.type
                             val itemList: List<InvoiceGetDataMasterArray.GetCompanyDetailList> =
                                 Gson().fromJson(it, type)
-                            listOfCompany.add(0, itemList[0])
+                            println("typeclic--- ${itemList[0].type}")
+                            listOfCompany.addAll(0, itemList.filter { it.type ==  itemList[0].type })
+                            if (itemList[0].type == 0){
+                                binding.BusinessTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_blue))
+                                binding.tabSelectTextBusiness.setTextColor(ContextCompat.getColor(this,R.color.invoice_white))
+
+                                binding.IndividualTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_white))
+                                binding.tabSelectTextIndividual.setTextColor(ContextCompat.getColor(this,R.color.invoice_black))
+                            }else{
+                                binding.BusinessTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_white))
+                                binding.tabSelectTextBusiness.setTextColor(ContextCompat.getColor(this,R.color.invoice_black))
+
+                                binding.IndividualTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_blue))
+                                binding.tabSelectTextIndividual.setTextColor(ContextCompat.getColor(this,R.color.invoice_white))
+                            }
+
                             println("Status== ${listOfCompany[0].status}")
                             if (itemList[0].status.equals("success")) {
                                 binding.NoDataLay.visibility = View.GONE
+                                binding.searchLay.visibility = View.GONE
                                 binding.recyclerCustomers.visibility = View.VISIBLE
                             } else {
                                 binding.NoDataLay.visibility = View.VISIBLE
+                                binding.searchLay.visibility = View.VISIBLE
                                 binding.recyclerCustomers.visibility = View.GONE
                             }
                             if (::adapter.isInitialized) {
                                 adapter.notifyItemInserted(0)
-                                adapter.notifyDataSetChanged()
+                                val listOfCompanyFilter : MutableList<InvoiceGetDataMasterArray. GetCompanyDetailList> = mutableListOf()
+                                listOfCompanyFilter.addAll(listOfCompany.filter { it.type == itemList[0].type})
+                                setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompanyFilter)
                             }
                         }
 
@@ -98,9 +117,11 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                             listOfClients.add(0, itemList[0])  // Add at the first position
                             if (itemList[0].status.equals("success")) {
                                 binding.NoDataLay.visibility = View.GONE
+                                binding.searchLay.visibility = View.VISIBLE
                                 binding.recyclerCustomers.visibility = View.VISIBLE
                             } else {
                                 binding.NoDataLay.visibility = View.VISIBLE
+                                binding.searchLay.visibility = View.GONE
                                 binding.recyclerCustomers.visibility = View.GONE
                             }
                             if (::adapter.isInitialized) {
@@ -121,9 +142,11 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                             listOfItems.add(0, itemList[0])
                             if (itemList[0].status.equals("success")) {
                                 binding.NoDataLay.visibility = View.GONE
+                                binding.searchLay.visibility = View.VISIBLE
                                 binding.recyclerCustomers.visibility = View.VISIBLE
                             } else {
                                 binding.NoDataLay.visibility = View.VISIBLE
+                                binding.searchLay.visibility = View.GONE
                                 binding.recyclerCustomers.visibility = View.GONE
                             }
                             if (::adapter.isInitialized) {
@@ -143,9 +166,11 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                             println("listOfEx === ${listOfExpenses.size}")
                             if (listOfExpenses.size != 0) {
                                 binding.NoDataLay.visibility = View.GONE
+                                binding.searchLay.visibility = View.VISIBLE
                                 binding.recyclerCustomers.visibility = View.VISIBLE
                             } else {
                                 binding.NoDataLay.visibility = View.VISIBLE
+                                binding.searchLay.visibility = View.GONE
                                 binding.recyclerCustomers.visibility = View.GONE
                             }
                             if (::adapter.isInitialized) {
@@ -179,6 +204,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                                     adapter.notifyItemChanged(dataClicpos)  // Refresh only updated item
                                 } else {
                                     binding.NoDataLay.visibility = View.GONE
+                                    binding.searchLay.visibility = View.VISIBLE
                                     binding.recyclerCustomers.visibility = View.VISIBLE
                                 }
                             }
@@ -275,7 +301,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getExpenses"
-                InputMap["user_id"] = "" + InvoiceUtils.userId
+                InputMap["user_id"] = "" + preference.getString(this@InvoiceBusinessAndCustomerActivity,"INVOICE_USER_ID")
 
                 println("InvoiceRequest - $_TAG == $InputMap")
                 InvoiceUtils.loadingProgress(
@@ -295,7 +321,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getMaster"
-                InputMap["user_id"] = "" + InvoiceUtils.userId
+                InputMap["user_id"] = "" + preference.getString(this@InvoiceBusinessAndCustomerActivity,"INVOICE_USER_ID")
 
                 println("InvoiceRequest - $_TAG == $InputMap")
                 InvoiceUtils.loadingProgress(
@@ -319,12 +345,14 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             if (getList.status.equals("success")) {
                 binding.swipeRefresh.isRefreshing = false
                 binding.NoDataLay.visibility = View.GONE
+                binding.searchLay.visibility = View.VISIBLE
                 binding.recyclerCustomers.visibility = View.VISIBLE
                 getList.data?.let { listOfExpenses.addAll(it) }
                 println("listEx == ${listOfExpenses[0].itemName}")
                 setAdapter<InvoiceGetExpenseDataList.DataList>(3, listOfExpenses)
             } else {
                 binding.NoDataLay.visibility = View.VISIBLE
+                binding.searchLay.visibility = View.GONE
                 binding.recyclerCustomers.visibility = View.GONE
                 //  InvoiceUtils.loadingProgress(this@InvoiceBusinessAndCustomerActivity,InvoiceUtils.errorMessage,false).show()
             }
@@ -348,7 +376,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getExpenses"
-                    InputMap["user_id"] = "" + InvoiceUtils.userId
+                    InputMap["user_id"] = "" + preference.getString(this@InvoiceBusinessAndCustomerActivity,"INVOICE_USER_ID")
 
                     println("InvoiceRequest - $_TAG == $InputMap")
                     viewModel.getExpenseList(InputMap)
@@ -363,7 +391,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getMaster"
-                    InputMap["user_id"] = "" + InvoiceUtils.userId
+                    InputMap["user_id"] = "" + preference.getString(this@InvoiceBusinessAndCustomerActivity,"INVOICE_USER_ID")
 
                     println("InvoiceRequest - $_TAG == $InputMap")
                     viewModel.getOverAllMasterDetail(InputMap)
@@ -396,7 +424,6 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 listOfClientsFilter.clear()
                 listOfClientsFilter.addAll(listOfClients.filter { it.type == 2 })
                 setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)
-
             }
 
 
@@ -428,6 +455,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             InvoiceUtils.loadingDialog.dismiss()
             if (getMasterArray.status.equals("success")) {
                 binding.NoDataLay.visibility = View.GONE
+                binding.searchLay.visibility = View.VISIBLE
                 binding.recyclerCustomers.visibility = View.VISIBLE
                 binding.swipeRefresh.isRefreshing = false
                 listOfCompany.addAll(getMasterArray.companyDetails!!)
@@ -438,10 +466,12 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     println("companyDet111 == ${getMasterArray.companyDetails!![0].status}")
                     if (getMasterArray.companyDetails!![0].status.equals("failure")) {
                         binding.NoDataLay.visibility = View.VISIBLE
+                        binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.GONE
                     } else {
                         println("companyDet == ${getMasterArray.companyDetails!![0].status}")
                         binding.NoDataLay.visibility = View.GONE
+                        binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
 
@@ -458,9 +488,11 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 } else if (fromPage == "Customers") {
                     if (getMasterArray.clientDetails!![0].status.equals("failure")) {
                         binding.NoDataLay.visibility = View.VISIBLE
+                        binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.GONE
                     } else {
                         binding.NoDataLay.visibility = View.GONE
+                        binding.searchLay.visibility = View.VISIBLE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
 
@@ -478,15 +510,18 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 } else if (fromPage == "Items") {
                     if (getMasterArray.itemList!![0].status.equals("failure")) {
                         binding.NoDataLay.visibility = View.VISIBLE
+                        binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.GONE
                     } else {
                         binding.NoDataLay.visibility = View.GONE
+                        binding.searchLay.visibility = View.VISIBLE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
                     setAdapter<InvoiceGetDataMasterArray.GetItemList>(2, listOfItems)
                 }
             } else {
                 binding.NoDataLay.visibility = View.VISIBLE
+                binding.searchLay.visibility = View.GONE
                 binding.recyclerCustomers.visibility = View.GONE
             }
         }
@@ -507,7 +542,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
                             val InputMap = HashMap<String, Any>()
                             InputMap["action"] = "getMaster"
-                            InputMap["user_id"] = "" + InvoiceUtils.userId
+                            InputMap["user_id"] = "" + preference.getString(this@InvoiceBusinessAndCustomerActivity,"INVOICE_USER_ID")
 
                             println("InvoiceRequest - $_TAG == $InputMap")
                             InvoiceUtils.loadingProgress(
@@ -639,10 +674,12 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 if (it) {
                     binding.recyclerCustomers.visibility = View.GONE
                     binding.NoDataLay.visibility = View.VISIBLE
+                    binding.searchLay.visibility = View.GONE
                     binding.NoDataLayText.text = "No search data"
                 } else {
                     binding.recyclerCustomers.visibility = View.VISIBLE
                     binding.NoDataLay.visibility = View.GONE
+                    binding.searchLay.visibility = View.VISIBLE
                 }
             }
         )

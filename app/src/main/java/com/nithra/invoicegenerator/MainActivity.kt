@@ -36,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         searchIcon = findViewById(R.id.searchIcon)
 
         val intent = Intent(this@MainActivity, InvoiceHomeScreen::class.java)
+        intent.putExtra("AppLogin", 0)
+        intent.putExtra("AppLoginFrom", "")
+        intent.putExtra("OpenFromHome", 0)
         startActivity(intent)
 
         changeHintWithAnimation()
@@ -48,9 +51,7 @@ class MainActivity : AppCompatActivity() {
                 resumeHintAnimation() // Resume animation when focus is lost
             }
         }
-
     }
-
 
     private fun changeHintWithAnimation() {
         handler.postDelayed(object : Runnable {

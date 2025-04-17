@@ -53,6 +53,21 @@ object InvoiceUtils {
         }
     }
 
+    fun getClassName(context: Context, MetaDataFrom: String): String? {
+        try {
+            val ai = context.packageManager.getApplicationInfo(
+                context.packageName,
+                PackageManager.GET_META_DATA
+            )
+            val bundle = ai.metaData
+            return bundle.getString(MetaDataFrom)
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return ""
+    }
+
+
     fun getAndroidId(context: Context?): String {
         return Settings.Secure.getString(
             context?.contentResolver, Settings.Secure.ANDROID_ID
@@ -70,19 +85,7 @@ object InvoiceUtils {
         return PackageInfoCompat.getLongVersionCode(pInfo!!).toInt()
     }
 
-    fun getClassName(context: Context, MetaDataFrom: String): String? {
-        try {
-            val ai = context.packageManager.getApplicationInfo(
-                context.packageName,
-                PackageManager.GET_META_DATA
-            )
-            val bundle = ai.metaData
-            return bundle.getString(MetaDataFrom)
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-        return ""
-    }
+
 
     lateinit var loadingDialog: Dialog
 

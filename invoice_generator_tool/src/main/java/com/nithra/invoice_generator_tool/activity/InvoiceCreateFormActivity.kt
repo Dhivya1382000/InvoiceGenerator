@@ -203,6 +203,13 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     invoiceBusinesGst = itemList.tax_id!!
                     invoiceBusinesMobile = itemList.mobile1!!
                     invoiceBusinesEmail = itemList.email!!
+                    invoiceBusinessMobileNumber = itemList.bussiness_mobile!!
+                    invoiceBusinessState = itemList.state + "(" + itemList.state_id + ")"
+                    invoiceBankName = itemList.bank_name!!
+                    invoiceBankAcc = itemList.bank_acoount_number!!
+                    invoiceBankIFSC = itemList.ifsc_code!!
+                    invoiceBankMICR = itemList.micr_code!!
+                    invoiceBankAddress = itemList.bank_address!!
                     binding.InvoiceBusinessTypeText.text = itemList.bussiness_name
                 } else {
                     println("iTemLit === ${itemList.invoice_id}")
@@ -474,17 +481,22 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 ).show()
             } else {
                 submitData = "business"
-                /* val intent = Intent(
-                     this@InvoiceCreateFormActivity,
-                     InvoiceBusinessAndCustomerActivity::class.java
-                 )
-                 intent.putExtra("fromInvoice", 1)
-                 intent.putExtra("InvoicefromPage", "Business")
-                 selectItemLauncher.launch(intent)*/
-                showSearchableDialog<InvoiceGetDataMasterArray.GetCompanyDetailList>(
-                    1,
-                    listOfCompanyDetails
-                )
+
+                if (binding.InvoiceBusinessTypeText.text.isEmpty()) {
+                    val intent = Intent(
+                        this@InvoiceCreateFormActivity,
+                        InvoiceBusinessAndCustomerActivity::class.java
+                    )
+                    intent.putExtra("fromInvoice", 1)
+                    intent.putExtra("InvoicefromPage", "Business")
+                    selectItemLauncher.launch(intent)
+                } else {
+                    showSearchableDialog<InvoiceGetDataMasterArray.GetCompanyDetailList>(
+                        1,
+                        listOfCompanyDetails
+                    )
+                }
+
             }
         }
 
@@ -497,18 +509,20 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 ).show()
             } else {
                 submitData = "customer"
-                /*val intent = Intent(
-                    this@InvoiceCreateFormActivity,
-                    InvoiceBusinessAndCustomerActivity::class.java
-                )
-                intent.putExtra("fromInvoice", 1)
-                intent.putExtra("InvoicefromPage", "Customers")
-                selectItemLauncher.launch(intent)*/
-
-                showSearchableDialog<InvoiceGetDataMasterArray.GetClientDetails>(
-                    1,
-                    listOfClientDetails
-                )
+                if (binding.InvoiceCustomerName.text.isEmpty()) {
+                    val intent = Intent(
+                        this@InvoiceCreateFormActivity,
+                        InvoiceBusinessAndCustomerActivity::class.java
+                    )
+                    intent.putExtra("fromInvoice", 1)
+                    intent.putExtra("InvoicefromPage", "Customers")
+                    selectItemLauncher.launch(intent)
+                } else {
+                    showSearchableDialog<InvoiceGetDataMasterArray.GetClientDetails>(
+                        1,
+                        listOfClientDetails
+                    )
+                }
             }
 
         }

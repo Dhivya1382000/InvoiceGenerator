@@ -39,6 +39,14 @@ class DataBusiness {
     @Expose
     var email: String? = null
 
+    @SerializedName("state")
+    @Expose
+    var state: String? = null
+
+    @SerializedName("type")
+    @Expose
+    var type: String? = null
+
     @SerializedName("bussiness_mobile")
     @Expose
     var bussinessMobile: String? = null
@@ -67,5 +75,30 @@ class DataBusiness {
     @Expose
     var bussinessId: String? = null
 
+    @SerializedName("bank_name")
+    @Expose
+    var bankName: String? = null
+
+    @SerializedName("bank_acoount_number")
+    @Expose
+    var bankAcoountNumber: String? = null
+
+    @SerializedName("micr_code")
+    @Expose
+    var micrCode: String? = null
+
+    @SerializedName("ifsc_code")
+    @Expose
+    var ifscCode: String? = null
+
+    @SerializedName("bank_address")
+    @Expose
+    var bankAddress: String? = null
+
+    @SerializedName("contact_person")
+    @Expose
+    var contactPerson: String? = null
+
     var status: String? = ""
 }
+

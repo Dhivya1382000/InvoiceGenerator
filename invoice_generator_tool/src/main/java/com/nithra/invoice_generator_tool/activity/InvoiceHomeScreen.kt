@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +19,9 @@ import com.nithra.invoice_generator_tool.adapter.InvoiceRecentAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceHomeScreenBinding
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceNewHomeScreenBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
+import com.nithra.invoice_generator_tool.support.InvoiceUtils.getOpenActivity
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
@@ -28,13 +33,120 @@ class InvoiceHomeScreen : AppCompatActivity() {
     private lateinit var invoicerecentadapter: InvoiceRecentAdapter
     private val viewModel: InvoiceViewModel by viewModels()
     var listOfGetInvoicelist: MutableList<InvoiceGetInvoiceList> = mutableListOf()
+    var AppLogin = 0
+    var AppLoginClick = 0
+    var AppLoginFrom = ""
+    var OpenFromHome = 0
+    var preference = InvioceSharedPreference()
+
+
+    private var activityCommonLoginResultLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                println("activityResultLauncher ${result.data!!.getStringExtra("country_code")}")
+                println("activityResultLauncher ${result.data!!.getStringExtra("user_mobile")}")
+                println("activityResultLauncher ${result.data.toString()}")
+                println("activityResultLauncher $result")
+
+                val InvoiceUserName = result.data!!.getStringExtra("TC_USER_NAME")
+                val InvoiceUserID = result.data!!.getStringExtra("TC_USER_ID")
+
+                if (InvoiceUserID!!.isNotEmpty()) {
+                    preference.putString(
+                        this@InvoiceHomeScreen,
+                        "INVOICE_USER_NAME",
+                        InvoiceUserName
+                    )
+                    preference.putString(
+                        this@InvoiceHomeScreen,
+                        "INVOICE_USER_ID",
+                        InvoiceUserName
+                    )
+                    setContentView(binding.root)
+                }else{
+                    setContentView(binding.root)
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityInvoiceNewHomeScreenBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        //binding = DataBindingUtil.setContentView<ActivityInvoiceHomeScreenBinding>(this, R.layout.activity_invoice_home_screen)
+
+        val bundle = intent.extras
+        OpenFromHome = bundle!!.getInt("OpenFromHome", 0)
+        if (bundle.getString("AppLoginFrom") != null) {
+            AppLoginFrom = bundle.getString("AppLoginFrom")!!
+            AppLogin = bundle.getInt("AppLogin", 0)
+            preference.putString(this@InvoiceHomeScreen, "AS_APP_LOGIN_FROM", AppLoginFrom)
+        }
+
+        if (OpenFromHome == 0) {
+            if (AppLogin == 1) {
+                if (AppLoginFrom == "tamil_calendar") {
+                    val otpStatus = preference.getString(
+                        this@InvoiceHomeScreen,
+                        "TC_USER_OTP_STATUS"
+                    )
+                    if (otpStatus == "VERIFIED") {
+                        val UserName = preference.getString(
+                            this@InvoiceHomeScreen,
+                            "TC_USER_NAME"
+                        )
+                        val UserID = preference.getString(
+                            this@InvoiceHomeScreen,
+                            "TC_USER_ID"
+                        )
+                        preference.putString(
+                            this@InvoiceHomeScreen,
+                            "INVOICE_USER_NAME",
+                            UserName
+                        )
+                        preference.putString(
+                            this@InvoiceHomeScreen,
+                            "INVOICE_USER_ID",
+                            UserID
+                        )
+
+                        setContentView(binding.root)
+                    } else {
+                        val i = Intent(
+                            this@InvoiceHomeScreen, getOpenActivity(
+                                this@InvoiceHomeScreen, "nithra.invoice.common.login"
+                            )
+                        )
+                        activityCommonLoginResultLauncher.launch(i)
+
+                    }
+                }else {
+                    preference.putString(
+                        this@InvoiceHomeScreen,
+                        "INVOICE_USER_NAME",
+                        "Dhivya S"
+                    )
+                    preference.putString(
+                        this@InvoiceHomeScreen,
+                        "INVOICE_USER_ID",
+                        InvoiceUtils.userId
+                    )
+                    setContentView(binding.root)
+                }
+            } else {
+                preference.putString(
+                    this@InvoiceHomeScreen,
+                    "INVOICE_USER_NAME",
+                    "Dhivya S"
+                )
+                preference.putString(
+                    this@InvoiceHomeScreen,
+                    "INVOICE_USER_ID",
+                    InvoiceUtils.userId
+                )
+                setContentView(binding.root)
+            }
+        }
+
 
         setSupportActionBar(binding.toolBarTitle)
 
@@ -53,7 +165,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
         toggle.syncState()
 
         val greetings = "" + getGreetingMessage()
-        binding.InvoiceUserName.setText(" " + greetings + " " + "Dhivya S")
+        binding.InvoiceUserName.setText(" " + greetings + " " + preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_NAME"))
 
         binding.createInvoiceLay.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
@@ -68,7 +180,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
             startActivity(intent)
         }
         binding.InvoiceCustomerLay.setOnClickListener {
-            if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+           /* if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                 Toast.makeText(
                     this@InvoiceHomeScreen,
                     "" + InvoiceUtils.messageNetCheck,
@@ -77,7 +189,21 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 return@setOnClickListener
             }
             val intent = Intent(this@InvoiceHomeScreen, InvoiceNewCustomerFormActivity::class.java)
-            startActivity(intent)
+            startActivity(intent)*/
+            if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+                val intent = Intent(
+                    this@InvoiceHomeScreen,
+                    InvoiceBusinessAndCustomerActivity::class.java
+                )
+                intent.putExtra("InvoicefromPage", "Customers")
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this@InvoiceHomeScreen,
+                    "" + InvoiceUtils.messageNetCheck,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
         binding.CardCreateInvoiceLay.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
@@ -96,7 +222,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                 val intent = Intent(
                     this@InvoiceHomeScreen,
-                    InvoiceAddItemFormActivity::class.java
+                    InvoiceBusinessAndCustomerActivity::class.java
                 )
                 intent.putExtra("InvoicefromPage", "Items")
                 startActivity(intent)
@@ -123,7 +249,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
 //            InvoiceUtils.loadingProgress(this@InvoiceHomeScreen,InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "homeReport"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = ""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_ID")
             InputMap["type"] = "1"
             InputMap["year"] = "2025"
 
@@ -149,7 +275,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 .show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getInvoiceList"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = ""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_ID")
             InputMap["type"] = "0"
 
             println("InvoiceRequest - $_TAG == $InputMap")
@@ -187,10 +313,24 @@ class InvoiceHomeScreen : AppCompatActivity() {
         }
 
         binding.AddBusinesslay.setOnClickListener {
-            if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+          /*  if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                 val intent = Intent(
                     this@InvoiceHomeScreen,
                     InvoiceBusinessDetailFormActivity::class.java
+                )
+                intent.putExtra("InvoicefromPage", "Business")
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this@InvoiceHomeScreen,
+                    "" + InvoiceUtils.messageNetCheck,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }*/
+            if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+                val intent = Intent(
+                    this@InvoiceHomeScreen,
+                    InvoiceBusinessAndCustomerActivity::class.java
                 )
                 intent.putExtra("InvoicefromPage", "Business")
                 startActivity(intent)
