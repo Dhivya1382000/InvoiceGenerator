@@ -23,10 +23,10 @@
         android:icon="@drawable/invoice_client_navicon"
         android:title="Customer" />
 
-    <item
+    <!--<item
         android:id="@+id/nav_expence"
         android:icon="@drawable/invoice_expense_navicon"
-        android:title="Expence" />
+        android:title="Expence" />-->
 
     <item
         android:id="@+id/nav_item"

@@ -17,6 +17,10 @@ class InvoiceOfflineDynamicData {
     var discount_type: Int? = null
     var discount: Int? = null
     var total_amt: String? = ""
+    var hsn: String? = ""
+    var sgst: Double? = 0.0
+    var cgst: Double? = 0.0
+    var Igst: String? = ""
 
     //Business Detail list
     var state_id: Int? = 0

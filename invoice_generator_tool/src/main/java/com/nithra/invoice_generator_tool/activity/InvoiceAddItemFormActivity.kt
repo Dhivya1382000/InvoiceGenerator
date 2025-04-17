@@ -347,14 +347,14 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                 // Sample list of suggestions
                 val SuggestionsItemName = listOfitemList.map {
                     "${it.itemName}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsItemName}")
 
                 // Create an ArrayAdapter
                 val adapterBusinessName = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsItemName
+                    SuggestionsItemName.toList()
                 )
                 // Set the adapter to the AutoCompleteTextView
                 itemFormBinding.InvoiceItemName.setAdapter(adapterBusinessName)
@@ -498,6 +498,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                             map["qty"] =
                                 "" + itemFormBinding.InvoiceItemQuantity.text.toString().trim()
                             map["tax"] = "" + selectedGstId
+                            map["hsn"] = "" + itemFormBinding.InvoiceItemHSNcode.text.toString().trim()
                             map["description"] =
                                 "" + itemFormBinding.InvoiceItemDesc.text.toString().trim()
                             map["discount_type"] = "" + selectedDiscount
@@ -511,7 +512,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                                 "" + InvoiceUtils.messageLoading,
                                 false
                             ).show()
-                            viewModel.addItemData(map)
+                          viewModel.addItemData(map)
 
                         } else {
                             Toast.makeText(

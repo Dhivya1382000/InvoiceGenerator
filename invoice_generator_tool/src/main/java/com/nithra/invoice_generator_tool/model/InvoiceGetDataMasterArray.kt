@@ -121,9 +121,38 @@ class InvoiceGetDataMasterArray {
         @Expose
         var bussinessId: String? = ""
 
+        @SerializedName("bank_name")
+        @Expose
+        var bankName: String? = ""
+
+        @SerializedName("bank_acoount_number")
+        @Expose
+        var bankAcoountNumber: String? = ""
+
+        @SerializedName("micr_code")
+        @Expose
+        var micrCode: String? = ""
+
+        @SerializedName("ifsc_code")
+        @Expose
+        var ifscCode: String? = ""
+
+        @SerializedName("bank_address")
+        @Expose
+        var bankAddress: String? = ""
+
+        @SerializedName("contact_person")
+        @Expose
+        var contactPerson: String? = ""
+
+        @SerializedName("type")
+        @Expose
+        var type: Int? = 0
+
         @SerializedName("status")
         @Expose
         var status: String? = ""
+
     }
 
     @SerializedName("client_details")
@@ -245,6 +274,10 @@ class InvoiceGetDataMasterArray {
         @SerializedName("tax")
         @Expose
         var tax: String? = ""
+
+        @SerializedName("hsn")
+        @Expose
+        var hsn: String? = ""
 
         @SerializedName("description")
         @Expose

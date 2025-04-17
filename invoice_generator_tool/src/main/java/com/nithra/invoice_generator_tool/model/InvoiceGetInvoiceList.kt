@@ -34,7 +34,7 @@ class InvoiceGetInvoiceList {
 
     @SerializedName("invoice_number")
     @Expose
-    var invoiceNumber: String? = null
+    var invoiceNumber: String? = ""
 
     @SerializedName("order_no")
     @Expose

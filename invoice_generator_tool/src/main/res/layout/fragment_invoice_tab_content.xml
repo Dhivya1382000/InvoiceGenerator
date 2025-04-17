@@ -5,271 +5,261 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/invoice_textfield_background"
+        app:cardCornerRadius="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="7dp"
         android:layout_marginBottom="7dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
-
-            <!-- Amount and Due Status -->
-            <RelativeLayout
-                android:id="@+id/AmountRelative"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/InvoiceAmountTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="6dp"
-                        android:paddingTop="5dp"
-                        android:paddingEnd="6dp"
-                        android:paddingBottom="5dp"
-                        android:text="Amount"
-                        android:textColor="@color/invoice_pink"
-                        android:textSize="12dp" />
-
-                    <TextView
-                        android:id="@+id/InvoiceAmount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="₹ 65,400"
-                        android:fontFamily="@font/lexend_medium"
-                        android:textColor="@android:color/black"
-                        android:textSize="20dp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/InvoiceDateCard"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    app:cardBackgroundColor="@color/invoice_lite_green"
-                    app:cardCornerRadius="10dp"
-                    android:layout_centerVertical="true">
-
-                    <TextView
-                        android:id="@+id/InvoiceDueStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="6dp"
-                        android:paddingTop="5dp"
-                        android:paddingEnd="6dp"
-                        android:paddingBottom="5dp"
-                        android:text="Due in 2 days"
-                        android:textColor="@color/invoice_green"
-                        android:textSize="12dp" />
-                </androidx.cardview.widget.CardView>
-
-            </RelativeLayout>
-
-            <!-- Invoice Details -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Invoice no"
-                    android:fontFamily="@font/lexend_medium"
-                    android:textColor="@color/invoice_pink"
-                    android:textSize="12dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Created on"
-                    android:fontFamily="@font/lexend_medium"
-                    android:gravity="center"
-                    android:textColor="@color/invoice_pink"
-                    android:textSize="12dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Status"
-                    android:fontFamily="@font/lexend_medium"
-                    android:textColor="@color/invoice_pink"
-                    android:textSize="12dp" />
-            </LinearLayout>
-
-            <!-- Invoice Values -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/InvoiceNo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="NA#OM12"
-                        android:layout_marginEnd="2dp"
-                        android:textColor="@android:color/black"
-                        android:fontFamily="@font/lexend_medium"
-                        android:textSize="13dp" />
-
-                    <TextView
-                        android:id="@+id/tvCreatedOn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="07/02/2025"
-                        android:gravity="center"
-                        android:layout_marginEnd="2dp"
-                        android:fontFamily="@font/lexend_medium"
-                        android:textColor="@android:color/black"
-                        android:textSize="13dp" />
-
-                    <TextView
-                        android:id="@+id/tvStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/lexend_medium"
-                        android:gravity="center"
-                        android:text="Unpaid"
-                        android:textColor="@color/invoice_black"
-                        android:textSize="13dp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/invoice_lite_gray" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+               android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:background="@color/invoice_green">
+
+                <TextView
+                    android:id="@+id/tvBusinessName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Dhivya"
+                    android:textColor="@color/invoice_white"
+                    android:fontFamily="@font/lexend_medium"
+                    android:textSize="14dp"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:layout_marginStart="5dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="5dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="10dp">
+
+                <!-- Amount and Due Status -->
+                <RelativeLayout
+                    android:id="@+id/AmountRelative"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/InvoiceAmountTxt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="2dp"
+                            android:paddingTop="5dp"
+                            android:paddingEnd="6dp"
+                            android:paddingBottom="5dp"
+                            android:text="Amount"
+                            android:textColor="@color/invoice_peack_green"
+                            android:textSize="12dp" />
+
+                        <TextView
+                            android:id="@+id/InvoiceAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₹ 65,400"
+                            android:fontFamily="@font/lexend_medium"
+                            android:textColor="@android:color/black"
+                            android:textSize="20dp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/InvoiceDateCard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        app:cardBackgroundColor="@color/invoice_lite_green"
+                        app:cardCornerRadius="10dp"
+                        android:layout_centerVertical="true">
+
+                        <TextView
+                            android:id="@+id/InvoiceDueStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="6dp"
+                            android:paddingTop="5dp"
+                            android:paddingEnd="6dp"
+                            android:paddingBottom="5dp"
+                            android:text="Due in 2 days"
+                            android:textColor="@color/invoice_green"
+                            android:textSize="12dp" />
+                    </androidx.cardview.widget.CardView>
+
+                </RelativeLayout>
+
+                <!-- Invoice Details -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Invoice no"
+                        android:fontFamily="@font/lexend_medium"
+                        android:textColor="@color/invoice_peack_green"
+                        android:textSize="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Created on"
+                        android:fontFamily="@font/lexend_medium"
+                        android:gravity="center"
+                        android:textColor="@color/invoice_peack_green"
+                        android:textSize="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Status"
+                        android:fontFamily="@font/lexend_medium"
+                        android:textColor="@color/invoice_peack_green"
+                        android:textSize="12dp" />
+                </LinearLayout>
+
+                <!-- Invoice Values -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/InvoiceNo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="NA#OM12"
+                            android:layout_marginEnd="2dp"
+                            android:textColor="@android:color/black"
+                            android:fontFamily="@font/lexend_medium"
+                            android:textSize="13dp" />
+
+                        <TextView
+                            android:id="@+id/tvCreatedOn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="07/02/2025"
+                            android:gravity="center"
+                            android:layout_marginEnd="2dp"
+                            android:fontFamily="@font/lexend_medium"
+                            android:textColor="@android:color/black"
+                            android:textSize="13dp" />
+
+                        <TextView
+                            android:id="@+id/tvStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/lexend_medium"
+                            android:gravity="center"
+                            android:text="Unpaid"
+                            android:textColor="@color/invoice_black"
+                            android:textSize="13dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/invoice_lite_gray" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_weight="1">
+                        android:orientation="horizontal"
+                        android:padding="5dp">
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingTop="10dp"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="5dp"
-                            android:paddingBottom="5dp">
-                            <!-- User Name -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Client Name : "
-                                android:textColor="@color/invoice_pink"
-                                android:fontFamily="@font/lexend_medium"
-                                android:textSize="14dp"
-                                android:textStyle="normal" />
-
-                            <TextView
-                                android:id="@+id/tvUserName"
+                            android:orientation="vertical"
+                            android:padding="2dp"
+                            android:layout_weight="1">
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Dhivya"
-                                android:layout_marginStart="5dp"
-                                android:layout_weight="1"
-                                android:textColor="@color/invoice_black"
-                                android:fontFamily="@font/lexend_medium"
-                                android:textSize="14dp"
-                                android:textStyle="bold" />
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:id="@+id/tvUserName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Dhivya"
+                                    android:layout_weight="1"
+                                    android:textColor="@color/invoice_black"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:textSize="12dp"
+                                    android:textStyle="bold" />
 
+
+                            </LinearLayout>
 
                         </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <ImageView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingTop="5dp"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="5dp"
-                            android:paddingBottom="10dp">
-                            <!-- User Name -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Business Name :"
-                                android:textColor="@color/invoice_pink"
-                                android:fontFamily="@font/lexend_medium"
-                                android:textSize="14dp"
-                                android:textStyle="normal" />
-
-                            <TextView
-                                android:id="@+id/tvBusinessName"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Dhivya"
-                                android:textColor="@color/invoice_black"
-                                android:fontFamily="@font/lexend_medium"
-                                android:textSize="14dp"
-                                android:layout_marginStart="5dp"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="10dp"
+                            android:src="@drawable/invoice_right_arrow" />
                     </LinearLayout>
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="10dp"
-                        android:src="@drawable/invoice_right_arrow" />
+
                 </LinearLayout>
+
 
             </LinearLayout>
 
-
         </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-    </LinearLayout>
 
 
 </LinearLayout>

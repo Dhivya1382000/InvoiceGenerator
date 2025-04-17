@@ -55,7 +55,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
     private val handler = Handler(Looper.getMainLooper())
     var hintTexts : ArrayList<String> = arrayListOf()
     private var currentIndex = 0
-
+ var clicktabPos = 0
 
     val addItemLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -253,16 +253,23 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
             fromPage == "Business"->{
                hintTexts.add("Search Name...")
                hintTexts.add("Find Business Name...")
+                binding.tabcardlay.visibility = View.VISIBLE
+                binding.searchLay.visibility = View.GONE
             }
             fromPage == "Customers"->{
                 hintTexts.add("Search Name...")
                 hintTexts.add("Find Customer Name...")
+                binding.tabcardlay.visibility = View.VISIBLE
+                binding.searchLay.visibility = View.VISIBLE
             }
             fromPage == "Items"->{
                 hintTexts.add("Search Name...")
                 hintTexts.add("Find Item Name...")
+                binding.tabcardlay.visibility = View.GONE
+                binding.searchLay.visibility = View.VISIBLE
             }
         }
+
         println("fromPage == $fromPage")
         if (fromPage == "Expense") {
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
@@ -369,6 +376,52 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 }
             }
         }
+        binding.BusinessTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_blue))
+        binding.tabSelectTextBusiness.setTextColor(ContextCompat.getColor(this,R.color.invoice_white))
+
+        binding.BusinessTypeClick.setOnClickListener {
+            clicktabPos = 0
+            binding.BusinessTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_blue))
+            binding.tabSelectTextBusiness.setTextColor(ContextCompat.getColor(this,R.color.invoice_white))
+
+            binding.IndividualTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_white))
+            binding.tabSelectTextIndividual.setTextColor(ContextCompat.getColor(this,R.color.invoice_black))
+
+            if (fromPage == "Business") {
+                val listOfCompanyFilter : MutableList<InvoiceGetDataMasterArray. GetCompanyDetailList> = mutableListOf()
+                listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 0 })
+                setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompanyFilter)
+            }else{
+                val listOfClientsFilter : MutableList<InvoiceGetDataMasterArray. GetClientDetails> = mutableListOf()
+                listOfClientsFilter.clear()
+                listOfClientsFilter.addAll(listOfClients.filter { it.type == 2 })
+                setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)
+
+            }
+
+
+        }
+
+        binding.IndividualTypeClick.setOnClickListener {
+            clicktabPos = 1
+            binding.BusinessTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_white))
+            binding.tabSelectTextBusiness.setTextColor(ContextCompat.getColor(this,R.color.invoice_black))
+
+            binding.IndividualTypeClick.setBackgroundColor(ContextCompat.getColor(this, R.color.invoice_blue))
+            binding.tabSelectTextIndividual.setTextColor(ContextCompat.getColor(this,R.color.invoice_white))
+
+            if (fromPage == "Business") {
+                val listOfCompanyFilter : MutableList<InvoiceGetDataMasterArray. GetCompanyDetailList> = mutableListOf()
+                listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 1 })
+                setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompanyFilter)
+            }else{
+                val listOfClientsFilter : MutableList<InvoiceGetDataMasterArray. GetClientDetails> = mutableListOf()
+                listOfClientsFilter.clear()
+                listOfClientsFilter.addAll(listOfClients.filter { it.type == 1 })
+                setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)
+            }
+
+        }
 
         viewModel.getMasterDetail.observe(this@InvoiceBusinessAndCustomerActivity) { getMasterArray ->
             println("getMastr == ${getMasterArray.companyDetails!!.size}")
@@ -388,11 +441,19 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         binding.recyclerCustomers.visibility = View.GONE
                     } else {
                         println("companyDet == ${getMasterArray.companyDetails!![0].status}")
-
                         binding.NoDataLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
-                    setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompany)
+
+                    val listOfCompanyFilter : MutableList<InvoiceGetDataMasterArray. GetCompanyDetailList> = mutableListOf()
+                    if (clicktabPos == 0){
+                        listOfCompanyFilter.clear()
+                        listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 0 })
+                    }else{
+                        listOfCompanyFilter.clear()
+                        listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 1 })
+                    }
+                    setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompanyFilter)
 
                 } else if (fromPage == "Customers") {
                     if (getMasterArray.clientDetails!![0].status.equals("failure")) {
@@ -402,7 +463,17 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         binding.NoDataLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
-                    setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClients)
+
+                    val listOfClientsFilter : MutableList<InvoiceGetDataMasterArray. GetClientDetails> = mutableListOf()
+                    if (clicktabPos == 0){
+                        listOfClientsFilter.clear()
+                        listOfClientsFilter.addAll(listOfClients.filter { it.type == 2 })
+                    }else{
+                        listOfClientsFilter.clear()
+                        listOfClientsFilter.addAll(listOfClients.filter { it.type == 1 })
+                    }
+
+                    setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)
 
                 } else if (fromPage == "Items") {
                     if (getMasterArray.itemList!![0].status.equals("failure")) {

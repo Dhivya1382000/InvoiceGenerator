@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceRecentAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceHomeScreenBinding
+import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceNewHomeScreenBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
@@ -23,7 +24,7 @@ import java.util.Calendar
 @AndroidEntryPoint
 class InvoiceHomeScreen : AppCompatActivity() {
 
-    lateinit var binding: ActivityInvoiceHomeScreenBinding
+    lateinit var binding: ActivityInvoiceNewHomeScreenBinding
     private lateinit var invoicerecentadapter: InvoiceRecentAdapter
     private val viewModel: InvoiceViewModel by viewModels()
     var listOfGetInvoicelist: MutableList<InvoiceGetInvoiceList> = mutableListOf()
@@ -31,7 +32,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityInvoiceHomeScreenBinding.inflate(layoutInflater)
+        binding = ActivityInvoiceNewHomeScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
         //binding = DataBindingUtil.setContentView<ActivityInvoiceHomeScreenBinding>(this, R.layout.activity_invoice_home_screen)
 
@@ -78,7 +79,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
             val intent = Intent(this@InvoiceHomeScreen, InvoiceNewCustomerFormActivity::class.java)
             startActivity(intent)
         }
-        binding.InvoiceExpensesLay.setOnClickListener {
+        binding.CardCreateInvoiceLay.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                 Toast.makeText(
                     this@InvoiceHomeScreen,
@@ -87,8 +88,27 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 ).show()
                 return@setOnClickListener
             }
-            val intent = Intent(this@InvoiceHomeScreen, InvoiceAddExpenseFormActivity::class.java)
+            val intent = Intent(this@InvoiceHomeScreen, InvoiceCreateFormActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.InvoiceAddItemsLay.setOnClickListener {
+            if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+                val intent = Intent(
+                    this@InvoiceHomeScreen,
+                    InvoiceAddItemFormActivity::class.java
+                )
+                intent.putExtra("InvoicefromPage", "Items")
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this@InvoiceHomeScreen,
+                    "" + InvoiceUtils.messageNetCheck,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+
         }
         // Initialize RecyclerView
         invoicerecentadapter = InvoiceRecentAdapter(
@@ -163,6 +183,39 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 val intent =
                     Intent(this@InvoiceHomeScreen, InvoiceTypeOfAllListActivity::class.java)
                 startActivity(intent)
+            }
+        }
+
+        binding.AddBusinesslay.setOnClickListener {
+            if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+                val intent = Intent(
+                    this@InvoiceHomeScreen,
+                    InvoiceBusinessDetailFormActivity::class.java
+                )
+                intent.putExtra("InvoicefromPage", "Business")
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this@InvoiceHomeScreen,
+                    "" + InvoiceUtils.messageNetCheck,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        binding.AddBusinessReportlay.setOnClickListener {
+            if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+                val intent = Intent(
+                    this@InvoiceHomeScreen,
+                    InvoioceBusinessReportActivity::class.java
+                )
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this@InvoiceHomeScreen,
+                    "" + InvoiceUtils.messageNetCheck,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -249,7 +302,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                 }
 
-                R.id.nav_expence -> {
+              /*  R.id.nav_expence -> {
                     if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                         val intent = Intent(
                             this@InvoiceHomeScreen,
@@ -266,7 +319,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
                     }
 
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
-                }
+                }*/
 
                 R.id.nav_item -> {
                     if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {

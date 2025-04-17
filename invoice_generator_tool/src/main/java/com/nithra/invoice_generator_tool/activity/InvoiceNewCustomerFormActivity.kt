@@ -74,7 +74,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         } else {
             selectedBusinesTypeId = 2
             binding.InvoiceCusCompanyNameLay.visibility = View.VISIBLE
-            binding.InvoiceCusDisplayNameLay.visibility = View.VISIBLE
+            //      binding.InvoiceCusDisplayNameLay.visibility = View.VISIBLE
             binding.InvoiceCusTaxIdLay.visibility = View.VISIBLE
         }
 
@@ -104,7 +104,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 R.id.InvoiceBusinessChoice -> {
                     selectedBusinesTypeId = 2
                     binding.InvoiceCusCompanyNameLay.visibility = View.VISIBLE
-                    binding.InvoiceCusDisplayNameLay.visibility = View.VISIBLE
+                    //   binding.InvoiceCusDisplayNameLay.visibility = View.VISIBLE
                     binding.InvoiceCusTaxIdLay.visibility = View.VISIBLE
                     binding.InvoiceCustomerName.requestFocus()
                     binding.InvoiceCustomerName.setText("")
@@ -151,10 +151,14 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
-            InvoiceUtils.loadingProgress(this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
+            InvoiceUtils.loadingProgress(
+                this@InvoiceNewCustomerFormActivity,
+                "" + InvoiceUtils.messageLoading,
+                false
+            ).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = "" + InvoiceUtils.userId
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
         } else {
@@ -182,18 +186,21 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
                 if (invoiceClickId != 0) {
                     println("invoiceClickId == $invoiceClickId")
+                    binding.InvoiceCustomerType.visibility = View.GONE
+                    binding.InvoiceTypeTxt.visibility = View.GONE
                     for (i in listOfClientDetails.indices) {
                         println("invoiceClickId Company == ${listOfClientDetails[i].clientId}")
                         if (invoiceClickId == listOfClientDetails[i].clientId) {
                             selectedBusinesTypeId = listOfClientDetails[i].type!!
                             if (listOfClientDetails[i].type == 1) {
                                 binding.InvoiceIndividualChoice.isChecked = true
+                                binding.InvoiceCusTaxIdLay.visibility = View.GONE
                             } else {
+                                binding.InvoiceCusTaxIdLay.visibility = View.VISIBLE
                                 binding.InvoiceBusinessChoice.isChecked = true
                             }
                             binding.InvoiceCustomerName.setText(listOfClientDetails[i].name)
                             binding.InvoiceCusCompanyName.setText(listOfClientDetails[i].companyName)
-                            binding.InvoiceCusTaxId.setText(listOfClientDetails[i].companyName)
                             binding.InvoiceCusDisplayName.setText(listOfClientDetails[i].displayName)
                             binding.InvoiceCusEmail.setText(listOfClientDetails[i].email)
                             binding.InvoiceCusMobile1.setText(listOfClientDetails[i].mobile1)
@@ -218,14 +225,14 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 // Sample list of suggestions
                 val SuggestionsBusinessName = listOfClientDetails.map {
                     "${it.name}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsBusinessName}")
 
                 // Create an ArrayAdapter
                 val adapterBusinessName = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsBusinessName
+                    SuggestionsBusinessName.toList()
                 )
                 // Set the adapter to the AutoCompleteTextView
                 binding.InvoiceCustomerName.setAdapter(adapterBusinessName)
@@ -235,12 +242,12 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 // Sample list of suggestions
                 val SuggestionsBusinessMobile = listOfClientDetails.map {
                     "${it.companyName}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsBusinessMobile}")
                 val adapterBusinessMobile = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsBusinessMobile
+                    SuggestionsBusinessMobile.toList()
                 )
                 binding.InvoiceCusCompanyName.setAdapter(adapterBusinessMobile)
                 binding.InvoiceCustomerName.threshold =
@@ -249,12 +256,12 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 // Sample list of suggestions
                 val SuggestionsBillingAddress1 = listOfClientDetails.map {
                     "${it.email}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsBillingAddress1}")
                 val adapterBillingAddress1 = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsBillingAddress1
+                    SuggestionsBillingAddress1.toList()
                 )
                 binding.InvoiceCusEmail.setAdapter(adapterBillingAddress1)
                 binding.InvoiceCusEmail.threshold = 1 // Start showing suggestions after 1 character
@@ -262,12 +269,12 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 // Sample list of suggestions
                 val SuggestionsBusinessEmail = listOfClientDetails.map {
                     "${it.email}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsBusinessEmail}")
                 val adapterBusinessEmail = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsBusinessEmail
+                    SuggestionsBusinessEmail.toList()
                 )
                 binding.InvoiceCusBillingAddress.setAdapter(adapterBusinessEmail)
                 binding.InvoiceCusBillingAddress.threshold =
@@ -276,12 +283,12 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 // Sample list of suggestions
                 val SuggestionsTaxId = listOfClientDetails.map {
                     "${it.shippingAddress}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsTaxId}")
                 val adapterTaxId = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsTaxId
+                    SuggestionsTaxId.toList()
                 )
                 binding.InvoiceCusShippingAddress.setAdapter(adapterTaxId)
                 binding.InvoiceCusShippingAddress.threshold =
@@ -392,6 +399,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         ).show()
                         return@setOnClickListener
                     }
+
                     !isValidGST(binding.InvoiceCusTaxId.text.toString().trim()) -> {
                         Toast.makeText(
                             this@InvoiceNewCustomerFormActivity,
@@ -405,7 +413,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addClientDetails"
-                            map["user_id"] = ""+InvoiceUtils.userId
+                            map["user_id"] = "" + InvoiceUtils.userId
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }
@@ -426,8 +434,12 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             map["state"] = "" + selectedStateId
                             map["tax_id"] = "" + binding.InvoiceCusTaxId.text.toString().trim()
 
-                            println("InvoiceRequest - $_TAG == $map")
-                            InvoiceUtils.loadingProgress(   this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
+                            println("InvoiceRequest - Business $_TAG == $map")
+                            InvoiceUtils.loadingProgress(
+                                this@InvoiceNewCustomerFormActivity,
+                                "" + InvoiceUtils.messageLoading,
+                                false
+                            ).show()
                             viewModel.getCustomerDetail(map)
                         } else {
                             Toast.makeText(
@@ -519,7 +531,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addClientDetails"
-                            map["user_id"] = ""+InvoiceUtils.userId
+                            map["user_id"] = "" + InvoiceUtils.userId
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }
@@ -539,8 +551,12 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             map["remark"] = "" + binding.InvoiceRemark.text.toString().trim()
                             map["state"] = "" + selectedStateId
 
-                            println("InvoiceRequest - $_TAG == $map")
-                            InvoiceUtils.loadingProgress(this@InvoiceNewCustomerFormActivity,""+InvoiceUtils.messageLoading,false).show()
+                            println("InvoiceRequest - Individual $_TAG == $map")
+                            InvoiceUtils.loadingProgress(
+                                this@InvoiceNewCustomerFormActivity,
+                                "" + InvoiceUtils.messageLoading,
+                                false
+                            ).show()
                             viewModel.getCustomerDetail(map)
 
                         } else {
@@ -579,7 +595,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             resultIntent.putExtra("INVOICE_FORM_DATA", addedData)
                             setResult(Activity.RESULT_OK, resultIntent)
                             finish()
-                        }else{
+                        } else {
                             finish()
                         }
                     }
@@ -626,6 +642,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         val gstRegex = "^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
         return gstNumber.matches(Regex(gstRegex))
     }
+
     fun isValidEmail(email: String): Boolean {
         val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
         return email.matches(emailPattern.toRegex())
@@ -661,7 +678,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             fromInvoice,
             fromSpinner, onAddItemClick = {
 
-            },  onDeleteItem ={deleteId ,pos,actionName->
+            }, onDeleteItem = { deleteId, pos, actionName ->
 
             },
             onSearchResult = {
@@ -751,7 +768,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             searchQuery.toString(),
             this, fromInvoice, fromSpinner, onAddItemClick = {
 
-            },  onDeleteItem ={deleteId ,pos,actionName->
+            }, onDeleteItem = { deleteId, pos, actionName ->
 
             },
             onSearchResult = {

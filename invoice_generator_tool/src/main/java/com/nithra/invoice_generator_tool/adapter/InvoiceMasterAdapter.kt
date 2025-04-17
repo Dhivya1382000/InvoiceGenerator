@@ -137,7 +137,9 @@ class InvoiceMasterAdapter<T>(
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text =
                         getHighlightedText(item.bussinessName!!, lastQuery)
+                    holder.binding.invoiceCustomerState.visibility = View.VISIBLE
                     holder.binding.invoiceCustomerMobile.text = item.bussinessMobile
+                    holder.binding.invoiceCustomerState.text = item.state
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
@@ -152,13 +154,18 @@ class InvoiceMasterAdapter<T>(
 
                 is InvoiceGetDataMasterArray.GetClientDetails -> {
                     clickDataId = item.clientId!!
+                    clikStateName = item.name!!
                     clickDeleteDataAction = "deleteClientDetails"
                     holder.binding.listOfNumbers.text = listCount
-                    holder.binding.invoiceCustomerName.text =
-                        getHighlightedText(item.name!!, lastQuery)
+                    holder.binding.invoiceCustomerName.text = getHighlightedText(item.name!!, lastQuery)
                     holder.binding.invoiceCustomerMobile.text = item.mobile1
+                    holder.binding.invoiceCustomerState.visibility = View.VISIBLE
+                    holder.binding.invoiceCustomerState.text = item.state
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
+                        holder.binding.menuIcon.visibility = View.GONE
+                    } else if (fromInvoice == 2) {
+                        holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.GONE
                     } else {
                         holder.binding.AddInvoice.visibility = View.GONE
@@ -172,9 +179,13 @@ class InvoiceMasterAdapter<T>(
                     holder.binding.listOfNumbers.text = listCount
                     holder.binding.invoiceCustomerName.text =
                         getHighlightedText(item.itemName!!, lastQuery)
-                    holder.binding.invoiceCustomerMobile.text = " ₹ " + item.totalAmt
+                    holder.binding.invoiceCustomerState.visibility = View.GONE
+                    holder.binding.invoiceCustomerMobile.text ="₹ " + item.totalAmt
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
+                        holder.binding.menuIcon.visibility = View.GONE
+                    } else if (fromInvoice == 2) {
+                        holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.GONE
                     } else {
                         holder.binding.AddInvoice.visibility = View.GONE
@@ -188,8 +199,13 @@ class InvoiceMasterAdapter<T>(
                 onAddItemClick(item)
             }
             holder.itemView.setOnClickListener {
-                if (fromInvoice == 0)
+                println("clicDataName == $clikStateName")
+                if (fromInvoice != 1) {
                     invoicemasterclick.onItemClick(clikStateName, clickDataId, fromClick, position)
+                } else {
+                    onAddItemClick(item)
+                }
+
             }
             holder.binding.menuIcon.setOnClickListener {
                 showPopupMenu(it, position, clikStateName, clickDataId, clickDeleteDataAction)

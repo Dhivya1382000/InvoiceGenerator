@@ -28,7 +28,6 @@
             android:gravity="center"
             app:title="Business Details"
             app:titleTextAppearance="@style/ToolbarTitleStyle" />
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,489 +39,1104 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <RelativeLayout
-                    android:id="@+id/InvoiceBusinessTypeSpinner"
+                <RadioGroup
+                    android:id="@+id/InvoiceBusinessType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/InvoiceTypeTxt"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp">
+                    android:layout_marginEnd="10dp"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
+                    <RadioButton
+                        android:id="@+id/InvoiceBusinessChoice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp">
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:fontFamily="@font/lexend_medium"
+                        android:buttonTint="@color/invoice_blue"
+                        android:text="Business" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/InvoiceBusinessTypeText"
+                    <RadioButton
+                        android:id="@+id/InvoiceIndividualChoice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/lexend_medium"
+                        android:buttonTint="@color/invoice_blue"
+                        android:text="Individual" />
+
+                </RadioGroup>
+                <LinearLayout
+                    android:id="@+id/BusinessChoiceLay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                    <RelativeLayout
+                        android:id="@+id/InvoiceBusinessTypeSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp">
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
                             android:paddingStart="5dp"
-                            android:paddingTop="7dp"
-                            android:paddingBottom="7dp"
-                            android:paddingEnd="5dp"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Business Type"
-                            android:text=""
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15sp" />
+                            android:paddingEnd="5dp">
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:layout_marginStart="2dp"
-                            android:layout_marginEnd="15dp"
-                            android:src="@drawable/invoice_spinner_icon" />
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/InvoiceBusinessTypeText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:paddingStart="5dp"
+                                android:paddingTop="7dp"
+                                android:paddingBottom="7dp"
+                                android:paddingEnd="5dp"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Business Type"
+                                android:text=""
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15sp" />
 
-                    </LinearLayout>
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginEnd="15dp"
+                                android:src="@drawable/invoice_spinner_icon" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Business Type*"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12sp" />
+                        </LinearLayout>
 
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
-
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/InvoiceBusinessId"
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
                             android:fontFamily="@font/lexend_medium"
-                            android:hint="Business Id"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Business Id"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12dp" />
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
-
-                      <!--  <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/InvoiceBusinessName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Business Name"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />-->
-                        <AutoCompleteTextView
-                            android:id="@+id/InvoiceBusinessName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Business Name"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp"/>
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Business Name*"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12dp" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/InvoiceBusinessEmail"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Email"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp"/>
-
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Email"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12dp" />
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
-
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/InvoiceBusinessMobile"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Mobile Number"
-                            android:maxLength="10"
-                            android:inputType="number"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Mobile Number *"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12dp" />
-
-
-                </RelativeLayout>
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/mobileNumberCheckBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:gravity="center"
-                    android:fontFamily="@font/lexend_medium"
-                    android:layout_marginEnd="15dp"
-                    android:text="Same as mobile number" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
-
-                  <!--      <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/InvoiceBusinessMobile1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Business Mobile Number"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />-->
-                        <AutoCompleteTextView
-                            android:id="@+id/InvoiceBusinessMobile1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Business Mobile Number"
-                            android:inputType="number"
-                            android:padding="15dp"
-                            android:maxLength="10"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp"/>
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Business Mobile Number *"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12dp" />
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
-
-                      <!--  <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/InvoiceBillingAddress1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:layout_gravity="start|top"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Billing Address1"
-                            android:gravity="start|top"
-                            android:inputType="textMultiLine"
-                            android:overScrollMode="always"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />-->
-
-                        <AutoCompleteTextView
-                            android:id="@+id/InvoiceBillingAddress1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:layout_gravity="start|top"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Billing Address1"
-                            android:gravity="start|top"
-                            android:inputType="textMultiLine"
-                            android:overScrollMode="always"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp"/>
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Billing Address1 *"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12dp" />
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/InvoiceBusinessStateSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp">
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/InvoiceBusinessStateText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
                             android:paddingStart="5dp"
-                            android:paddingTop="7dp"
-                            android:paddingBottom="7dp"
                             android:paddingEnd="5dp"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="Business State"
-                            android:text=""
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15sp" />
+                            android:text="Business Type*"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12sp" />
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:layout_marginStart="2dp"
-                            android:layout_marginEnd="15dp"
-                            android:src="@drawable/invoice_spinner_icon" />
+                    </RelativeLayout>
 
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Business State*"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12sp" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
+                        android:layout_margin="10dp"
+                        android:visibility="gone">
 
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/InvoiceWebsite"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceBusinessId"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Business Id"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
                             android:fontFamily="@font/lexend_medium"
-                            android:hint="Website"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Business Id"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
 
-                    </LinearLayout>
 
-                    <TextView
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <!--  <androidx.appcompat.widget.AppCompatEditText
+                                  android:id="@+id/InvoiceBusinessName"
+                                  android:layout_width="match_parent"
+                                  android:layout_height="wrap_content"
+                                  android:layout_marginStart="10dp"
+                                  android:layout_weight="1"
+                                  android:background="@null"
+                                  android:fontFamily="@font/lexend_medium"
+                                  android:hint="Business Name"
+                                  android:inputType="textCapSentences"
+                                  android:padding="15dp"
+                                  android:textColor="@color/invoice_black"
+                                  android:textSize="15dp" />-->
+                            <AutoCompleteTextView
+                                android:id="@+id/InvoiceBusinessName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Business Name"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp"/>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Business Name*"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceBusinessMobile"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Mobile Number"
+                                android:maxLength="10"
+                                android:inputType="number"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Mobile Number *"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <!--  <androidx.appcompat.widget.AppCompatEditText
+                                  android:id="@+id/InvoiceBillingAddress1"
+                                  android:layout_width="match_parent"
+                                  android:layout_height="match_parent"
+                                  android:layout_marginStart="10dp"
+                                  android:layout_weight="1"
+                                  android:layout_gravity="start|top"
+                                  android:background="@null"
+                                  android:fontFamily="@font/lexend_medium"
+                                  android:hint="Billing Address1"
+                                  android:gravity="start|top"
+                                  android:inputType="textMultiLine"
+                                  android:overScrollMode="always"
+                                  android:padding="15dp"
+                                  android:textColor="@color/invoice_black"
+                                  android:textSize="15dp" />-->
+
+                            <AutoCompleteTextView
+                                android:id="@+id/InvoiceBillingAddress1"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:layout_gravity="start|top"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Billing Address"
+                                android:gravity="start|top"
+                                android:inputType="textMultiLine"
+                                android:overScrollMode="always"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp"/>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Billing Address*"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/InvoiceBusinessEmail"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Email"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp"/>
+
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Email"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+
+                    </RelativeLayout>
+
+                    <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id="@+id/mobileNumberCheckBox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
+                        android:layout_gravity="end"
+                        android:gravity="center"
                         android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="Website"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12dp" />
+                        android:layout_marginEnd="15dp"
+                        android:text="Same as mobile number"
+                        android:visibility="gone"/>
 
-                </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <!--      <androidx.appcompat.widget.AppCompatEditText
+                                      android:id="@+id/InvoiceBusinessMobile1"
+                                      android:layout_width="match_parent"
+                                      android:layout_height="wrap_content"
+                                      android:layout_marginStart="10dp"
+                                      android:layout_weight="1"
+                                      android:background="@null"
+                                      android:fontFamily="@font/lexend_medium"
+                                      android:hint="Business Mobile Number"
+                                      android:inputType="textCapSentences"
+                                      android:padding="15dp"
+                                      android:textColor="@color/invoice_black"
+                                      android:textSize="15dp" />-->
+                            <AutoCompleteTextView
+                                android:id="@+id/InvoiceBusinessMobile1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Business Mobile Number"
+                                android:inputType="number"
+                                android:padding="15dp"
+                                android:maxLength="10"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp"/>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Business Mobile Number *"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:id="@+id/InvoiceBusinessStateSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/InvoiceBusinessStateText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:paddingStart="5dp"
+                                android:paddingTop="7dp"
+                                android:paddingBottom="7dp"
+                                android:paddingEnd="5dp"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="State"
+                                android:text=""
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15sp" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginEnd="15dp"
+                                android:src="@drawable/invoice_spinner_icon" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="State*"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/InvoiceTaxId"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="GST number"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="GST number *"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceWebsite"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Website"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Website"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceContactPersonDetailEdit"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:layout_gravity="top"
+                                android:gravity="top"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Contact Person Detail"
+                                android:inputType="textMultiLine"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Contact Person Detail"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceBankNameEdit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Bank Name"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Bank Name"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceBankAccountEdit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Account Number"
+                                android:inputType="number"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Account Number"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceBankIFSCEdit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="IFSC Code"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="IFSC Code"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceBankMICREdit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="MICR Code"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="MICR Code"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/InvoiceBankAddressEdit"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Bank Address"
+                                android:layout_gravity="top"
+                                android:gravity="top"
+                                android:inputType="textMultiLine"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Bank Address"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/IndividualChoiceLay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/IndividualName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Name"
+                                android:inputType="textCapSentences"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp"/>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Name*"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/IndividualMobile"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Mobile Number"
+                                android:maxLength="10"
+                                android:inputType="number"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Mobile Number *"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <!--  <androidx.appcompat.widget.AppCompatEditText
+                                  android:id="@+id/InvoiceBillingAddress1"
+                                  android:layout_width="match_parent"
+                                  android:layout_height="match_parent"
+                                  android:layout_marginStart="10dp"
+                                  android:layout_weight="1"
+                                  android:layout_gravity="start|top"
+                                  android:background="@null"
+                                  android:fontFamily="@font/lexend_medium"
+                                  android:hint="Billing Address1"
+                                  android:gravity="start|top"
+                                  android:inputType="textMultiLine"
+                                  android:overScrollMode="always"
+                                  android:padding="15dp"
+                                  android:textColor="@color/invoice_black"
+                                  android:textSize="15dp" />-->
+
+                            <AutoCompleteTextView
+                                android:id="@+id/IndividualBillingAddress1"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:layout_gravity="start|top"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Billing Address"
+                                android:gravity="start|top"
+                                android:inputType="textMultiLine"
+                                android:overScrollMode="always"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp"/>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Billing Address*"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/IndividualEmail"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="Email"
+                                android:inputType="textEmailAddress"
+                                android:padding="15dp"
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15dp"/>
+
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="Email"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12dp" />
+
+
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:id="@+id/IndividualStateSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/invoice_textfield_background"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/IndividualStateText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:paddingStart="5dp"
+                                android:paddingTop="7dp"
+                                android:paddingBottom="7dp"
+                                android:paddingEnd="5dp"
+                                android:fontFamily="@font/lexend_medium"
+                                android:hint="State"
+                                android:text=""
+                                android:textColor="@color/invoice_black"
+                                android:textSize="15sp" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginEnd="15dp"
+                                android:src="@drawable/invoice_spinner_icon" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/invoice_white"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="State*"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="#000"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
 
               <!--  <RelativeLayout
                     android:layout_width="match_parent"
@@ -568,66 +1182,9 @@
 
                 </RelativeLayout>-->
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
-
-                    <!--    <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/InvoiceTaxId"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="GST number"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />-->
-
-                        <AutoCompleteTextView
-                            android:id="@+id/InvoiceTaxId"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:hint="GST number"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/invoice_white"
-                        android:fontFamily="@font/lexend_medium"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:text="GST number *"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="#000"
-                        android:textSize="12dp" />
-
-                </RelativeLayout>
-
-
             </LinearLayout>
         </ScrollView>
+
         <androidx.cardview.widget.CardView
             android:id="@+id/InvoiceBusinessSaveCard"
             android:layout_width="200dp"

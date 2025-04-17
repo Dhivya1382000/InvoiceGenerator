@@ -63,57 +63,142 @@ tools:openDrawer="start">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="10dp">
-
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
-                        <LinearLayout
-                            android:id="@+id/createInvoiceLay"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/invoice_rectanglebakground"
-                            android:orientation="vertical"
-                            android:padding="15dp">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/invoice_amount_icon"
-                                android:layout_gravity="center"/>
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Create Invoice"
-                                android:textColor="@color/invoice_black"
-                                android:fontFamily="@font/lexend_medium"
-                                android:textSize="15dp"
-                                android:padding="15dp"/>
-
-
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_weight="1">
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="5dp">
 
                         <LinearLayout
-                            android:id="@+id/InvoiceCustomerLay"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/invoice_rectanglebakground"
-                            android:orientation="horizontal">
+                            android:layout_marginEnd="15dp"
+                            android:layout_weight="1">
+
+                            <LinearLayout
+                                android:id="@+id/createInvoiceLay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:orientation="vertical"
+                               android:layout_gravity="center"
+                                android:gravity="center">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/invoice_amount_icon"
+                                    android:layout_gravity="center"/>
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="New Invoice"
+                                    android:textColor="@color/invoice_black"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:textSize="15dp"
+                                    android:padding="15dp"/>
+
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:layout_marginStart="5dp">
+
+                            <LinearLayout
+                                android:id="@+id/InvoiceCustomerLay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/invoice_rectanglebakground"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/invoice_client_icon"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:padding="3dp"/>
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="New Customer"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="5dp"
+                                    android:textColor="@color/invoice_black"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:padding="3dp"
+                                    android:textSize="15dp"/>
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/InvoiceAddItemsLay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/invoice_rectanglebakground"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="15dp">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/invoice_add_item_img"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:padding="2dp"/>
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Items"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="5dp"
+                                    android:padding="2dp"
+                                    android:textColor="@color/invoice_black"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:textSize="15dp"/>
+
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="10dp">
+
+                        <LinearLayout
+                            android:id="@+id/AddBusinesslay"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/invoice_rectanglebakground"
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="15dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/invoice_client_icon"
+                                android:src="@drawable/invoice_business_img"
                                 android:layout_gravity="center"
                                 android:layout_weight="1"
                                 android:padding="3dp"/>
@@ -121,7 +206,7 @@ tools:openDrawer="start">
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="New Customer"
+                                android:text="New Business"
                                 android:layout_gravity="center"
                                 android:layout_marginStart="5dp"
                                 android:textColor="@color/invoice_black"
@@ -133,17 +218,18 @@ tools:openDrawer="start">
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/InvoiceExpensesLay"
+                            android:id="@+id/AddBusinessReportlay"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/invoice_rectanglebakground"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="15dp">
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:layout_marginStart="5dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/invoice_expense_icon"
+                                android:src="@drawable/invoice_business_report_img"
                                 android:layout_gravity="center"
                                 android:layout_weight="1"
                                 android:padding="2dp"/>
@@ -151,7 +237,7 @@ tools:openDrawer="start">
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Add Expenses"
+                                android:text="Business Report"
                                 android:layout_gravity="center"
                                 android:layout_marginStart="5dp"
                                 android:padding="2dp"
@@ -163,9 +249,8 @@ tools:openDrawer="start">
                         </LinearLayout>
 
                     </LinearLayout>
-
-
                 </LinearLayout>
+
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/RecentInvoice"

@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel" />
@@ -71,24 +72,31 @@
                             android:paddingTop="7dp"
                             android:paddingEnd="5dp"
                             android:paddingBottom="7dp"
-                            android:text=""
                             android:textColor="@color/invoice_black"
                             android:textSize="15dp" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
+                        <!--  <androidx.appcompat.widget.AppCompatTextView
+                              android:id="@+id/InvoiceBusinessChange"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_marginStart="10dp"
+                              android:background="@null"
+                              android:fontFamily="@font/lexend_medium"
+                              android:paddingStart="5dp"
+                              android:paddingTop="7dp"
+                              android:paddingEnd="5dp"
+                              android:paddingBottom="7dp"
+                              android:text="Select"
+                              android:textColor="@color/invoice_pink"
+                              android:textSize="12dp" />-->
+
+                        <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/InvoiceBusinessChange"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
-                            android:paddingStart="5dp"
-                            android:paddingTop="7dp"
-                            android:paddingEnd="5dp"
-                            android:paddingBottom="7dp"
-                            android:text="Select"
-                            android:textColor="@color/invoice_pink"
-                            android:textSize="12dp" />
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginEnd="15dp"
+                            android:src="@drawable/invoice_spinner_icon" />
 
                     </LinearLayout>
 
@@ -108,16 +116,23 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/InvoiceCustomerDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:paddingStart="5dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="5dp"
+                        android:paddingBottom="10dp">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/InvoiceCustomerName"
@@ -127,27 +142,36 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
-                            android:hint="Customer Detail"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
-                            android:textColor="@color/invoice_black"
-                            android:textSize="15dp" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/InvoiceCustomerAdd"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="5dp"
-                            android:background="@null"
-                            android:fontFamily="@font/lexend_medium"
+                            android:hint="Customer Details"
                             android:paddingStart="5dp"
                             android:paddingTop="7dp"
                             android:paddingEnd="5dp"
                             android:paddingBottom="7dp"
-                            android:text="Select"
-                            android:textColor="@color/invoice_pink"
-                            android:textSize="12dp" />
+                            android:textColor="@color/invoice_black"
+                            android:textSize="15dp" />
+
+                        <!-- <androidx.appcompat.widget.AppCompatTextView
+                             android:id="@+id/InvoiceCustomerAdd"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:layout_marginStart="10dp"
+                             android:background="@null"
+                             android:fontFamily="@font/lexend_medium"
+                             android:paddingStart="5dp"
+                             android:paddingTop="7dp"
+                             android:paddingEnd="5dp"
+                             android:paddingBottom="7dp"
+                             android:text="Select"
+                             android:textColor="@color/invoice_pink"
+                             android:textSize="12dp" />-->
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/InvoiceCustomerAdd"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginEnd="15dp"
+                            android:src="@drawable/invoice_spinner_icon" />
 
                     </LinearLayout>
 
@@ -159,13 +183,77 @@
                         android:fontFamily="@font/lexend_medium"
                         android:paddingStart="5dp"
                         android:paddingEnd="5dp"
-                        android:text="CustomerDetail*"
+                        android:text="Customer Details *"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textColor="#000"
-                        android:textSize="12dp" />
-
+                        android:textSize="12sp" />
 
                 </RelativeLayout>
+
+                <!--  <RelativeLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_marginStart="10dp"
+                      android:layout_marginTop="10dp"
+                      android:layout_marginEnd="10dp">
+
+                      <LinearLayout
+                          android:id="@+id/InvoiceCustomerDetails"
+                          android:layout_width="match_parent"
+                          android:layout_height="match_parent"
+                          android:layout_marginTop="10dp"
+                          android:background="@drawable/invoice_textfield_background"
+                          android:gravity="center">
+
+                          <androidx.appcompat.widget.AppCompatTextView
+                              android:id="@+id/InvoiceCustomerName"
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:layout_marginStart="10dp"
+                              android:layout_weight="1"
+                              android:background="@null"
+                              android:fontFamily="@font/lexend_medium"
+                              android:hint="Business Details"
+                              android:paddingStart="5dp"
+                              android:paddingTop="7dp"
+                              android:paddingEnd="5dp"
+                              android:paddingBottom="7dp"
+                              android:textColor="@color/invoice_black"
+                              android:textSize="15dp"/>
+
+                          <androidx.appcompat.widget.AppCompatTextView
+                              android:id="@+id/InvoiceCustomerAdd"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_marginStart="10dp"
+                              android:layout_marginEnd="5dp"
+                              android:background="@null"
+                              android:fontFamily="@font/lexend_medium"
+                              android:paddingStart="5dp"
+                              android:paddingTop="7dp"
+                              android:paddingEnd="5dp"
+                              android:paddingBottom="7dp"
+                              android:text="Select"
+                              android:textColor="@color/invoice_pink"
+                              android:textSize="12dp" />
+
+                      </LinearLayout>
+
+                      <TextView
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginStart="20dp"
+                          android:background="@color/invoice_white"
+                          android:fontFamily="@font/lexend_medium"
+                          android:paddingStart="5dp"
+                          android:paddingEnd="5dp"
+                          android:text="CustomerDetail*"
+                          android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                          android:textColor="#000"
+                          android:textSize="12dp" />
+
+
+                  </RelativeLayout>-->
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -285,8 +373,8 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/invoice_datepicker_icon"
-                            android:layout_marginEnd="5dp"/>
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/invoice_datepicker_icon" />
 
                     </LinearLayout>
 
@@ -327,10 +415,11 @@
                             android:text="Item List"
                             android:textColor="@color/invoice_black"
                             android:textSize="15dp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:visibility="gone" />
 
                         <androidx.cardview.widget.CardView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="10dp"
                             android:padding="5dp"
@@ -338,7 +427,7 @@
                             app:cardCornerRadius="4dp">
 
                             <androidx.cardview.widget.CardView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_margin="1dp"
                                 app:cardBackgroundColor="@color/invoice_lite_blue"
@@ -348,11 +437,14 @@
                                     android:id="@+id/AddInvoiceText"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="5dp"
                                     android:fontFamily="@font/lexend_medium"
-                                    android:padding="5dp"
+                                    android:gravity="center"
+                                    android:padding="7dp"
                                     android:text="+ Add Invoice Items"
                                     android:textColor="@color/invoice_blue"
-                                    android:textSize="12dp" />
+                                    android:textSize="15dp" />
                             </androidx.cardview.widget.CardView>
 
 
@@ -377,50 +469,88 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
+                            <!--  <LinearLayout
+                                  android:layout_width="match_parent"
+                                  android:layout_height="wrap_content"
+                                  android:background="@color/invoice_blue"
+                                  android:orientation="horizontal"
+                                  android:padding="10dp">
+
+                                  <androidx.appcompat.widget.AppCompatTextView
+                                      android:layout_width="match_parent"
+                                      android:layout_height="wrap_content"
+                                      android:layout_weight="1"
+                                      android:fontFamily="@font/lexend_medium"
+                                      android:text="S.no/Items"
+                                      android:textColor="@color/invoice_white" />
+
+                                  <androidx.appcompat.widget.AppCompatTextView
+                                      android:layout_width="match_parent"
+                                      android:layout_height="wrap_content"
+                                      android:layout_weight="1"
+                                      android:fontFamily="@font/lexend_medium"
+                                      android:gravity="center"
+                                      android:text="Qty"
+                                      android:textColor="@color/invoice_white" />
+
+                                  <androidx.appcompat.widget.AppCompatTextView
+                                      android:layout_width="match_parent"
+                                      android:layout_height="wrap_content"
+                                      android:layout_weight="1"
+                                      android:fontFamily="@font/lexend_medium"
+                                      android:gravity="center"
+                                      android:text="Amount"
+                                      android:textColor="@color/invoice_white" />
+                              </LinearLayout>-->
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@color/invoice_blue"
-                                android:orientation="horizontal"
-                                android:padding="10dp">
-
+                                android:orientation="horizontal">
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
                                     android:fontFamily="@font/lexend_medium"
                                     android:text="S.no/Items"
-                                    android:textColor="@color/invoice_white" />
+                                    android:paddingTop="10dp"
+                                    android:paddingBottom="5dp"
+                                    android:paddingStart="5dp"
+                                    android:textColor="@color/invoice_black"
+                                    android:layout_weight="1"/>
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
                                     android:fontFamily="@font/lexend_medium"
-                                    android:gravity="center"
-                                    android:text="Qty"
-                                    android:textColor="@color/invoice_white" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:fontFamily="@font/lexend_medium"
-                                    android:gravity="center"
                                     android:text="Amount"
-                                    android:textColor="@color/invoice_white" />
+                                    android:paddingTop="10dp"
+                                    android:paddingBottom="5dp"
+                                    android:paddingStart="5dp"
+                                    android:textColor="@color/invoice_black"
+                                    android:layout_gravity="end"
+                                    android:gravity="end"
+                                    android:paddingEnd="15dp"
+                                    android:layout_weight="1"/>
+
                             </LinearLayout>
+
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/invoice_lite_gray2" />
 
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/dynamicContainer"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
-.
+
                             <LinearLayout
                                 android:id="@+id/TotalAmountLay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
+
                                 <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -431,11 +561,11 @@
                                     <androidx.appcompat.widget.AppCompatTextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        android:layout_marginEnd="15dp"
                                         android:layout_weight="1"
                                         android:fontFamily="@font/lexend_medium"
                                         android:gravity="center"
                                         android:text="Total(₹ )"
-                                        android:layout_marginEnd="15dp"
                                         android:textColor="@color/invoice_black"
                                         android:textSize="14dp" />
 
@@ -464,11 +594,11 @@
                                     <androidx.appcompat.widget.AppCompatTextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        android:layout_marginEnd="5dp"
                                         android:layout_weight="1"
                                         android:fontFamily="@font/lexend_medium"
                                         android:gravity="center"
-                                        android:text="Total Discount(₹ )"
-                                        android:layout_marginEnd="5dp"
+                                        android:text="Total Discount(₹)"
                                         android:textColor="@color/invoice_black"
                                         android:textSize="14dp" />
 
@@ -477,8 +607,8 @@
                                         android:layout_width="100dp"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="10dp"
-                                        android:layout_weight="1"
                                         android:layout_marginEnd="10dp"
+                                        android:layout_weight="1"
                                         android:fontFamily="@font/lexend_medium"
                                         android:gravity="center"
                                         android:hint="₹ 0"
@@ -492,10 +622,10 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="end"
-                                    android:orientation="horizontal"
-                                    android:padding="5dp"
                                     android:layout_marginTop="10dp"
-                                    android:layout_marginBottom="10dp">
+                                    android:layout_marginBottom="10dp"
+                                    android:orientation="horizontal"
+                                    android:padding="5dp">
 
                                     <androidx.appcompat.widget.AppCompatTextView
                                         android:layout_width="match_parent"
@@ -504,9 +634,9 @@
                                         android:fontFamily="@font/lexend_medium"
                                         android:gravity="center"
                                         android:text="Total Amount(₹ )"
-                                        android:textStyle="bold"
                                         android:textColor="@color/invoice_black"
-                                        android:textSize="16dp" />
+                                        android:textSize="16dp"
+                                        android:textStyle="bold" />
 
                                     <androidx.appcompat.widget.AppCompatTextView
                                         android:id="@+id/ItemsFinalAmount"
@@ -517,15 +647,17 @@
                                         android:fontFamily="@font/lexend_medium"
                                         android:gravity="center"
                                         android:text="₹ 0"
-                                        android:textStyle="bold"
                                         android:textColor="@color/invoice_black"
-                                        android:textSize="17dp" />
+                                        android:textSize="17dp"
+                                        android:textStyle="bold" />
 
                                 </LinearLayout>
                             </LinearLayout>
 
 
                         </LinearLayout>
+
+
                     </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
@@ -646,8 +778,8 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/invoice_datepicker_icon"
-                            android:layout_marginEnd="5dp"/>
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/invoice_datepicker_icon" />
 
                     </LinearLayout>
 
@@ -675,7 +807,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="100dp"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/invoice_textfield_background"
                         android:gravity="center">
@@ -684,10 +816,10 @@
                             android:id="@+id/InvoiceRemarkEdit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="start"
                             android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:background="@null"
-                            android:layout_gravity="start"
                             android:fontFamily="@font/lexend_medium"
                             android:hint="Remark for customer"
                             android:inputType="textCapSentences"
@@ -721,7 +853,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="100dp"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/invoice_textfield_background"
                         android:gravity="center">
@@ -730,10 +862,10 @@
                             android:id="@+id/InvoiceTermsAndConditionEdit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="start"
                             android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:background="@null"
-                            android:layout_gravity="start"
                             android:fontFamily="@font/lexend_medium"
                             android:hint="Terms And Condition"
                             android:inputType="textCapSentences"

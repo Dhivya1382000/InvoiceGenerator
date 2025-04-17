@@ -156,7 +156,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                     binding.ExpensesAmount.text = "NIL"
                 }
                 binding.TotalPaidAmount.text = " ₹ " + pieChartList.total_amount
-                var totalPaidnew = listOfGetInvoicePieChart.filter { it.amtType == 1 }
+                val totalPaidnew = listOfGetInvoicePieChart.filter { it.amtType == 1 }
                     .sumOf { it.totalPaid!! } //paid
                 val totalUnpaid = listOfGetInvoicePieChart.filter { it.amtType == 2 }
                     .sumOf { it.totalPaid!! } //un paid
@@ -181,7 +181,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                             )
 
                         }
-                        println(" Expens == ==$expenseAmount")
+                        println(" Expens ==== $expenseAmount")
                         PieChart(
                             currentChartData,expenseAmount,
                             pieChartList.status!!,

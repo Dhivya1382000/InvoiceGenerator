@@ -44,7 +44,9 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
 
     /*private lateinit var adapter: InvoiceMasterAdapter*/
     var selectedStateId = 0
+    var selectedInvoiceStateId = 0
     var selectedBusinesTypeId = 0
+    var selectedBusinesChoiceTypeId = 0
     var fromInvoicePage = ""
     var invoiceClickId = 0
     var fromInvoice = 0
@@ -98,6 +100,37 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 Toast.LENGTH_SHORT
             ).show()
         }
+        if (binding.InvoiceIndividualChoice.isChecked) {
+            selectedBusinesChoiceTypeId = 1
+            binding.IndividualChoiceLay.visibility = View.VISIBLE
+            binding.BusinessChoiceLay.visibility = View.GONE
+            selectedInvoiceStateId = 0
+        } else {
+            selectedBusinesChoiceTypeId = 0
+            binding.IndividualChoiceLay.visibility = View.GONE
+            binding.BusinessChoiceLay.visibility = View.VISIBLE
+            selectedStateId = 0
+        }
+
+        binding.InvoiceBusinessType.setOnCheckedChangeListener { group, checkedId ->
+            // Get the selected RadioButton by its ID
+            when (checkedId) {
+                R.id.InvoiceBusinessChoice -> {
+                    selectedBusinesChoiceTypeId = 0
+                    binding.IndividualChoiceLay.visibility = View.GONE
+                    binding.BusinessChoiceLay.visibility = View.VISIBLE
+                }
+                R.id.InvoiceIndividualChoice -> {
+                    selectedBusinesChoiceTypeId = 1
+                    binding.IndividualChoiceLay.visibility = View.VISIBLE
+                    binding.BusinessChoiceLay.visibility = View.GONE
+                }
+
+                else -> {
+
+                }
+            }
+        }
 
         viewModel.errorMessage.observe(this@InvoiceBusinessDetailFormActivity) {
             InvoiceUtils.loadingDialog.dismiss()
@@ -117,25 +150,48 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 println("invoiceClickId == $invoiceClickId")
 
                 if (invoiceClickId != 0) {
+                    binding.InvoiceBusinessType.visibility = View.GONE
                     for (i in listOfCompanyDetails.indices) {
                         println("invoiceClickId Company == ${listOfCompanyDetails[i].companyId}")
                         if (invoiceClickId == listOfCompanyDetails[i].companyId) {
                             selectedBusinesTypeId = listOfCompanyDetails[i].bussinessType!!
-                            binding.InvoiceBusinessTypeText.text =
-                                listOfCompanyDetails[i].industrialName!!
-                            binding.InvoiceBusinessId.setText("" + listOfCompanyDetails[i].bussinessId)
-                            binding.InvoiceBusinessName.setText("" + listOfCompanyDetails[i].bussinessName)
-                            binding.InvoiceBusinessEmail.setText("" + listOfCompanyDetails[i].email)
-                            binding.InvoiceBusinessMobile.setText("" + listOfCompanyDetails[i].mobile)
-                            binding.InvoiceBusinessMobile1.setText("" + listOfCompanyDetails[i].bussinessMobile)
-                            binding.InvoiceBillingAddress1.setText("" + listOfCompanyDetails[i].billingAddress1)
-                            selectedStateId = listOfCompanyDetails[i].stateId!!
-                            binding.InvoiceBusinessStateText.setText("" + listOfCompanyDetails[i].state)
-                            binding.InvoiceWebsite.setText("" + listOfCompanyDetails[i].website)
-                            binding.InvoiceTaxId.setText("" + listOfCompanyDetails[i].taxId)
-                            if (listOfCompanyDetails[i].mobile.equals(listOfCompanyDetails[i].bussinessMobile)) {
-                                binding.mobileNumberCheckBox.isChecked = true
+                            if (listOfCompanyDetails[i].type == 0) {
+                               binding.BusinessChoiceLay.visibility = View.VISIBLE
+                               binding.IndividualChoiceLay.visibility = View.GONE
+
+                                binding.InvoiceBusinessTypeText.text =
+                                    listOfCompanyDetails[i].industrialName!!
+                                binding.InvoiceBusinessId.setText("" + listOfCompanyDetails[i].bussinessId)
+                                binding.InvoiceBusinessName.setText("" + listOfCompanyDetails[i].bussinessName)
+                                binding.InvoiceBusinessEmail.setText("" + listOfCompanyDetails[i].email)
+                                binding.InvoiceBusinessMobile.setText("" + listOfCompanyDetails[i].mobile)
+                                binding.InvoiceBusinessMobile1.setText("" + listOfCompanyDetails[i].bussinessMobile)
+                                binding.InvoiceBillingAddress1.setText("" + listOfCompanyDetails[i].billingAddress1)
+                                selectedStateId = listOfCompanyDetails[i].stateId!!
+                                binding.InvoiceBusinessStateText.setText("" + listOfCompanyDetails[i].state)
+                                binding.InvoiceWebsite.setText("" + listOfCompanyDetails[i].website)
+                                binding.InvoiceTaxId.setText("" + listOfCompanyDetails[i].taxId)
+                                binding.InvoiceContactPersonDetailEdit.setText("" + listOfCompanyDetails[i].contactPerson)
+                                binding.InvoiceBankNameEdit.setText("" + listOfCompanyDetails[i].bankName)
+                                binding.InvoiceBankAccountEdit.setText("" + listOfCompanyDetails[i].bankAcoountNumber)
+                                binding.InvoiceBankIFSCEdit.setText("" + listOfCompanyDetails[i].ifscCode)
+                                binding.InvoiceBankMICREdit.setText("" + listOfCompanyDetails[i].micrCode)
+                                binding.InvoiceBankAddressEdit.setText("" + listOfCompanyDetails[i].bankAddress)
+                                if (listOfCompanyDetails[i].mobile.equals(listOfCompanyDetails[i].bussinessMobile)) {
+                                    binding.mobileNumberCheckBox.isChecked = true
+                                }
+                            } else {
+                                binding.BusinessChoiceLay.visibility = View.GONE
+                                binding.IndividualChoiceLay.visibility = View.VISIBLE
+
+                                binding.IndividualName.setText(listOfCompanyDetails[i].bussinessName!!)
+                                binding.IndividualMobile.setText("" + listOfCompanyDetails[i].bussinessMobile)
+                                binding.IndividualBillingAddress1.setText("" + listOfCompanyDetails[i].billingAddress1)
+                                binding.IndividualEmail.setText("" + listOfCompanyDetails[i].email)
+                                selectedStateId = listOfCompanyDetails[i].stateId!!
+                                binding.IndividualStateText.setText("" + listOfCompanyDetails[i].state)
                             }
+
                             binding.InvoiceBusCardText.text = "Update"
                         }
                     }
@@ -145,30 +201,29 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 // Sample list of suggestions
                 val SuggestionsBusinessName = listOfCompanyDetails.map {
                     "${it.bussinessName}"
-                }
+                }.toSet()
 
                 println("itBusiness=Name == ${SuggestionsBusinessName}")
 
                 // Create an ArrayAdapter
                 val adapterBusinessName = ArrayAdapter(
-                    this,
+                    this@InvoiceBusinessDetailFormActivity,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsBusinessName
+                    SuggestionsBusinessName.toList()
                 )
                 // Set the adapter to the AutoCompleteTextView
                 binding.InvoiceBusinessName.setAdapter(adapterBusinessName)
-                binding.InvoiceBusinessName.threshold =
-                    1 // Start showing suggestions after 1 character
+                binding.InvoiceBusinessName.threshold = 1 // Start showing suggestions after 1 character
 
                 // Sample list of suggestions
                 val SuggestionsBusinessMobile = listOfCompanyDetails.map {
                     "${it.bussinessMobile}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsBusinessMobile}")
                 val adapterBusinessMobile = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsBusinessMobile
+                    SuggestionsBusinessMobile.toList()
                 )
                 binding.InvoiceBusinessMobile1.setAdapter(adapterBusinessMobile)
                 binding.InvoiceBusinessMobile1.threshold =
@@ -177,12 +232,12 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 // Sample list of suggestions
                 val SuggestionsBillingAddress1 = listOfCompanyDetails.map {
                     "${it.billingAddress1}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsBillingAddress1}")
                 val adapterBillingAddress1 = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsBillingAddress1
+                    SuggestionsBillingAddress1.toList()
                 )
                 binding.InvoiceBillingAddress1.setAdapter(adapterBillingAddress1)
                 binding.InvoiceBillingAddress1.threshold =
@@ -191,12 +246,12 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 // Sample list of suggestions
                 val SuggestionsBusinessEmail = listOfCompanyDetails.map {
                     "${it.email}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsBusinessEmail}")
                 val adapterBusinessEmail = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsBusinessEmail
+                    SuggestionsBusinessEmail.toList()
                 )
                 binding.InvoiceBusinessEmail.setAdapter(adapterBusinessEmail)
                 binding.InvoiceBusinessEmail.threshold =
@@ -205,12 +260,12 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 // Sample list of suggestions
                 val SuggestionsTaxId = listOfCompanyDetails.map {
                     "${it.taxId}"
-                }
+                }.toSet()
                 println("itBusiness=Name == ${SuggestionsTaxId}")
                 val adapterTaxId = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    SuggestionsTaxId
+                    SuggestionsTaxId.toList()
                 )
                 binding.InvoiceTaxId.setAdapter(adapterTaxId)
                 binding.InvoiceTaxId.threshold = 1 // Start showing suggestions after 1 character
@@ -219,6 +274,18 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         }
 
         binding.InvoiceBusinessStateSpinner.setOnClickListener {
+            if (!InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
+                Toast.makeText(
+                    this@InvoiceBusinessDetailFormActivity,
+                    "Check your internet connection",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+            showSearchableDialog<InvoiceGetDataMasterArray.GetStateList>(0, listOfState)
+        }
+
+        binding.IndividualStateSpinner.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
                 Toast.makeText(
                     this@InvoiceBusinessDetailFormActivity,
@@ -244,106 +311,185 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
 
 
         binding.InvoiceBusinessSaveCard.setOnClickListener {
-            when {
-                binding.InvoiceBusinessName.text.toString().trim().isEmpty() -> {
-                    Toast.makeText(
-                        this@InvoiceBusinessDetailFormActivity,
-                        "Enter your business Name",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                binding.InvoiceBusinessMobile.text.toString().trim().isEmpty() -> {
-                    Toast.makeText(
-                        this@InvoiceBusinessDetailFormActivity,
-                        "Enter your mobile number",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                binding.InvoiceBusinessMobile1.text.toString().trim().isEmpty() -> {
-                    Toast.makeText(
-                        this@InvoiceBusinessDetailFormActivity,
-                        "Enter your business mobile number",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                binding.InvoiceBillingAddress1.text.toString().trim().isEmpty() -> {
-                    Toast.makeText(
-                        this@InvoiceBusinessDetailFormActivity,
-                        "Enter your billing address1",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                binding.InvoiceBusinessStateText.text.toString().trim().isEmpty() -> {
-                    Toast.makeText(
-                        this@InvoiceBusinessDetailFormActivity,
-                        "Select your business state",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                binding.InvoiceTaxId.text.toString().trim().isEmpty() -> {
-                    Toast.makeText(
-                        this@InvoiceBusinessDetailFormActivity,
-                        "Enter your GST number",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                !isValidGST(binding.InvoiceTaxId.text.toString().trim()) -> {
-                    Toast.makeText(
-                        this@InvoiceBusinessDetailFormActivity,
-                        "Enter valid GST number",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                else -> {
-                    if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
-                        val map = HashMap<String, Any>()
-                        map["action"] = "addCompanyDetails"
-                        map["user_id"] = ""+InvoiceUtils.userId
-                        if (invoiceClickId != 0) {
-                            map["id"] = invoiceClickId
-                        }
-                        map["bussiness_name"] =
-                            "" + binding.InvoiceBusinessName.text.toString().trim()
-                        map["email"] = "" + binding.InvoiceBusinessEmail.text.toString().trim()
-                        map["bussiness_mobile"] =
-                            "" + binding.InvoiceBusinessMobile1.text.toString().trim()
-                        map["billing_address_1"] =
-                            "" + binding.InvoiceBillingAddress1.text.toString().trim()
-                        map["billing_address_2"] = ""
-                        map["website"] = "" + binding.InvoiceWebsite.text.toString().trim()
-                        map["tax_name"] = ""
-                        map["tax_id"] = "" + binding.InvoiceTaxId.text.toString().trim()
-                        map["bussiness_id"] = "" + binding.InvoiceBusinessId.text.toString().trim()
-                        map["state"] = "" + selectedStateId
-                        map["bussiness_type"] = "" + selectedBusinesTypeId
-
-                        println("InvoiceRequest - $_TAG == $map")
-                        InvoiceUtils.loadingProgress(this@InvoiceBusinessDetailFormActivity,""+InvoiceUtils.messageLoading,false).show()
-                        viewModel.getBusinessDetail(map)
-
-                    } else {
+            println("selectState === $selectedStateId")
+            println("selectState individual === $selectedInvoiceStateId")
+            if (selectedBusinesChoiceTypeId == 0){
+                when {
+                    binding.InvoiceBusinessName.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceBusinessDetailFormActivity,
-                            "Check Your Internet Connection",
+                            "Enter your business Name",
                             Toast.LENGTH_SHORT
                         ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.InvoiceBusinessMobile.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter your mobile number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.InvoiceBillingAddress1.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter your billing address1",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.InvoiceBusinessStateText.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Select your business state",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.InvoiceTaxId.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter your GST number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    !isValidGST(binding.InvoiceTaxId.text.toString().trim()) -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter valid GST number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    else -> {
+                        if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
+                            val map = HashMap<String, Any>()
+                            map["action"] = "addCompanyDetails"
+                            map["user_id"] = ""+InvoiceUtils.userId
+                            if (invoiceClickId != 0) {
+                                map["id"] = invoiceClickId
+                            }
+                            map["bussiness_name"] =
+                                "" + binding.InvoiceBusinessName.text.toString().trim()
+                            map["email"] = "" + binding.InvoiceBusinessEmail.text.toString().trim()
+                            map["bussiness_mobile"] =
+                                "" + binding.InvoiceBusinessMobile.text.toString().trim()
+                            map["billing_address_1"] =
+                                "" + binding.InvoiceBillingAddress1.text.toString().trim()
+                            map["billing_address_2"] = ""
+                            map["website"] = "" + binding.InvoiceWebsite.text.toString().trim()
+                            map["tax_name"] = ""
+                            map["tax_id"] = "" + binding.InvoiceTaxId.text.toString().trim()
+                            map["bussiness_id"] = "" + binding.InvoiceBusinessId.text.toString().trim()
+                            map["state"] = "" + selectedStateId
+                            map["bussiness_type"] = "" + selectedBusinesTypeId
+                            map["type"] = "" + selectedBusinesChoiceTypeId
+                            map["bank_name"] = "" + binding.InvoiceBankNameEdit.text.toString().trim()
+                            map["bank_acoount_number"] = "" + binding.InvoiceBankAccountEdit.text.toString().trim()
+                            map["micr_code"] = "" + binding.InvoiceBankMICREdit.text.toString().trim()
+                            map["ifsc_code"] = "" + binding.InvoiceBankIFSCEdit.text.toString().trim()
+                            map["bank_address"] = "" + binding.InvoiceBankAddressEdit.text.toString().trim()
+                            map["contact_person"] = "" + binding.InvoiceContactPersonDetailEdit.text.toString().trim()
+
+                            println("InvoiceRequest - $_TAG == $map")
+                            InvoiceUtils.loadingProgress(this@InvoiceBusinessDetailFormActivity,""+InvoiceUtils.messageLoading,false).show()
+                       viewModel.getBusinessDetail(map)
+                        } else {
+                            Toast.makeText(
+                                this@InvoiceBusinessDetailFormActivity,
+                                "Check Your Internet Connection",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }else{
+                when {
+                    binding.IndividualName.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter your Name",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.IndividualMobile.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter your mobile number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.IndividualBillingAddress1.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter your billing address",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.IndividualEmail.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter your email",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.IndividualStateText.text.toString().trim().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Select your state",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    else -> {
+                        if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
+                            val map = HashMap<String, Any>()
+                            map["action"] = "addCompanyDetails"
+                            map["user_id"] = ""+InvoiceUtils.userId
+                            if (invoiceClickId != 0) {
+                                map["id"] = invoiceClickId
+                            }
+                            map["bussiness_name"] =
+                                "" + binding.IndividualName.text.toString().trim()
+                            map["email"] = "" + binding.IndividualEmail.text.toString().trim()
+                            map["bussiness_mobile"] =
+                                "" + binding.IndividualMobile.text.toString().trim()
+                            map["billing_address_1"] =
+                                "" + binding.IndividualBillingAddress1.text.toString().trim()
+                            map["state"] = "" + selectedInvoiceStateId
+                            map["type"] = "" + selectedBusinesChoiceTypeId
+
+                            println("InvoiceRequest - $_TAG == $map")
+                            InvoiceUtils.loadingProgress(this@InvoiceBusinessDetailFormActivity,""+InvoiceUtils.messageLoading,false).show()
+                          viewModel.getBusinessDetail(map)
+                        } else {
+                            Toast.makeText(
+                                this@InvoiceBusinessDetailFormActivity,
+                                "Check Your Internet Connection",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             }
+
         }
 
 
@@ -387,7 +533,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getMaster"
-                    InputMap["user_id"] = ""+
+                    InputMap["user_id"] = ""+InvoiceUtils.userId
 
                     println("InvoiceRequest - $_TAG == $InputMap")
                     viewModel.getOverAllMasterDetail(InputMap)
@@ -598,8 +744,14 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
     override fun onItemClick(clikName: String, clikId: Int, fromClick: Int, position: Int) {
         stateDialog.dismiss()
         if (fromClick == 0) {
-            selectedStateId = clikId
-            binding.InvoiceBusinessStateText.setText(clikName)
+
+            if (selectedBusinesChoiceTypeId == 0){
+                binding.InvoiceBusinessStateText.setText(clikName)
+                selectedStateId = clikId
+            }else{
+                binding.IndividualStateText.setText(clikName)
+                selectedInvoiceStateId = clikId
+            }
         } else if (fromClick == 1) {
             selectedBusinesTypeId = clikId
             binding.InvoiceBusinessTypeText.setText(clikName)

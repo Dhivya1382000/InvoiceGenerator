@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/drawer_layout"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/invoice_white"
+android:orientation="vertical"
+tools:openDrawer="start">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolBarTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/invoice_white"
+            android:elevation="0dp"
+            android:gravity="center"
+            app:title="Invoice Generator"
+            app:titleTextAppearance="@style/ToolbarTitleStyle" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/InvoiceUserName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend_medium"
+                        android:text=""
+                        android:textColor="@color/invoice_black"
+                        android:textSize="17dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/InvoiceQuotes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend_medium"
+                        android:paddingStart="2dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:text="@string/home_quotes"
+                        android:textColor="@color/invoice_black"
+                        android:textSize="13dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="5dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:id="@+id/createInvoiceLay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:paddingTop="20dp"
+                                android:paddingBottom="10dp"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp">
+
+                                <ImageView
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginBottom="5dp"
+                                    android:src="@drawable/invoice_amount_icon" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="2dp"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:gravity="center"
+                                    android:text="New Invoice"
+                                    android:textColor="@color/invoice_black"
+                                    android:textSize="13dp" />
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/InvoiceCustomerLay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp">
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginBottom="5dp"
+                                    android:src="@drawable/invoice_client_icon" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="5dp"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:gravity="center"
+                                    android:text="New Customer"
+                                    android:textColor="@color/invoice_black"
+                                    android:textSize="12dp" />
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/InvoiceAddItemsLay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:paddingTop="25dp"
+                                android:paddingBottom="15dp"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp">
+
+                                <ImageView
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/invoice_add_item_img" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="5dp"
+                                    android:layout_marginTop="7dp"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:gravity="center"
+                                    android:text="New Items"
+                                    android:textColor="@color/invoice_black"
+                                    android:textSize="12dp" />
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/AddBusinesslay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:paddingTop="20dp"
+                                android:paddingBottom="10dp"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp">
+
+                                <ImageView
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginBottom="5dp"
+                                    android:src="@drawable/invoice_business_img" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:gravity="center"
+                                    android:text="New Business"
+                                    android:textColor="@color/invoice_black"
+                                    android:textSize="12dp" />
+
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="5dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:id="@+id/CardCreateInvoiceLay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="5dp"
+                                android:orientation="vertical"
+                                android:background="@drawable/invoice_rectanglebakground">
+
+                                <ImageView
+                                    android:layout_width="35dp"
+                                    android:layout_height="35dp"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:padding="2dp"
+                                    android:src="@drawable/invoice_amount_icon" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="5dp"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:padding="2dp"
+                                    android:text="Create Invoice"
+                                    android:textColor="@color/invoice_black"
+                                    android:textSize="12dp" />
+
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/AddBusinessReportlay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:background="@drawable/invoice_rectanglebakground">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:padding="2dp"
+                                    android:src="@drawable/invoice_business_report_img" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="5dp"
+                                    android:fontFamily="@font/lexend_medium"
+                                    android:padding="2dp"
+                                    android:text="Business Report"
+                                    android:textColor="@color/invoice_black"
+                                    android:textSize="12dp" />
+
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/RecentInvoice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/invoice_lite_blue"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend_medium"
+                        android:padding="10dp"
+                        android:text="Recents Invoice"
+                        android:textColor="@color/invoice_black"
+                        android:textSize="15dp"
+                        android:textStyle="bold" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/seeAllText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lexend_medium"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:text="See all >"
+                        android:textColor="@color/invoice_blue"
+                        android:textSize="15dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/businessReport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/invoice_white"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lexend_medium"
+                            android:padding="10dp"
+                            android:text="My Business Report"
+                            android:textColor="@color/invoice_black"
+                            android:textSize="15dp"
+                            android:textStyle="bold" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:cardCornerRadius="15dp">
+
+
+                        </androidx.cardview.widget.CardView>
+
+                    </LinearLayout>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        app:cardBackgroundColor="@color/invoice_white"
+                        app:cardCornerRadius="7dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <androidx.compose.ui.platform.ComposeView
+                                android:id="@+id/chartComposeView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <com.google.android.material.navigation.NavigationView
+    android:id="@+id/nav_view"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/invoice_white"
+    app:headerLayout="@layout/invoice_nav_header"
+    app:itemTextAppearance="@style/MyNavigationMenuTextAppearance"
+    app:itemTextColor="@color/invoice_black"
+    app:menu="@menu/invoice_navigation" />
+
+</androidx.drawerlayout.widget.DrawerLayout>
