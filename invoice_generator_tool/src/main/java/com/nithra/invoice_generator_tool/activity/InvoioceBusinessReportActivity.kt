@@ -207,7 +207,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "" + InvoiceUtils.userId
+            InputMap["user_id"] = "" + preference.getString(this@InvoioceBusinessReportActivity,"INVOICE_USER_ID")
 
             println("InvoiceRequest - ${InvoiceBusinessDetailFormActivity._TAG} == $InputMap")
             viewmodel.getOverAllMasterDetail(InputMap)
@@ -224,7 +224,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "picChartReport"
-            InputMap["user_id"] = "" + InvoiceUtils.userId
+            InputMap["user_id"] = "" + preference.getString(this@InvoioceBusinessReportActivity,"INVOICE_USER_ID")
             InputMap["company_id"] = "" + clickDataId
 
             println("InvoiceRequest - $_TAG == $InputMap")

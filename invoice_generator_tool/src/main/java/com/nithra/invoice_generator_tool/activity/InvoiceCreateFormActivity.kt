@@ -358,7 +358,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             ).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "" + InvoiceUtils.userId
+            InputMap["user_id"] = "" + preference.getString(this@InvoiceCreateFormActivity,"INVOICE_USER_ID")
 
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
@@ -401,7 +401,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getInvoiceList"
-            InputMap["user_id"] = "" + InvoiceUtils.userId
+            InputMap["user_id"] = "" +preference.getString(this@InvoiceCreateFormActivity,"INVOICE_USER_ID")
             InputMap["type"] = "0"
             println("InvoiceRequest - ${InvoiceHomeScreen._TAG} == $InputMap")
             /*InvoiceUtils.loadingProgress(
@@ -1235,7 +1235,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         //check
         val map = LinkedHashMap<String, RequestBody>()
         map["action"] = createPartFromString("addInvoice")
-        map["user_id"] = createPartFromString("" + InvoiceUtils.userId)
+        map["user_id"] = createPartFromString("" + preference.getString(this@InvoiceCreateFormActivity,"INVOICE_USER_ID"))
         map["bussiness_id"] = createPartFromString("" + selectedBusinessId)
         map["client_id"] = createPartFromString("" + selectedCustomerId)
         map["invoice_number"] =

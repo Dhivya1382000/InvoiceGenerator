@@ -26,6 +26,7 @@ import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceBusinessDeta
 import com.nithra.invoice_generator_tool.model.InvoiceGetBusinessDetail
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,6 +52,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
     var invoiceClickId = 0
     var fromInvoice = 0
     var clickPosition = 0
+    var preference = InvioceSharedPreference()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +91,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             InvoiceUtils.loadingProgress(this@InvoiceBusinessDetailFormActivity,""+InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = ""+preference.getString(this@InvoiceBusinessDetailFormActivity,"INVOICE_USER_ID")
 
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
@@ -373,7 +375,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addCompanyDetails"
-                            map["user_id"] = ""+InvoiceUtils.userId
+                            map["user_id"] = ""+preference.getString(this@InvoiceBusinessDetailFormActivity,"INVOICE_USER_ID")
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }
@@ -462,7 +464,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addCompanyDetails"
-                            map["user_id"] = ""+InvoiceUtils.userId
+                            map["user_id"] = ""+preference.getString(this@InvoiceBusinessDetailFormActivity,"INVOICE_USER_ID")
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }
@@ -533,7 +535,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessDetailFormActivity)) {
                     val InputMap = HashMap<String, Any>()
                     InputMap["action"] = "getMaster"
-                    InputMap["user_id"] = ""+InvoiceUtils.userId
+                    InputMap["user_id"] = ""+preference.getString(this@InvoiceBusinessDetailFormActivity,"INVOICE_USER_ID")
 
                     println("InvoiceRequest - $_TAG == $InputMap")
                     viewModel.getOverAllMasterDetail(InputMap)

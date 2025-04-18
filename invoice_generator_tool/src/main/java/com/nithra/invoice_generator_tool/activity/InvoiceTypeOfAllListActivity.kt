@@ -17,6 +17,7 @@ import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceTypeOfAllListBinding
 import com.nithra.invoice_generator_tool.fragment.InvoiceTabContentFragment
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +29,7 @@ class InvoiceTypeOfAllListActivity : AppCompatActivity() {
     private lateinit var adapter: InvoiceDynamicTabAdapter
     private val tabList: MutableList<InvoiceGetDataMasterArray.GetpaymentStatus> = mutableListOf()
     private val viewModel: InvoiceViewModel by viewModels()
+    var preference = InvioceSharedPreference()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,7 +118,7 @@ class InvoiceTypeOfAllListActivity : AppCompatActivity() {
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceTypeOfAllListActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = ""+preference.getString(this@InvoiceTypeOfAllListActivity,"INVOICE_USER_ID")
 
             println("InvoiceRequest - $_TAG == $InputMap")
             InvoiceUtils.loadingProgress(

@@ -14,6 +14,7 @@ import com.nithra.invoice_generator_tool.activity.InvoiceHomeScreen.Companion._T
 import com.nithra.invoice_generator_tool.adapter.InvoiceAllListAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceAllDataBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +27,7 @@ class InvoiceTabContentFragment : Fragment() {
     var listOfGetInvoicelist: MutableList<InvoiceGetInvoiceList> = mutableListOf()
     lateinit var listAdapter: InvoiceAllListAdapter
     var tabId = ""
+    var preference = InvioceSharedPreference()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +48,7 @@ class InvoiceTabContentFragment : Fragment() {
             if (InvoiceUtils.isNetworkAvailable(requireContext())) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getInvoiceList"
-                InputMap["user_id"] = ""+InvoiceUtils.userId
+                InputMap["user_id"] = ""+preference.getString(requireContext(),"INVOICE_USER_ID")
                 InputMap["type"] = "" + tabId
                 println("InvoiceRequest - $_TAG == $InputMap")
                 InvoiceUtils.loadingProgress(requireContext(), "Loading please wait....", false)
@@ -64,7 +66,7 @@ class InvoiceTabContentFragment : Fragment() {
         if (InvoiceUtils.isNetworkAvailable(requireContext())) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getInvoiceList"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = ""+preference.getString(requireContext(),"INVOICE_USER_ID")
             InputMap["type"] = "" + tabId
             println("InvoiceRequest - $_TAG == $InputMap")
             InvoiceUtils.loadingProgress(requireContext(), "Loading please wait....", false)

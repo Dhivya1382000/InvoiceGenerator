@@ -48,10 +48,10 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 println("activityResultLauncher ${result.data.toString()}")
                 println("activityResultLauncher $result")
 
-                val InvoiceUserName = result.data!!.getStringExtra("TC_USER_NAME")
-                val InvoiceUserID = result.data!!.getStringExtra("TC_USER_ID")
+                val InvoiceUserName = preference.getString(this@InvoiceHomeScreen,"TC_USER_NAME")
+                val InvoiceUserID = preference.getString(this@InvoiceHomeScreen,"TC_USER_ID")
 
-                if (InvoiceUserID!!.isNotEmpty()) {
+                if (InvoiceUserID.isNotEmpty()) {
                     preference.putString(
                         this@InvoiceHomeScreen,
                         "INVOICE_USER_NAME",

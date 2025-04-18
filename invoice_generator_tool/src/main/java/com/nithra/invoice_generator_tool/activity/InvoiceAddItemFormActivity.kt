@@ -78,7 +78,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
             ).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "" + InvoiceUtils.userId
+            InputMap["user_id"] = "" + preference.getString(this@InvoiceAddItemFormActivity,"INVOICE_USER_ID")
 
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
@@ -486,7 +486,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceAddItemFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addItem"
-                            map["user_id"] = "" + InvoiceUtils.userId
+                            map["user_id"] = "" + preference.getString(this@InvoiceAddItemFormActivity,"INVOICE_USER_ID")
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }

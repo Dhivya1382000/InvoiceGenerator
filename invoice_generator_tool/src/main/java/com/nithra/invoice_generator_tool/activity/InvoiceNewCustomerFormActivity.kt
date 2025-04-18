@@ -22,6 +22,7 @@ import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceNewCustomerBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +45,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
     var fromInvoice = 0
     var fromInvoicePage = ""
     var clickPosition = 0
+    var preference = InvioceSharedPreference()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -158,7 +160,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             ).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = "" + InvoiceUtils.userId
+            InputMap["user_id"] = "" + preference.getString(this@InvoiceNewCustomerFormActivity,"INVOICE_USER_ID")
             println("InvoiceRequest - $_TAG == $InputMap")
             viewModel.getOverAllMasterDetail(InputMap)
         } else {
@@ -413,7 +415,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addClientDetails"
-                            map["user_id"] = "" + InvoiceUtils.userId
+                            map["user_id"] = "" + preference.getString(this@InvoiceNewCustomerFormActivity,"INVOICE_USER_ID")
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }
@@ -531,7 +533,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
                             val map = HashMap<String, Any>()
                             map["action"] = "addClientDetails"
-                            map["user_id"] = "" + InvoiceUtils.userId
+                            map["user_id"] = "" +preference.getString(this@InvoiceNewCustomerFormActivity,"INVOICE_USER_ID")
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }

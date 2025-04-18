@@ -71,7 +71,7 @@ class InvoiceAddExpenseFormActivity : AppCompatActivity(), InvoicemasterClick {
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceAddExpenseFormActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getMaster"
-            InputMap["user_id"] = ""+InvoiceUtils.userId
+            InputMap["user_id"] = ""+preference.getString(this@InvoiceAddExpenseFormActivity,"INVOICE_USER_ID")
 
             println("InvoiceRequest - ${InvoiceBusinessDetailFormActivity._TAG} == $InputMap")
             viewmodel.getOverAllMasterDetail(InputMap)
@@ -214,7 +214,7 @@ class InvoiceAddExpenseFormActivity : AppCompatActivity(), InvoicemasterClick {
                         ).show()
                         val map = HashMap<String, Any>()
                         map["action"] = "addExpenses"
-                        map["user_id"] = ""+InvoiceUtils.userId
+                        map["user_id"] = ""+preference.getString(this@InvoiceAddExpenseFormActivity,"INVOICE_USER_ID")
                         map["date"] = "" + selectedDate
                         map["item_name"] =
                             "" + binding.InvoiceExpenseItemName.text.toString().trim()

@@ -4,7 +4,23 @@ plugins {
     id ("kotlin-kapt")
     alias(libs.plugins.hilt.android.gradle.plugin)
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.0"
+    id ("maven-publish")
 }
+
+afterEvaluate {
+    publishing {
+        // Add your publications configuration here
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = "com.github.nithraedu"
+                artifactId = "InvoiceGenerator"
+                version = "1.0.0"
+            }
+        }
+    }
+}
+
 
 android {
     namespace = "com.nithra.invoice_generator_tool"
