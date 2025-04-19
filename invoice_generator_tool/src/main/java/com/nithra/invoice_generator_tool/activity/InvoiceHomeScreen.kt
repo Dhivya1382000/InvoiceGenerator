@@ -18,6 +18,7 @@ import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceRecentAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceHomeScreenBinding
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceNewHomeScreenBinding
+import com.nithra.invoice_generator_tool.databinding.InvoiceNavHeaderBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
@@ -50,6 +51,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
 
                 val InvoiceUserName = preference.getString(this@InvoiceHomeScreen,"TC_USER_NAME")
                 val InvoiceUserID = preference.getString(this@InvoiceHomeScreen,"TC_USER_ID")
+                val InvoiceUserMobile = preference.getString(this@InvoiceHomeScreen,"TC_USER_MOBILE")
 
                 if (InvoiceUserID.isNotEmpty()) {
                     preference.putString(
@@ -62,10 +64,20 @@ class InvoiceHomeScreen : AppCompatActivity() {
                         "INVOICE_USER_ID",
                         InvoiceUserName
                     )
+                    preference.putString(
+                        this@InvoiceHomeScreen,
+                        "INVOICE_USER_MOBILE",
+                        InvoiceUserMobile
+                    )
+
                     setContentView(binding.root)
+
                 }else{
                     setContentView(binding.root)
+                    finish()
                 }
+            }else{
+                finish()
             }
         }
 
@@ -98,6 +110,9 @@ class InvoiceHomeScreen : AppCompatActivity() {
                             this@InvoiceHomeScreen,
                             "TC_USER_ID"
                         )
+
+                        val UserMobile = preference.getString(this@InvoiceHomeScreen,"TC_USER_MOBILE")
+
                         preference.putString(
                             this@InvoiceHomeScreen,
                             "INVOICE_USER_NAME",
@@ -108,7 +123,11 @@ class InvoiceHomeScreen : AppCompatActivity() {
                             "INVOICE_USER_ID",
                             UserID
                         )
-
+                        preference.putString(
+                            this@InvoiceHomeScreen,
+                            "INVOICE_USER_MOBILE",
+                            UserMobile
+                        )
                         setContentView(binding.root)
                     } else {
                         val i = Intent(
@@ -123,12 +142,17 @@ class InvoiceHomeScreen : AppCompatActivity() {
                     preference.putString(
                         this@InvoiceHomeScreen,
                         "INVOICE_USER_NAME",
-                        "Dhivya S"
+                        ""
                     )
                     preference.putString(
                         this@InvoiceHomeScreen,
                         "INVOICE_USER_ID",
                         InvoiceUtils.userId
+                    )
+                    preference.putString(
+                        this@InvoiceHomeScreen,
+                        "TC_USER_MOBILE",
+                       ""
                     )
                     setContentView(binding.root)
                 }
@@ -136,12 +160,17 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 preference.putString(
                     this@InvoiceHomeScreen,
                     "INVOICE_USER_NAME",
-                    "Dhivya S"
+                    ""
                 )
                 preference.putString(
                     this@InvoiceHomeScreen,
                     "INVOICE_USER_ID",
                     InvoiceUtils.userId
+                )
+                preference.putString(
+                    this@InvoiceHomeScreen,
+                    "TC_USER_MOBILE",
+                    ""
                 )
                 setContentView(binding.root)
             }
@@ -165,6 +194,15 @@ class InvoiceHomeScreen : AppCompatActivity() {
 
         val greetings = "" + getGreetingMessage()
         binding.InvoiceUserName.setText(" " + greetings + " " + preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_NAME"))
+        val navView = binding.navView  // if you're using ViewBinding for your Activity layout
+
+// Access the header view
+        val headerView = navView.getHeaderView(0)
+
+        val headerBinding = InvoiceNavHeaderBinding.bind(headerView)
+
+        headerBinding.InvoiceUserNameTxt.text = ""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_NAME")
+        headerBinding.InvoiceMobileTxt.text =""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_MOBILE")
 
         binding.createInvoiceLay.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {

@@ -216,7 +216,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
 
                             if (itemList[0].status.equals("success")) {
                                 binding.NoDataLay.visibility = View.GONE
-                                binding.searchLay.visibility = View.VISIBLE
+                                binding.searchLay.visibility = View.GONE
                                 binding.recyclerCustomers.visibility = View.VISIBLE
                             } else {
                                 binding.NoDataLay.visibility = View.VISIBLE
@@ -331,7 +331,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                                     )
                                 }else{
                                     binding.NoDataLay.visibility = View.GONE
-                                    binding.searchLay.visibility = View.VISIBLE
+                                    binding.searchLay.visibility = View.GONE
                                     binding.recyclerCustomers.visibility = View.VISIBLE
                                 }
                             }
@@ -406,7 +406,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 hintTexts.add("Search Name...")
                 hintTexts.add("Find Customer Name...")
                 binding.tabcardlay.visibility = View.VISIBLE
-                binding.searchLay.visibility = View.VISIBLE
+                binding.searchLay.visibility = View.GONE
             }
 
             fromPage == "Items" -> {
@@ -683,7 +683,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         binding.recyclerCustomers.visibility = View.GONE
                     } else {
                         binding.NoDataLay.visibility = View.GONE
-                        binding.searchLay.visibility = View.VISIBLE
+                        binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
 
@@ -872,7 +872,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 if (it) {
                     binding.recyclerCustomers.visibility = View.GONE
                     binding.NoDataLay.visibility = View.VISIBLE
-                    binding.searchLay.visibility = View.GONE
+                    binding.searchLay.visibility = View.VISIBLE
                     binding.NoDataLayText.text = "No search data"
                 } else {
                     binding.recyclerCustomers.visibility = View.VISIBLE

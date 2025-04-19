@@ -6,6 +6,7 @@
 
 
     <application>
+
         <activity
             android:name=".activity.InvoiceTypeOfAllListActivity"
             android:configChanges="orientation|screenSize|uiMode"
