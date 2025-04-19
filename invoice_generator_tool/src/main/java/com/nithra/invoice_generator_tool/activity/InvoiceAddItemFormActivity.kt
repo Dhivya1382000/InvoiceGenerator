@@ -106,6 +106,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                     itemFormBinding.InvoiceItemName.setText(itemList[i].item_name)
                     itemFormBinding.InvoiceItemDesc.setText(itemList[i].description)
                     itemFormBinding.InvoiceItemQuantity.setText(itemList[i].qty)
+                    itemFormBinding.InvoiceItemHSNcode.setText(itemList[i].hsn)
 
                     selectedMeasuresId = itemList[i].qty_type!!
                     selectedGstId = itemList[i].tax!!.toInt()
@@ -456,8 +457,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                             arrayListOf()
                         val getItemList = InvoiceGetItemData.GetItemDataList()
                         getItemList.itemId = invoiceClickId
-                        getItemList.itemName =
-                            "" + itemFormBinding.InvoiceItemName.text.toString().trim()
+                        getItemList.itemName = "" + itemFormBinding.InvoiceItemName.text.toString().trim()
                         getItemList.userId = ""+preference.getString(this@InvoiceAddItemFormActivity,"INVOICE_USER_ID")
                         getItemList.qtyType = selectedMeasuresId
                         getItemList.qty = itemFormBinding.InvoiceItemQuantity.text.toString().trim()

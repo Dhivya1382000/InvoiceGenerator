@@ -442,14 +442,14 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         return@setOnClickListener
                     }
 
-                    binding.IndividualEmail.text.toString().trim().isEmpty() -> {
+                /*    binding.IndividualEmail.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceBusinessDetailFormActivity,
                             "Enter your email",
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setOnClickListener
-                    }
+                    }*/
 
                     binding.IndividualStateText.text.toString().trim().isEmpty() -> {
                         Toast.makeText(

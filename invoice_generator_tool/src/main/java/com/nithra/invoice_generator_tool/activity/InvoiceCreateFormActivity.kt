@@ -143,6 +143,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                                     dynamicList.qty_type = itemList.qty_type
                                     dynamicList.qty = itemList.qty
                                     dynamicList.tax = itemList.tax
+                                    dynamicList.hsn = itemList.hsn
                                     dynamicList.description = itemList.description
                                     dynamicList.discount_type = itemList.discount_type
                                     dynamicList.discount = itemList.discount
@@ -171,6 +172,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                                 dynamicList.description = itemList.description
                                 dynamicList.discount_type = itemList.discount_type
                                 dynamicList.discount = itemList.discount
+                                dynamicList.hsn = itemList.hsn
                                 dynamicList.total_amt = itemList.total_amt
                                 dynamicList.Igst = totalGST
                                 dynamicList.sgst = 0.0
@@ -237,20 +239,22 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
 
                 println("iTemLit click === ${clickEditId}")
 
-                // val index = itemList.indexOfFirst { clickEditId == itemList[0].item_id }
-                var foundIndex = -1  // Default to -1 (not found)
+               // var foundIndex = itemList.indexOfFirst { clickEditId == itemList[0].item_id }
+               var foundIndex = -1  // Default to -1 (not found)
+
                 for (i in DynamicitemList.indices) {
                     println("itemId Dy==== ${DynamicitemList[i].item_id}")
+                    println("itemId Dy item==== ${itemList[0].item_id}")
                     if (DynamicitemList[i].item_id == itemList[0].item_id) {
-                        foundIndex = i  // Store the index
-                        break  // Exit loop early
+                        foundIndex = i
+                        DynamicitemList[i] = itemList[0] // Replace existing
+                       break
                     }
                 }
 
-                println("iTemLit from amt name === ${itemList[0].item_name}")
-                println("inddex === $foundIndex")
-                println("inddex size === ${DynamicitemList.size}")
-                println("inddex itemList size === ${itemList.size}")
+                if (foundIndex == -1) {
+                    DynamicitemList.add(itemList[0])
+                }
 
                 if (selectedBusinessState == selectedCustomerState) {
                     println("itemListTax == ${itemList[0].tax}")
@@ -272,6 +276,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                                 dynamicList.description = itemList[0].description
                                 dynamicList.discount_type = itemList[0].discount_type
                                 dynamicList.discount = itemList[0].discount
+                                dynamicList.hsn = itemList[0].hsn
                                 dynamicList.total_amt = itemList[0].total_amt
                                 dynamicList.sgst = sgstValu
                                 dynamicList.cgst = cgstValu
@@ -281,7 +286,8 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                         }
 
                     }
-                } else {
+                }
+                else {
                     for (i in listOfGstList.indices) {
                         if (itemList[0].tax.toString() == listOfGstList[i].id.toString()) {
                             val totalGST = listOfGstList[i].gst
@@ -298,6 +304,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                             dynamicList.discount_type = itemList[0].discount_type
                             dynamicList.discount = itemList[0].discount
                             dynamicList.total_amt = itemList[0].total_amt
+                            dynamicList.hsn = itemList[0].hsn
                             dynamicList.sgst = 0.0
                             dynamicList.cgst = 0.0
                             dynamicList.Igst = totalGST
@@ -307,11 +314,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     }
                 }
 
-                /*  if (foundIndex != -1) {
-                      DynamicitemList[foundIndex] = itemList[0]
-                  } else {
-                      DynamicitemList.add(itemList[0])
-                  }*/
 
                 TotalAmount = DynamicitemList.sumOf { it.total_amt?.toDouble() ?: 0.0 }
                 finalTotalAmount = TotalAmount - DisountAmount
@@ -433,46 +435,20 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         viewModel.getInvoiceList.observe(this@InvoiceCreateFormActivity) { getInvoice ->
            //InvoiceUtils.loadingDialog.dismiss()
             if (getInvoice.size != 0){
-                if (getInvoice[0].status != "failure"){
-                    if (preference.getInt(this@InvoiceCreateFormActivity, "GEN_INVOICENUMBER") == 0) {
-                        val lastInvoice = getInvoice
-                            .filter { it.invoiceNumber!!.any { c -> c.isDigit() } }
-                            .maxByOrNull {
-                                // Extract digits and convert to Int
-                                it.invoiceNumber!!.filter { c -> c.isDigit() }.toInt()
-                            }
-                        newInvoiceNumber = lastInvoice!!.invoiceNumber!!.toInt()
-                        println("newinvoiceNumber == $newInvoiceNumber")
-                        preference.putInt(this@InvoiceCreateFormActivity,"GEN_INVOICENUMBER",newInvoiceNumber)
-                        binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
-                    }else{
-                        val currentInvoiceNumber = preference.getInt(
-                            this@InvoiceCreateFormActivity,
-                            "GEN_INVOICENUMBER"
-                        ) // Start from 1000
-
-                        newInvoiceNumber = currentInvoiceNumber + 1
-
-                        binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
-                    }
+                if (getInvoice[0].status != "failure") {
+                    newInvoiceNumber = getInvoice.size + 1
+                    preference.putInt(this@InvoiceCreateFormActivity,"GEN_INVOICENUMBER",newInvoiceNumber)
+                    binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
                 }else{
-                    val currentInvoiceNumber = preference.getInt(
-                        this@InvoiceCreateFormActivity,
-                        "GEN_INVOICENUMBER"
-                    ) // Start from 1000
-
-                    newInvoiceNumber = currentInvoiceNumber + 1
-
+                    newInvoiceNumber = 1
+                    preference.putInt(this@InvoiceCreateFormActivity,"GEN_INVOICENUMBER",newInvoiceNumber)
                     binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
                 }
-
             }else{
-                val currentInvoiceNumber = preference.getInt(
+                newInvoiceNumber = preference.getInt(
                     this@InvoiceCreateFormActivity,
                     "GEN_INVOICENUMBER"
                 ) // Start from 1000
-
-                newInvoiceNumber = currentInvoiceNumber + 1
 
                 binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
             }
@@ -731,11 +707,13 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             if (getAddeddat.status.equals("success")) {
                 val pdfFileUrl = getAddeddat.data?.invoiceDetails!![0].pdf
                 val bussinessName = getAddeddat.data?.invoiceDetails!![0].bussinessName
-                preference.putInt(
+                /*preference.putInt(
                     this@InvoiceCreateFormActivity,
                     "GEN_INVOICENUMBER",
                     newInvoiceNumber
-                )
+                )*/
+
+                binding.InvoiceIncreNumber.setText(""+getAddeddat.data?.invoiceDetails!![0].invoiceNumber!!)
                 if (pdfFileUrl!!.isNotEmpty()) {
                     val intent =
                         Intent(this@InvoiceCreateFormActivity, InvoicePdfViewActivity::class.java)
@@ -1295,7 +1273,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
     ): String {
 
         val htmlBuilder = StringBuilder()
-        var cutomerName = binding.InvoiceCustomerName.text.toString()
+        val cutomerName = binding.InvoiceCustomerName.text.toString()
         htmlBuilder.append(
             """
         <!DOCTYPE html>

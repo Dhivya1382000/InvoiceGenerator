@@ -69,6 +69,7 @@ class InvoiceAllListAdapter(
             if (item.bussinessName != null){
                  bussinessName =  ""+item.bussinessName
             }
+
             holder.itemView.setOnClickListener {
                 if (pdfFileUrl!!.isNotEmpty()) {
                     val intent = Intent(context, InvoicePdfViewActivity::class.java)
