@@ -158,7 +158,8 @@ class InvoiceMasterAdapter<T>(
                     clikStateName = item.name!!
                     clickDeleteDataAction = "deleteClientDetails"
                     holder.binding.listOfNumbers.text = listCount
-                    holder.binding.invoiceCustomerName.text = getHighlightedText(item.name!!, lastQuery)
+                    holder.binding.invoiceCustomerName.text =
+                        getHighlightedText(item.name!!, lastQuery)
                     holder.binding.invoiceCustomerMobile.text = item.mobile1
                     holder.binding.invoiceCustomerState.visibility = View.VISIBLE
                     holder.binding.invoiceCustomerState.text = item.state
@@ -181,7 +182,7 @@ class InvoiceMasterAdapter<T>(
                     holder.binding.invoiceCustomerName.text =
                         getHighlightedText(item.itemName!!, lastQuery)
                     holder.binding.invoiceCustomerState.visibility = View.GONE
-                    holder.binding.invoiceCustomerMobile.text ="₹ " + item.totalAmt
+                    holder.binding.invoiceCustomerMobile.text = "₹ " + item.totalAmt
                     if (fromInvoice == 1) {
                         holder.binding.AddInvoice.visibility = View.VISIBLE
                         holder.binding.menuIcon.visibility = View.GONE
@@ -355,5 +356,10 @@ class InvoiceMasterAdapter<T>(
                 onSearchResult(filteredList.isEmpty())
             }
         }
+    }
+
+    fun  Updatelist(dataClicpos: Int, listOfCompanyFilter: T) {
+        filteredList[dataClicpos] = listOfCompanyFilter
+        notifyItemChanged(dataClicpos, listOfCompanyFilter)
     }
 }

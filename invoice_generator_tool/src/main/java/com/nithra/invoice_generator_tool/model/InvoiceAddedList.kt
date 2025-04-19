@@ -94,6 +94,15 @@ class InvoiceAddedList {
             @SerializedName("pdf")
             @Expose
             var pdf: String? = null
+
+            @SerializedName("discount_amt")
+            @Expose
+            var discountAmt: String? = null
+
+            @SerializedName("total_invoice_amt")
+            @Expose
+            var totalInvoiceAmt: String? = null
+
         }
 
     }

@@ -202,6 +202,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                                 itemFormBinding.InvoiceItemTaxSpinner.setSelection(GstId)
 
                                 itemFormBinding.InvoiceItemDiscount.setText("" + listOfitemList[i].discount)
+                                itemFormBinding.InvoiceItemHSNcode.setText("" + listOfitemList[i].hsn)
 
                                 if (selectedDiscount == 1) {
                                     itemFormBinding.itemDiscountSpinner.setSelection(0)
@@ -457,7 +458,7 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                         getItemList.itemId = invoiceClickId
                         getItemList.itemName =
                             "" + itemFormBinding.InvoiceItemName.text.toString().trim()
-                        getItemList.userId = InvoiceUtils.userId.toInt()
+                        getItemList.userId = ""+preference.getString(this@InvoiceAddItemFormActivity,"INVOICE_USER_ID")
                         getItemList.qtyType = selectedMeasuresId
                         getItemList.qty = itemFormBinding.InvoiceItemQuantity.text.toString().trim()
                         getItemList.tax = "" + selectedGstId

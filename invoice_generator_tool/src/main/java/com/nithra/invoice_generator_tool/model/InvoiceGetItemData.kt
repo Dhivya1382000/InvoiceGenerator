@@ -19,7 +19,7 @@ class InvoiceGetItemData {
     class GetItemDataList{
         @SerializedName("user_id")
         @Expose
-        var userId: Int? = null
+        var userId: String? = null
 
         @SerializedName("mobile")
         @Expose
@@ -64,6 +64,10 @@ class InvoiceGetItemData {
         @SerializedName("total_amt")
         @Expose
         var totalAmt: String? = null
+
+        @SerializedName("hsn")
+        @Expose
+        var hsn: String? = null
 
         var status: String? = ""
     }

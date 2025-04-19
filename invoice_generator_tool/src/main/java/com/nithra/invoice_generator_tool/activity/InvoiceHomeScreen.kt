@@ -147,7 +147,6 @@ class InvoiceHomeScreen : AppCompatActivity() {
             }
         }
 
-
         setSupportActionBar(binding.toolBarTitle)
 
         // Enable Navigation Icon (Hamburger Menu)
@@ -287,7 +286,6 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
         }
-
 
         viewModel.getInvoiceList.observe(this) { getInvoice ->
             InvoiceUtils.loadingDialog.dismiss()

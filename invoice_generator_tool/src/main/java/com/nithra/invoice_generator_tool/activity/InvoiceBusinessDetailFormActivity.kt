@@ -160,9 +160,8 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                             if (listOfCompanyDetails[i].type == 0) {
                                binding.BusinessChoiceLay.visibility = View.VISIBLE
                                binding.IndividualChoiceLay.visibility = View.GONE
-
-                                binding.InvoiceBusinessTypeText.text =
-                                    listOfCompanyDetails[i].industrialName!!
+                                selectedBusinesChoiceTypeId = 0
+                                binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[i].industrialName!!
                                 binding.InvoiceBusinessId.setText("" + listOfCompanyDetails[i].bussinessId)
                                 binding.InvoiceBusinessName.setText("" + listOfCompanyDetails[i].bussinessName)
                                 binding.InvoiceBusinessEmail.setText("" + listOfCompanyDetails[i].email)
@@ -185,12 +184,12 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                             } else {
                                 binding.BusinessChoiceLay.visibility = View.GONE
                                 binding.IndividualChoiceLay.visibility = View.VISIBLE
-
+                                selectedBusinesChoiceTypeId = 1
+                                selectedInvoiceStateId = listOfCompanyDetails[i].stateId!!
                                 binding.IndividualName.setText(listOfCompanyDetails[i].bussinessName!!)
                                 binding.IndividualMobile.setText("" + listOfCompanyDetails[i].bussinessMobile)
                                 binding.IndividualBillingAddress1.setText("" + listOfCompanyDetails[i].billingAddress1)
                                 binding.IndividualEmail.setText("" + listOfCompanyDetails[i].email)
-                                selectedStateId = listOfCompanyDetails[i].stateId!!
                                 binding.IndividualStateText.setText("" + listOfCompanyDetails[i].state)
                             }
 
@@ -315,6 +314,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         binding.InvoiceBusinessSaveCard.setOnClickListener {
             println("selectState === $selectedStateId")
             println("selectState individual === $selectedInvoiceStateId")
+            println("selectState individual type=== $selectedBusinesChoiceTypeId")
             if (selectedBusinesChoiceTypeId == 0){
                 when {
                     binding.InvoiceBusinessName.text.toString().trim().isEmpty() -> {
@@ -565,6 +565,17 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
         val gstRegex = "^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
         return gstNumber.matches(Regex(gstRegex))
     }
+
+    fun isValidMICR(micr: String): Boolean {
+        val micrRegex = Regex("^\\d{9}$")
+        return micrRegex.matches(micr)
+    }
+
+    fun isValidIFSC(ifsc: String): Boolean {
+        val ifscRegex = Regex("^[A-Z]{4}0[A-Z0-9]{6}$")
+        return ifscRegex.matches(ifsc)
+    }
+
 
 
     private fun <T> showSearchableDialog(

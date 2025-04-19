@@ -729,7 +729,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     intent.putExtra("InvoicePdfName", bussinessName)
                     startActivity(intent)
                 }
-
                 Toast.makeText(
                     this@InvoiceCreateFormActivity,
                     "" + getAddeddat.msg,

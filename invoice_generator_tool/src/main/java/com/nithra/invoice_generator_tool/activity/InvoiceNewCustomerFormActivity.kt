@@ -194,29 +194,49 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         println("invoiceClickId Company == ${listOfClientDetails[i].clientId}")
                         if (invoiceClickId == listOfClientDetails[i].clientId) {
                             selectedBusinesTypeId = listOfClientDetails[i].type!!
-                            if (listOfClientDetails[i].type == 1) {
-                                binding.InvoiceIndividualChoice.isChecked = true
-                                binding.InvoiceCusTaxIdLay.visibility = View.GONE
-                            } else {
-                                binding.InvoiceCusTaxIdLay.visibility = View.VISIBLE
-                                binding.InvoiceBusinessChoice.isChecked = true
+                            if (selectedBusinesTypeId == 1){
+                                if (listOfClientDetails[i].type == 1) {
+                                    binding.InvoiceIndividualChoice.isChecked = true
+                                    binding.InvoiceCusTaxIdLay.visibility = View.GONE
+                                } else {
+                                    binding.InvoiceCusTaxIdLay.visibility = View.VISIBLE
+                                    binding.InvoiceBusinessChoice.isChecked = true
+                                }
+                                binding.InvoiceCustomerName.setText(listOfClientDetails[i].name)
+                                binding.InvoiceCusCompanyName.setText(listOfClientDetails[i].companyName)
+                                binding.InvoiceCusDisplayName.setText(listOfClientDetails[i].displayName)
+                                binding.InvoiceCusEmail.setText(listOfClientDetails[i].email)
+                                binding.InvoiceCusMobile1.setText(listOfClientDetails[i].mobile1)
+                                binding.InvoiceCusMobile2.setText(listOfClientDetails[i].mobile2)
+                                binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].billingAddress)
+                                binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].shippingAddress)
+                                if (listOfClientDetails[i].billingAddress.equals(listOfClientDetails[i].shippingAddress)) {
+                                    binding.checkBox1.isChecked = true
+                                }
+                                binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
+                                selectedStateId = listOfClientDetails[i].stateId!!
+                                binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
+                                binding.InvoiceRemark.setText(listOfClientDetails[i].remark)
+                                binding.InvoiceCusTaxId.setText(listOfClientDetails[i].taxId)
+                            }else{
+                                binding.InvoiceCustomerName.setText(listOfClientDetails[i].name)
+                                binding.InvoiceCusCompanyName.setText(listOfClientDetails[i].companyName)
+                                binding.InvoiceCusDisplayName.setText(listOfClientDetails[i].displayName)
+                                binding.InvoiceCusEmail.setText(listOfClientDetails[i].email)
+                                binding.InvoiceCusMobile1.setText(listOfClientDetails[i].mobile1)
+                                binding.InvoiceCusMobile2.setText(listOfClientDetails[i].mobile2)
+                                binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].billingAddress)
+                                binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].shippingAddress)
+                                if (listOfClientDetails[i].billingAddress.equals(listOfClientDetails[i].shippingAddress)) {
+                                    binding.checkBox1.isChecked = true
+                                }
+                                binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
+                                selectedStateId = listOfClientDetails[i].stateId!!
+                                binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
+                                binding.InvoiceRemark.setText(listOfClientDetails[i].remark)
+                                binding.InvoiceCusTaxId.setText(listOfClientDetails[i].taxId)
                             }
-                            binding.InvoiceCustomerName.setText(listOfClientDetails[i].name)
-                            binding.InvoiceCusCompanyName.setText(listOfClientDetails[i].companyName)
-                            binding.InvoiceCusDisplayName.setText(listOfClientDetails[i].displayName)
-                            binding.InvoiceCusEmail.setText(listOfClientDetails[i].email)
-                            binding.InvoiceCusMobile1.setText(listOfClientDetails[i].mobile1)
-                            binding.InvoiceCusMobile2.setText(listOfClientDetails[i].mobile2)
-                            binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].billingAddress)
-                            binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].shippingAddress)
-                            if (listOfClientDetails[i].billingAddress.equals(listOfClientDetails[i].shippingAddress)) {
-                                binding.checkBox1.isChecked = true
-                            }
-                            binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
-                            selectedStateId = listOfClientDetails[i].stateId!!
-                            binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
-                            binding.InvoiceRemark.setText(listOfClientDetails[i].remark)
-                            binding.InvoiceCusTaxId.setText(listOfClientDetails[i].taxId)
+
 
                             binding.InvoiceSaveText.text = "Update"
                         }
