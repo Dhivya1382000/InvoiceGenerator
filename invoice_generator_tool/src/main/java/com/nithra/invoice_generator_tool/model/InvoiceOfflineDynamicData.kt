@@ -43,9 +43,6 @@ class InvoiceOfflineDynamicData {
     var ifsc_code: String? = ""
     var bank_address: String? = ""
     var contact_person: String? = ""
-    @SerializedName("type")
-    @Expose
-    var b_type: Int? = 0
 
     //Customer Detail list
     var stateId: Int? = null

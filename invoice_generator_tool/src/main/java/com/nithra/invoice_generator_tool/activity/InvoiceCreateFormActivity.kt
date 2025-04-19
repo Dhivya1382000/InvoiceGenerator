@@ -389,10 +389,23 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
 
                 selectedCustomerId = listOfClientDetails[0].clientId!!
                 selectedBusinessId = listOfCompanyDetails[0].companyId!!
-                selectedBusinessState = listOfCompanyDetails[0].state!!
                 selectedCustomerState = listOfClientDetails[0].state!!
                 binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
                 invoiceBillingAddress = listOfCompanyDetails[0].billingAddress1!!
+
+                invoiceBillingAddress = listOfCompanyDetails[0].billingAddress1!!
+                selectedBusinessState = listOfCompanyDetails[0].state!!
+                invoiceBusinessGSTId = listOfCompanyDetails[0].taxId!!
+                invoiceBusinessMobileNumber = listOfCompanyDetails[0].bussinessMobile!!
+                invoiceBusinessEmail = listOfCompanyDetails[0].email!!
+                invoiceBusinessState = listOfCompanyDetails[0].state + "(" + listOfCompanyDetails[0].stateId + ")"
+                invoiceBankName = listOfCompanyDetails[0].bankName!!
+                invoiceBankAcc = listOfCompanyDetails[0].bankAcoountNumber!!
+                invoiceBankIFSC = listOfCompanyDetails[0].ifscCode!!
+                invoiceBankMICR = listOfCompanyDetails[0].micrCode!!
+                invoiceBankAddress = listOfCompanyDetails[0].bankAddress!!
+                selectedBusinessState = listOfCompanyDetails[0].state!!
+
             }
             val hasStatusKey = listOfItemDetails.any { !it.status.isNullOrEmpty() } ?: false
             println("map === " + hasStatusKey) // Output: true or false
@@ -509,7 +522,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 ).show()
             } else {
                 submitData = "customer"
-                if (binding.InvoiceCustomerName.text.isEmpty()) {
+              /*  if (binding.InvoiceCustomerName.text.isEmpty()) {
                     val intent = Intent(
                         this@InvoiceCreateFormActivity,
                         InvoiceBusinessAndCustomerActivity::class.java
@@ -518,11 +531,12 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     intent.putExtra("InvoicefromPage", "Customers")
                     selectItemLauncher.launch(intent)
                 } else {
-                    showSearchableDialog<InvoiceGetDataMasterArray.GetClientDetails>(
-                        1,
-                        listOfClientDetails
-                    )
-                }
+
+                }*/
+                showSearchableDialog<InvoiceGetDataMasterArray.GetClientDetails>(
+                    1,
+                    listOfClientDetails
+                )
             }
 
         }
