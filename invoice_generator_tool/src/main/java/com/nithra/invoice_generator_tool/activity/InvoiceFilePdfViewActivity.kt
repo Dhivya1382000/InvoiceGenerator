@@ -1,28 +1,20 @@
 package com.nithra.invoice_generator_tool.activity
 
 import android.app.Activity
-import android.app.DownloadManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.databinding.InvoiceActivityPdfMainBinding
-import com.nithra.invoice_generator_tool.pdfviewer.PdfViewer
+import com.nithra.invoice_generator_tool.pdfviewer.InvoicePdfViewer
 import com.nithra.invoice_generator_tool.pdfviewer.interfaces.OnErrorListener
 import com.nithra.invoice_generator_tool.pdfviewer.interfaces.OnPageChangedListener
 import com.nithra.invoice_generator_tool.pdfviewer.utils.PdfPageQuality
@@ -74,7 +66,7 @@ class InvoiceFilePdfViewActivity : AppCompatActivity(), OnPageChangedListener, O
         if (pdfFile.exists()) {
             InvoiceUtils.loadingDialog.dismiss()
             val uri = Uri.fromFile(pdfFile)
-            PdfViewer.Builder(binding.rootView, lifecycleScope)
+            InvoicePdfViewer.Builder(binding.rootView, lifecycleScope)
                 .setMaxZoom(3f)
                 .setZoomEnabled(true)
                 .quality(PdfPageQuality.QUALITY_1080)
@@ -105,7 +97,7 @@ class InvoiceFilePdfViewActivity : AppCompatActivity(), OnPageChangedListener, O
         if (requestCode == REQUEST_CODE_LOAD && resultCode == Activity.RESULT_OK) {
             data?.data?.let { uri ->
                 binding.rootView.removeAllViews()
-                PdfViewer.Builder(binding.rootView, lifecycleScope)
+                InvoicePdfViewer.Builder(binding.rootView, lifecycleScope)
                     .setMaxZoom(3f)
                     .setZoomEnabled(true)
                     .quality(PdfPageQuality.QUALITY_1080)

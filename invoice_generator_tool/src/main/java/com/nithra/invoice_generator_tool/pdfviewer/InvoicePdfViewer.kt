@@ -20,7 +20,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.lang.Exception
 
-class PdfViewer private constructor(
+class InvoicePdfViewer private constructor(
     pdfViewController: PdfViewController,
     rootView: ViewGroup,
     private var scope: CoroutineScope,
@@ -156,8 +156,8 @@ class PdfViewer private constructor(
             return this
         }
 
-        fun build(): PdfViewer {
-            val pdfViewer = PdfViewer(pdfViewController, rootView, scope, onErrorListener)
+        fun build(): InvoicePdfViewer {
+            val pdfViewer = InvoicePdfViewer(pdfViewController, rootView, scope, onErrorListener)
             pdfViewController.setQuality(quality)
             pdfViewController.setZoomEnabled(isZoomEnabled)
             pdfViewController.setMaxZoom(maxZoom)
