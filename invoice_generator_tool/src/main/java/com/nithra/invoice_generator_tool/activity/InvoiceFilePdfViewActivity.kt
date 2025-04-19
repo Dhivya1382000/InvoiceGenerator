@@ -20,9 +20,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import com.danjdt.pdfviewer.PdfViewer
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.databinding.InvoiceActivityPdfMainBinding
+import com.nithra.invoice_generator_tool.pdfviewer.PdfViewer
 import com.nithra.invoice_generator_tool.pdfviewer.interfaces.OnErrorListener
 import com.nithra.invoice_generator_tool.pdfviewer.interfaces.OnPageChangedListener
 import com.nithra.invoice_generator_tool.pdfviewer.utils.PdfPageQuality

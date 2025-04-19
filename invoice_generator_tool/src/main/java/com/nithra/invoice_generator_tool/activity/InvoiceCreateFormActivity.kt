@@ -1295,6 +1295,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
     ): String {
 
         val htmlBuilder = StringBuilder()
+        var cutomerName = binding.InvoiceCustomerName.text.toString()
         htmlBuilder.append(
             """
         <!DOCTYPE html>
@@ -1371,14 +1372,27 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 </table>
             </div>
 
-            <div class="section">
-                <table>
-                    <tr>
-                        <td><b style="font-size:25px;">Bill To</b><br/><span style="font-size:22px;">$invoiceCustomerBillingAddress<br/></span></td>
-                        <td><b style="font-size:25px;">Ship To</b><br/><span style="font-size:22px;">$invoiceCustomerShippingAddress<br/></span></td>
-                    </tr>
-                </table>
-            </div>
+         <div class="section">
+    <table>
+        <tr>
+            <td>
+                <b style="font-size:25px;">Bill To</b><br/>
+                <span style="font-size:22px;">
+                    ${cutomerName}<br/>
+                    $invoiceCustomerBillingAddress<br/>
+                </span>
+            </td>
+            <td>
+                <b style="font-size:25px;">Ship To</b><br/>
+                <span style="font-size:22px;">
+                    ${cutomerName}<br/>
+                    $invoiceCustomerShippingAddress<br/>
+                </span>
+            </td>
+        </tr>
+    </table>
+</div>
+
 
             <div class="section">
                 <table>
@@ -1427,7 +1441,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         <div class="section">
                <b style="font-size:25px;">Bank Details:</b><br/>
     <span style="font-size:22px;">
-            Name: ${if (invoiceBusinesname.isEmpty()) "-" else invoiceBusinesname}<br/>
+            Name: ${if (binding.InvoiceBusinessTypeText.text.toString().isEmpty()) "-" else binding.InvoiceBusinessTypeText.text.toString()}<br/>
             Bank: ${if (invoiceBankName.isEmpty()) "-" else invoiceBankName}<br/>
             Account No: ${if (invoiceBankAcc.isEmpty()) "-" else invoiceBankAcc}<br/>
             IFSC Code: ${if (invoiceBankIFSC.isEmpty()) "-" else invoiceBankIFSC}<br/>
