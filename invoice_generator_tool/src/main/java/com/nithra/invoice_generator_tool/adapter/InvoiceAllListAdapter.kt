@@ -5,6 +5,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nithra.invoice_generator_tool.R
@@ -33,7 +34,7 @@ class InvoiceAllListAdapter(
     override fun onBindViewHolder(holder: InvoiceViewHolder, position: Int) {
         val item = itemList[position]
         holder.binding.apply {
-            InvoiceAmount.text = "" + item.totalInvoiceAmt
+            InvoiceAmount.text = " ₹ " + item.totalInvoiceAmt
             InvoiceNo.text = "" + item.invoiceNumber
             if (item.invoiceDate != null){
                 val createDate = formatDate("" + item.invoiceDate)
@@ -45,23 +46,25 @@ class InvoiceAllListAdapter(
                     tvStatus.text = "Paid"
                     InvoiceDateCard.visibility = View.GONE
                     InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_green))
-                    InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_green))
+                    tvStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_green))
                 } else if (item.amtType!! == 2) {
                     tvStatus.text = "Un paid"
                     InvoiceDateCard.visibility = View.GONE
                     InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_red))
-                    InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_red))
+                    tvStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_red))
                 } else if (item.amtType!! == 3) {
                     tvStatus.text = "Partially Paid"
                     InvoiceDateCard.visibility = View.GONE
                     InvoiceDateCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.invoice_lite_blue))
-                    InvoiceDueStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_peack_green))
+                    tvStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_peack_green))
                 }
             }
-            if (item.clientName != null){
+            if (item.clientName != ""){
                 tvUserName.text = item.clientName
+            }else{
+                tvUserName.text = "test"
             }
-            if (item.bussinessName != null){
+            if (item.bussinessName != ""){
                 tvBusinessName.text = item.bussinessName
             }
             val pdfFileUrl =  item.pdf
@@ -78,6 +81,11 @@ class InvoiceAllListAdapter(
                     context.startActivity(intent)
                 }
             }
+            holder.binding.menuIcon.setOnClickListener {
+                showPopupMenu(it)
+            }
+
+
         }
     }
 
@@ -90,4 +98,25 @@ class InvoiceAllListAdapter(
     }
 
     override fun getItemCount(): Int = itemList.size
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(view.context, view)
+        popupMenu.inflate(R.menu.invoice_list_pop)
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.edit -> {
+                    true
+                }
+
+                R.id.delete -> {
+                    true
+                }
+
+                else -> false
+            }
+        }
+        popupMenu.show()
+
+    }
 }

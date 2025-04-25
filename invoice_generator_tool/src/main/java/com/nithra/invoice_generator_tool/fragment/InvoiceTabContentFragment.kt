@@ -1,16 +1,25 @@
 package com.nithra.invoice_generator_tool.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.nithra.invoice_generator_tool.R
+import com.nithra.invoice_generator_tool.activity.InvoiceAddExpenseFormActivity
+import com.nithra.invoice_generator_tool.activity.InvoiceAddItemFormActivity
 import com.nithra.invoice_generator_tool.activity.InvoiceBusinessAndCustomerActivity
 import com.nithra.invoice_generator_tool.activity.InvoiceBusinessAndCustomerActivity.Companion
+import com.nithra.invoice_generator_tool.activity.InvoiceBusinessDetailFormActivity
 import com.nithra.invoice_generator_tool.activity.InvoiceHomeScreen.Companion._TAG
+import com.nithra.invoice_generator_tool.activity.InvoiceNewCustomerFormActivity
 import com.nithra.invoice_generator_tool.adapter.InvoiceAllListAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceAllDataBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
@@ -102,6 +111,7 @@ class InvoiceTabContentFragment : Fragment() {
         return binding.root
 
     }
+
 
     companion object {
 

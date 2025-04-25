@@ -135,8 +135,8 @@ class InvoiceMasterAdapter<T>(
                     clikStateName = item.bussinessName!!
                     clickDeleteDataAction = "deleteCompanyDetails"
                     holder.binding.listOfNumbers.text = listCount
-                    holder.binding.invoiceCustomerName.text =
-                        getHighlightedText(item.bussinessName!!, lastQuery)
+
+                    holder.binding.invoiceCustomerName.text = "" + getHighlightedText(item.bussinessName!!, lastQuery)
                     holder.binding.invoiceCustomerState.visibility = View.VISIBLE
                     holder.binding.invoiceCustomerMobile.text = item.bussinessMobile
                     holder.binding.invoiceCustomerState.text = item.state
@@ -147,6 +147,11 @@ class InvoiceMasterAdapter<T>(
                     } else if (fromInvoice == 2) {
                         holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.GONE
+                        if (item.type == 0) {
+                            holder.binding.InvoiceBusinessType.text = "(Business)"
+                        } else {
+                            holder.binding.InvoiceBusinessType.text = "(Individual)"
+                        }
                     } else {
                         holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.VISIBLE
@@ -169,6 +174,11 @@ class InvoiceMasterAdapter<T>(
                     } else if (fromInvoice == 2) {
                         holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.GONE
+                        if (item.type == 2) {
+                            holder.binding.InvoiceBusinessType.text = "(Business)"
+                        } else {
+                            holder.binding.InvoiceBusinessType.text = "(Individual)"
+                        }
                     } else {
                         holder.binding.AddInvoice.visibility = View.GONE
                         holder.binding.menuIcon.visibility = View.VISIBLE
@@ -358,7 +368,7 @@ class InvoiceMasterAdapter<T>(
         }
     }
 
-    fun  Updatelist(dataClicpos: Int, listOfCompanyFilter: T) {
+    fun Updatelist(dataClicpos: Int, listOfCompanyFilter: T) {
         filteredList[dataClicpos] = listOfCompanyFilter
         notifyItemChanged(dataClicpos, listOfCompanyFilter)
     }

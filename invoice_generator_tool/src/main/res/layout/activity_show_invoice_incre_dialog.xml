@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="15dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="5dp"
+        android:paddingTop="15dp"
+        android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/dialogTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Invoice Number"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/lexend_medium"
+            android:gravity="center"
+            android:textColor="@color/invoice_black" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/radioAuto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Continue auto-generating invoice numbers"
+                android:fontFamily="@font/lexend_medium"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="24dp"
+                android:gravity="center_vertical">
+
+                <EditText
+                    android:id="@+id/etPrefix"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Prefix"
+                    android:text="INV-"
+                    android:textSize="15dp"
+                    android:focusable="false"
+                    android:cursorVisible="false"
+                    android:fontFamily="@font/lexend_medium"
+                    android:clickable="true"
+                    android:inputType="text" />
+
+                <EditText
+                    android:id="@+id/etNextNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Next Number"
+                    android:textSize="15dp"
+                    android:fontFamily="@font/lexend_medium"
+                    android:text="1"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <RadioButton
+                android:id="@+id/radioManualEach"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lexend_medium"
+                android:text="I will add them manually this invoice only" />
+
+        </RadioGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/invoice_lite_gray"
+            android:layout_marginTop="10dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btnCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CANCEL"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:gravity="center"
+                android:background="@color/invoice_blue"
+                android:textColor="@color/invoice_white"
+                android:fontFamily="@font/lexend_medium"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ok"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:textColor="@color/invoice_black"
+                android:fontFamily="@font/lexend_medium"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

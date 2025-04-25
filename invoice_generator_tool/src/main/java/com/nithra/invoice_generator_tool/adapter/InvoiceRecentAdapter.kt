@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.activity.InvoicePdfViewActivity
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceRecentItemlistBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
@@ -31,8 +33,16 @@ class InvoiceRecentAdapter(
             val reversedPosition =  listOfGetInvoicelist.size - 1 - position // Reverse the order
             val item = listOfGetInvoicelist[reversedPosition]
             //InvoiceCusName.text =item.clientName
-            InvoiceNo.text = "." +item.invoiceNumber
-            InvoiceAmount.text = ""+listOfGetInvoicelist[position].paidAmt
+            InvoiceNo.text = "" +item.invoiceNumber
+            if (item.amtType!! == 1) {
+            //    InvoiceAmount.text = "Paid Amount - "+listOfGetInvoicelist[position].paidAmt
+                InvoiceAmount.text = "Paid"
+                InvoiceAmount.setTextColor(ContextCompat.getColor(activity, R.color.invoice_green))
+            }else{
+                InvoiceAmount.text = "Un paid"
+                InvoiceAmount.setTextColor(ContextCompat.getColor(activity, R.color.invoice_red))
+            }
+
             if (listOfGetInvoicelist[position].invoiceDate != null){
                 val createDate = formatDate("" +item.invoiceDate)
                 createdDate.text = "created on " + createDate

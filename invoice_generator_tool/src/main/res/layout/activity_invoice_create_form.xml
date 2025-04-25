@@ -67,7 +67,7 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
-                            android:hint="Business Details"
+                            android:hint="Business"
                             android:paddingStart="5dp"
                             android:paddingTop="7dp"
                             android:paddingEnd="5dp"
@@ -142,7 +142,7 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
-                            android:hint="Customer Details"
+                            android:hint="Customer"
                             android:paddingStart="5dp"
                             android:paddingTop="7dp"
                             android:paddingEnd="5dp"
@@ -276,6 +276,9 @@
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
                             android:hint="Invoice No"
+                            android:focusable="false"
+                            android:cursorVisible="false"
+                            android:clickable="true"
                             android:inputType="textCapSentences"
                             android:padding="15dp"
                             android:textColor="@color/invoice_black"
@@ -345,14 +348,14 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/InvoiceDateLay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp">
 
                     <LinearLayout
-                        android:id="@+id/InvoiceDateLay"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/invoice_textfield_background"
                         android:gravity="center">
@@ -689,6 +692,7 @@
                         android:layout_weight="1"
                         android:buttonTint="@color/invoice_blue"
                         android:fontFamily="@font/lexend_medium"
+                        android:visibility="gone"
                         android:text="Partially Paid" />
 
                     <RadioButton
@@ -823,6 +827,7 @@
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
                             android:hint="Remark for customer"
+                            android:text="Thanks for your business"
                             android:inputType="textCapSentences"
                             android:padding="15dp"
                             android:textColor="@color/invoice_black"
@@ -850,7 +855,8 @@
                     android:id="@+id/InvoiceTermsAndCondition"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:layout_margin="10dp"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"

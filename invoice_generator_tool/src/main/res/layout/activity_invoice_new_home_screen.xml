@@ -77,12 +77,10 @@ tools:openDrawer="start">
                             android:orientation="horizontal">
 
                             <LinearLayout
-                                android:id="@+id/createInvoiceLay"
+                                android:id="@+id/AddBusinesslay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center"
                                 android:layout_weight="1"
-                                android:gravity="center"
                                 android:orientation="vertical"
                                 android:paddingTop="20dp"
                                 android:paddingBottom="10dp"
@@ -90,22 +88,21 @@ tools:openDrawer="start">
                                 android:paddingEnd="10dp">
 
                                 <ImageView
-                                    android:layout_width="25dp"
-                                    android:layout_height="25dp"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
                                     android:layout_gravity="center"
                                     android:layout_marginBottom="5dp"
-                                    android:src="@drawable/invoice_amount_icon" />
+                                    android:src="@drawable/invoice_business_img" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
-                                    android:layout_marginTop="2dp"
                                     android:fontFamily="@font/lexend_medium"
                                     android:gravity="center"
-                                    android:text="New Invoice"
+                                    android:text="Add Business"
                                     android:textColor="@color/invoice_black"
-                                    android:textSize="13dp" />
+                                    android:textSize="12dp" />
 
 
                             </LinearLayout>
@@ -136,7 +133,7 @@ tools:openDrawer="start">
                                     android:layout_marginStart="5dp"
                                     android:fontFamily="@font/lexend_medium"
                                     android:gravity="center"
-                                    android:text="New Customer"
+                                    android:text="Add Customer"
                                     android:textColor="@color/invoice_black"
                                     android:textSize="12dp" />
 
@@ -169,18 +166,21 @@ tools:openDrawer="start">
                                     android:layout_marginTop="7dp"
                                     android:fontFamily="@font/lexend_medium"
                                     android:gravity="center"
-                                    android:text="New Items"
+                                    android:text="Add Product"
                                     android:textColor="@color/invoice_black"
                                     android:textSize="12dp" />
 
 
                             </LinearLayout>
 
+
                             <LinearLayout
-                                android:id="@+id/AddBusinesslay"
+                                android:id="@+id/AddBusinessReportlay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center"
                                 android:layout_weight="1"
+                                android:gravity="center"
                                 android:orientation="vertical"
                                 android:paddingTop="20dp"
                                 android:paddingBottom="10dp"
@@ -188,21 +188,22 @@ tools:openDrawer="start">
                                 android:paddingEnd="10dp">
 
                                 <ImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
                                     android:layout_gravity="center"
                                     android:layout_marginBottom="5dp"
-                                    android:src="@drawable/invoice_business_img" />
+                                    android:src="@drawable/invoice_business_report_img" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
+                                    android:layout_marginTop="2dp"
                                     android:fontFamily="@font/lexend_medium"
                                     android:gravity="center"
-                                    android:text="New Business"
+                                    android:text="Business Report"
                                     android:textColor="@color/invoice_black"
-                                    android:textSize="12dp" />
+                                    android:textSize="13dp" />
 
 
                             </LinearLayout>
@@ -249,7 +250,7 @@ tools:openDrawer="start">
 
 
                             </LinearLayout>
-                            <LinearLayout
+                     <!--       <LinearLayout
                                 android:id="@+id/AddBusinessReportlay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -278,9 +279,10 @@ tools:openDrawer="start">
                                     android:textSize="12dp" />
 
 
-                            </LinearLayout>
+                            </LinearLayout>-->
 
                         </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>

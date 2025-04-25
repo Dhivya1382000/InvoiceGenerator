@@ -55,7 +55,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
     private val handler = Handler(Looper.getMainLooper())
     var hintTexts: ArrayList<String> = arrayListOf()
     private var currentIndex = 0
-    var clicktabPos = 0
+    var clicktabPos = 1
 
     val addItemLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -442,28 +442,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 ).show()
             }
         } else {
-            if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
-                val InputMap = HashMap<String, Any>()
-                InputMap["action"] = "getMaster"
-                InputMap["user_id"] = "" + preference.getString(
-                    this@InvoiceBusinessAndCustomerActivity,
-                    "INVOICE_USER_ID"
-                )
-
-                println("InvoiceRequest - $_TAG == $InputMap")
-                InvoiceUtils.loadingProgress(
-                    this@InvoiceBusinessAndCustomerActivity,
-                    InvoiceUtils.messageLoading,
-                    false
-                ).show()
-                viewModel.getOverAllMasterDetail(InputMap)
-            } else {
-                Toast.makeText(
-                    this@InvoiceBusinessAndCustomerActivity,
-                    "Check Your Internet Connection",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            loadMasterData()
         }
 
         viewModel.getExpenseList.observe(this@InvoiceBusinessAndCustomerActivity) { getList ->
@@ -518,23 +497,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     ).show()
                 }
             } else {
-                if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
-                    val InputMap = HashMap<String, Any>()
-                    InputMap["action"] = "getMaster"
-                    InputMap["user_id"] = "" + preference.getString(
-                        this@InvoiceBusinessAndCustomerActivity,
-                        "INVOICE_USER_ID"
-                    )
-
-                    println("InvoiceRequest - $_TAG == $InputMap")
-                    viewModel.getOverAllMasterDetail(InputMap)
-                } else {
-                    Toast.makeText(
-                        this@InvoiceBusinessAndCustomerActivity,
-                        "Check Your Internet Connection",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                loadMasterData()
             }
         }
         binding.BusinessTypeClick.setBackgroundColor(
@@ -549,9 +512,9 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 R.color.invoice_white
             )
         )
-
+      binding.BusinessTypeClick.performClick()
         binding.BusinessTypeClick.setOnClickListener {
-            clicktabPos = 0
+            clicktabPos = 1
             binding.BusinessTypeClick.setBackgroundColor(
                 ContextCompat.getColor(
                     this,
@@ -577,25 +540,28 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     R.color.invoice_black
                 )
             )
-
-            if (fromPage == "Business") {
-                val listOfCompanyFilter: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> =
+            println("fromPageOfRRadioClick === $fromPage")
+          /*  if (fromPage == "Business") {
+               *//* val listOfCompanyFilter: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> =
                     mutableListOf()
                 listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 0 })
-                setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompanyFilter)
+                setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompanyFilter)*//*
+                loadMasterData()
             } else {
-                val listOfClientsFilter: MutableList<InvoiceGetDataMasterArray.GetClientDetails> =
+                *//*val listOfClientsFilter: MutableList<InvoiceGetDataMasterArray.GetClientDetails> =
                     mutableListOf()
                 listOfClientsFilter.clear()
                 listOfClientsFilter.addAll(listOfClients.filter { it.type == 2 })
-                setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)
-            }
+                setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)*//*
+                loadMasterData()
+            }*/
+            loadMasterData()
 
 
         }
 
         binding.IndividualTypeClick.setOnClickListener {
-            clicktabPos = 1
+            clicktabPos = 2
             binding.BusinessTypeClick.setBackgroundColor(
                 ContextCompat.getColor(
                     this,
@@ -621,19 +587,22 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     R.color.invoice_white
                 )
             )
-
-            if (fromPage == "Business") {
-                val listOfCompanyFilter: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> =
+            println("fromPageOfRRadioClick 11 === $fromPage")
+            loadMasterData()
+           /* if (fromPage == "Business") {
+             *//*   val listOfCompanyFilter: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> =
                     mutableListOf()
                 listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 1 })
-                setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompanyFilter)
+                setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(0, listOfCompanyFilter)*//*
+                loadMasterData()
             } else {
-                val listOfClientsFilter: MutableList<InvoiceGetDataMasterArray.GetClientDetails> =
+               *//* val listOfClientsFilter: MutableList<InvoiceGetDataMasterArray.GetClientDetails> =
                     mutableListOf()
                 listOfClientsFilter.clear()
                 listOfClientsFilter.addAll(listOfClients.filter { it.type == 1 })
-                setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)
-            }
+                setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)*//*
+                loadMasterData()
+            }*/
 
         }
 
@@ -645,6 +614,8 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 binding.searchLay.visibility = View.VISIBLE
                 binding.recyclerCustomers.visibility = View.VISIBLE
                 binding.swipeRefresh.isRefreshing = false
+                listOfCompany.clear()
+                listOfClients.clear()
                 listOfCompany.addAll(getMasterArray.companyDetails!!)
                 listOfClients.addAll(getMasterArray.clientDetails!!)
                 listOfItems.addAll(getMasterArray.itemList!!)
@@ -661,15 +632,24 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
-
                     val listOfCompanyFilter: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> =
                         mutableListOf()
-                    if (clicktabPos == 0) {
+                    if (clicktabPos == 1) {
                         listOfCompanyFilter.clear()
                         listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 0 })
                     } else {
                         listOfCompanyFilter.clear()
                         listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 1 })
+                        println("listOfCompany -== ${listOfCompanyFilter.size}")
+                    }
+                    if (listOfCompanyFilter.size != 0){
+                        binding.NoDataLay.visibility = View.GONE
+                        binding.searchLay.visibility = View.GONE
+                        binding.recyclerCustomers.visibility = View.VISIBLE
+                    }else{
+                        binding.NoDataLay.visibility = View.VISIBLE
+                        binding.searchLay.visibility = View.GONE
+                        binding.recyclerCustomers.visibility = View.GONE
                     }
                     setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(
                         0,
@@ -686,15 +666,24 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
-
                     val listOfClientsFilter: MutableList<InvoiceGetDataMasterArray.GetClientDetails> =
                         mutableListOf()
-                    if (clicktabPos == 0) {
+                    if (clicktabPos == 1) {
                         listOfClientsFilter.clear()
                         listOfClientsFilter.addAll(listOfClients.filter { it.type == 2 })
                     } else {
                         listOfClientsFilter.clear()
                         listOfClientsFilter.addAll(listOfClients.filter { it.type == 1 })
+                    }
+
+                    if (listOfClientsFilter.size != 0){
+                        binding.NoDataLay.visibility = View.GONE
+                        binding.searchLay.visibility = View.GONE
+                        binding.recyclerCustomers.visibility = View.VISIBLE
+                    }else{
+                        binding.NoDataLay.visibility = View.VISIBLE
+                        binding.searchLay.visibility = View.GONE
+                        binding.recyclerCustomers.visibility = View.GONE
                     }
 
                     setAdapter<InvoiceGetDataMasterArray.GetClientDetails>(1, listOfClientsFilter)
@@ -731,28 +720,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     adapter.DeleteNotify(ListPosition)
                     println("list Data delete size == ${adapter.itemCount}")
                     if (adapter.itemCount == 0) {
-                        if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
-                            val InputMap = HashMap<String, Any>()
-                            InputMap["action"] = "getMaster"
-                            InputMap["user_id"] = "" + preference.getString(
-                                this@InvoiceBusinessAndCustomerActivity,
-                                "INVOICE_USER_ID"
-                            )
-
-                            println("InvoiceRequest - $_TAG == $InputMap")
-                            InvoiceUtils.loadingProgress(
-                                this@InvoiceBusinessAndCustomerActivity,
-                                InvoiceUtils.messageLoading,
-                                false
-                            ).show()
-                            viewModel.getOverAllMasterDetail(InputMap)
-                        } else {
-                            Toast.makeText(
-                                this@InvoiceBusinessAndCustomerActivity,
-                                "Check Your Internet Connection",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        loadMasterData()
                     }
                 } else {
                     Toast.makeText(
@@ -793,6 +761,31 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         })
 
 
+    }
+
+    fun loadMasterData(){
+        if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
+            val InputMap = HashMap<String, Any>()
+            InputMap["action"] = "getMaster"
+            InputMap["user_id"] = "" + preference.getString(
+                this@InvoiceBusinessAndCustomerActivity,
+                "INVOICE_USER_ID"
+            )
+
+            println("InvoiceRequest - $_TAG == $InputMap")
+            InvoiceUtils.loadingProgress(
+                this@InvoiceBusinessAndCustomerActivity,
+                InvoiceUtils.messageLoading,
+                false
+            ).show()
+            viewModel.getOverAllMasterDetail(InputMap)
+        } else {
+            Toast.makeText(
+                this@InvoiceBusinessAndCustomerActivity,
+                "Check Your Internet Connection",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private fun stopHintAnimation() {
@@ -1004,61 +997,61 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.add_icon -> {
-                if (fromPage == "Business") {
-                    val intent = Intent(
-                        this@InvoiceBusinessAndCustomerActivity,
-                        InvoiceBusinessDetailFormActivity::class.java
-                    )
-                    intent.putExtra(
-                        "fromInvoicePage",
-                        "InvoiceBusinessAndCustomerActivity_Business"
-                    )
-                    addItemLauncher.launch(intent)
-                } else if (fromPage == "Customers") {
-                    val intent = Intent(
-                        this@InvoiceBusinessAndCustomerActivity,
-                        InvoiceNewCustomerFormActivity::class.java
-                    )
-                    intent.putExtra(
-                        "fromInvoicePage",
-                        "InvoiceBusinessAndCustomerActivity_Customers"
-                    )
-                    addItemLauncher.launch(intent)
-                } else if (fromPage == "Expense") {
-                    if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.add_icon -> {
+                    if (fromPage == "Business") {
                         val intent = Intent(
                             this@InvoiceBusinessAndCustomerActivity,
-                            InvoiceAddExpenseFormActivity::class.java
+                            InvoiceBusinessDetailFormActivity::class.java
                         )
                         intent.putExtra(
                             "fromInvoicePage",
-                            "InvoiceBusinessAndCustomerActivity_Expenses"
+                            "InvoiceBusinessAndCustomerActivity_Business"
                         )
                         addItemLauncher.launch(intent)
-                    } else {
-                        Toast.makeText(
+                    } else if (fromPage == "Customers") {
+                        val intent = Intent(
                             this@InvoiceBusinessAndCustomerActivity,
-                            "" + InvoiceUtils.messageNetCheck,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            InvoiceNewCustomerFormActivity::class.java
+                        )
+                        intent.putExtra(
+                            "fromInvoicePage",
+                            "InvoiceBusinessAndCustomerActivity_Customers"
+                        )
+                        addItemLauncher.launch(intent)
+                    } else if (fromPage == "Expense") {
+                        if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {
+                            val intent = Intent(
+                                this@InvoiceBusinessAndCustomerActivity,
+                                InvoiceAddExpenseFormActivity::class.java
+                            )
+                            intent.putExtra(
+                                "fromInvoicePage",
+                                "InvoiceBusinessAndCustomerActivity_Expenses"
+                            )
+                            addItemLauncher.launch(intent)
+                        } else {
+                            Toast.makeText(
+                                this@InvoiceBusinessAndCustomerActivity,
+                                "" + InvoiceUtils.messageNetCheck,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        val intent = Intent(
+                            this@InvoiceBusinessAndCustomerActivity,
+                            InvoiceAddItemFormActivity::class.java
+                        )
+                        intent.putExtra("fromInvoicePage", "InvoiceBusinessAndCustomerActivity_Item")
+                        addItemLauncher.launch(intent)
                     }
-                } else {
-                    val intent = Intent(
-                        this@InvoiceBusinessAndCustomerActivity,
-                        InvoiceAddItemFormActivity::class.java
-                    )
-                    intent.putExtra("fromInvoicePage", "InvoiceBusinessAndCustomerActivity_Item")
-                    addItemLauncher.launch(intent)
+                    true
                 }
-                true
-            }
 
-            else -> super.onOptionsItemSelected(item)
+                else -> super.onOptionsItemSelected(item)
+            }
         }
-    }
 
     companion object {
         var _TAG = "InvoiceBusinessAndCustomerActivity"

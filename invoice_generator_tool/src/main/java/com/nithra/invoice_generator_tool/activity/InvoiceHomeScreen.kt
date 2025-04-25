@@ -204,7 +204,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
         headerBinding.InvoiceUserNameTxt.text = ""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_NAME")
         headerBinding.InvoiceMobileTxt.text =""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_MOBILE")
 
-        binding.createInvoiceLay.setOnClickListener {
+        /*binding.createInvoiceLay.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                 Toast.makeText(
                     this@InvoiceHomeScreen,
@@ -215,7 +215,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
             }
             val intent = Intent(this@InvoiceHomeScreen, InvoiceCreateFormActivity::class.java)
             startActivity(intent)
-        }
+        }*/
         binding.InvoiceCustomerLay.setOnClickListener {
            /* if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                 Toast.makeText(
@@ -398,10 +398,12 @@ class InvoiceHomeScreen : AppCompatActivity() {
         // Handle Menu Clicks
         binding.navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
+/*
 
                 R.id.nav_dash -> {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                 }
+*/
 
                 R.id.nav_business_detail -> {
                     /*   Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)

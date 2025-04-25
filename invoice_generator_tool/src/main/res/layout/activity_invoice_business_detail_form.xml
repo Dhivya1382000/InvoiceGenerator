@@ -26,7 +26,7 @@
             android:background="@color/invoice_white"
             android:elevation="0dp"
             android:gravity="center"
-            app:title="Business Details"
+            app:title="Add Business"
             app:titleTextAppearance="@style/ToolbarTitleStyle" />
         <ScrollView
             android:layout_width="match_parent"
@@ -214,7 +214,7 @@
                                 android:background="@null"
                                 android:fontFamily="@font/lexend_medium"
                                 android:hint="Business Name"
-                                android:inputType="textCapSentences"
+                                android:inputType="textCapWords"
                                 android:padding="15dp"
                                 android:textColor="@color/invoice_black"
                                 android:textSize="15dp"/>
@@ -288,7 +288,7 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="120dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:background="@drawable/invoice_textfield_background"
                             android:gravity="center">
@@ -313,7 +313,7 @@
                             <AutoCompleteTextView
                                 android:id="@+id/InvoiceBillingAddress1"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content "
                                 android:layout_marginStart="10dp"
                                 android:layout_weight="1"
                                 android:layout_gravity="start|top"
@@ -321,7 +321,7 @@
                                 android:fontFamily="@font/lexend_medium"
                                 android:hint="Billing Address"
                                 android:gravity="start|top"
-                                android:inputType="textMultiLine"
+                                android:inputType="textCapWords|textMultiLine"
                                 android:overScrollMode="always"
                                 android:padding="15dp"
                                 android:textColor="@color/invoice_black"
@@ -366,7 +366,7 @@
                                 android:background="@null"
                                 android:fontFamily="@font/lexend_medium"
                                 android:hint="Email"
-                                android:inputType="textCapSentences"
+                                android:inputType="textEmailAddress"
                                 android:padding="15dp"
                                 android:textColor="@color/invoice_black"
                                 android:textSize="15dp"/>
@@ -673,7 +673,7 @@
                                 android:background="@null"
                                 android:fontFamily="@font/lexend_medium"
                                 android:hint="Bank Name"
-                                android:inputType="textCapSentences"
+                                android:inputType="textCapWords"
                                 android:padding="15dp"
                                 android:textColor="@color/invoice_black"
                                 android:textSize="15dp" />
@@ -784,7 +784,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp">
+                        android:layout_margin="10dp"
+                        android:visibility="gone">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -831,7 +832,7 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="100dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:background="@drawable/invoice_textfield_background"
                             android:gravity="center">
@@ -839,12 +840,12 @@
                             <AutoCompleteTextView
                                 android:id="@+id/InvoiceBankAddressEdit"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
                                 android:layout_weight="1"
                                 android:background="@null"
                                 android:fontFamily="@font/lexend_medium"
-                                android:hint="Bank Address"
+                                android:hint="Branch Name"
                                 android:layout_gravity="top"
                                 android:gravity="top"
                                 android:inputType="textMultiLine"
@@ -862,7 +863,7 @@
                             android:fontFamily="@font/lexend_medium"
                             android:paddingStart="5dp"
                             android:paddingEnd="5dp"
-                            android:text="Bank Address"
+                            android:text="Branch Name"
                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
                             android:textColor="#000"
                             android:textSize="12dp" />
@@ -899,7 +900,7 @@
                                 android:background="@null"
                                 android:fontFamily="@font/lexend_medium"
                                 android:hint="Name"
-                                android:inputType="textCapSentences"
+                                android:inputType="textCapWords"
                                 android:padding="15dp"
                                 android:textColor="@color/invoice_black"
                                 android:textSize="15dp"/>
@@ -973,7 +974,7 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="120dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:background="@drawable/invoice_textfield_background"
                             android:gravity="center">
@@ -998,15 +999,14 @@
                             <AutoCompleteTextView
                                 android:id="@+id/IndividualBillingAddress1"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
-                                android:layout_weight="1"
                                 android:layout_gravity="start|top"
                                 android:background="@null"
                                 android:fontFamily="@font/lexend_medium"
-                                android:hint="Billing Address"
+                                android:hint="Address"
                                 android:gravity="start|top"
-                                android:inputType="textMultiLine"
+                                android:inputType="textMultiLine|textCapWords"
                                 android:overScrollMode="always"
                                 android:padding="15dp"
                                 android:textColor="@color/invoice_black"
@@ -1022,7 +1022,7 @@
                             android:fontFamily="@font/lexend_medium"
                             android:paddingStart="5dp"
                             android:paddingEnd="5dp"
-                            android:text="Billing Address*"
+                            android:text="Address*"
                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
                             android:textColor="#000"
                             android:textSize="12dp" />

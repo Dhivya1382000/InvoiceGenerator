@@ -157,7 +157,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         println("invoiceClickId Company == ${listOfCompanyDetails[i].companyId}")
                         if (invoiceClickId == listOfCompanyDetails[i].companyId) {
                             selectedBusinesTypeId = listOfCompanyDetails[i].bussinessType!!
-                            if (listOfCompanyDetails[i].type == 0) {
+                            if (listOfCompanyDetails[i].type == 0) { //business
                                binding.BusinessChoiceLay.visibility = View.VISIBLE
                                binding.IndividualChoiceLay.visibility = View.GONE
                                 selectedBusinesChoiceTypeId = 0
@@ -181,7 +181,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                                 if (listOfCompanyDetails[i].mobile.equals(listOfCompanyDetails[i].bussinessMobile)) {
                                     binding.mobileNumberCheckBox.isChecked = true
                                 }
-                            } else {
+                            } else { //individual
                                 binding.BusinessChoiceLay.visibility = View.GONE
                                 binding.IndividualChoiceLay.visibility = View.VISIBLE
                                 selectedBusinesChoiceTypeId = 1
@@ -255,8 +255,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     SuggestionsBusinessEmail.toList()
                 )
                 binding.InvoiceBusinessEmail.setAdapter(adapterBusinessEmail)
-                binding.InvoiceBusinessEmail.threshold =
-                    1 // Start showing suggestions after 1 character
+                binding.InvoiceBusinessEmail.threshold = 1 // Start showing suggestions after 1 character
 
                 // Sample list of suggestions
                 val SuggestionsTaxId = listOfCompanyDetails.map {
@@ -418,7 +417,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     binding.IndividualName.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceBusinessDetailFormActivity,
-                            "Enter your Name",
+                            "Enter Name",
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setOnClickListener
@@ -427,7 +426,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     binding.IndividualMobile.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceBusinessDetailFormActivity,
-                            "Enter your mobile number",
+                            "Enter Mobile Number",
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setOnClickListener
@@ -436,7 +435,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     binding.IndividualBillingAddress1.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceBusinessDetailFormActivity,
-                            "Enter your billing address",
+                            "Enter Address",
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setOnClickListener
@@ -454,7 +453,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     binding.IndividualStateText.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceBusinessDetailFormActivity,
-                            "Select your state",
+                            "Select  State",
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setOnClickListener
@@ -767,7 +766,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             }
         } else if (fromClick == 1) {
             selectedBusinesTypeId = clikId
-            binding.InvoiceBusinessTypeText.setText(clikName)
+            binding.InvoiceBusinessTypeText.text = clikName
         }
     }
 

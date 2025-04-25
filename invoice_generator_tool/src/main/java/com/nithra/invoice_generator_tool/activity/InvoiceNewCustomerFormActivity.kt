@@ -41,7 +41,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
     var invoiceClickId = 0
 
     var selectedStateId = 0
-    var selectedBusinesTypeId = 1
+    var selectedIndiInvoiceStateId = 0
+    var selectedBusinesTypeId = 1   //indi = 1,business = 2
     var fromInvoice = 0
     var fromInvoicePage = ""
     var clickPosition = 0
@@ -68,16 +69,19 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             clickPosition = intent.getIntExtra("clickPosition", 0)
         }
         println("invoiceCli == $invoiceClickId")
+      binding.InvoiceBusinessChoice.isChecked = true
+      binding.InvoiceIndividualChoice.isChecked = false
 
         if (binding.InvoiceIndividualChoice.isChecked) {
             selectedBusinesTypeId = 1
-            binding.InvoiceCusCompanyNameLay.visibility = View.GONE
-            binding.InvoiceCusTaxIdLay.visibility = View.GONE
+            binding.BusinessLay.visibility = View.GONE
+            binding.IndividualLay.visibility = View.VISIBLE
+            selectedIndiInvoiceStateId = 0
         } else {
             selectedBusinesTypeId = 2
-            binding.InvoiceCusCompanyNameLay.visibility = View.VISIBLE
-            //      binding.InvoiceCusDisplayNameLay.visibility = View.VISIBLE
-            binding.InvoiceCusTaxIdLay.visibility = View.VISIBLE
+            binding.BusinessLay.visibility = View.VISIBLE
+            binding.IndividualLay.visibility = View.GONE
+            selectedStateId = 0
         }
 
         binding.InvoiceCustomerType.setOnCheckedChangeListener { group, checkedId ->
@@ -88,40 +92,17 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                     binding.InvoiceCusCompanyNameLay.visibility = View.GONE
                     binding.InvoiceCusTaxIdLay.visibility = View.GONE
                     binding.InvoiceCustomerName.requestFocus()
-                    binding.InvoiceCustomerName.setText("")
-                    binding.InvoiceCusCompanyName.setText("")
-                    binding.InvoiceCusDisplayName.setText("")
-                    binding.InvoiceCusEmail.setText("")
-                    binding.InvoiceCusMobile1.setText("")
-                    binding.InvoiceCusMobile2.setText("")
-                    binding.InvoiceCusBillingAddress.setText("")
-                    binding.checkBox1.isChecked = false
-                    binding.InvoiceCusShippingAddress.setText("")
-                    binding.InvoiceCustomerStateText.setText("")
-                    binding.InvoiceCusTaxId.setText("")
-                    binding.InvoiceRemark.setText("")
-                    selectedStateId = 0
+                    binding.BusinessLay.visibility = View.GONE
+                    binding.IndividualLay.visibility = View.VISIBLE
                 }
 
                 R.id.InvoiceBusinessChoice -> {
                     selectedBusinesTypeId = 2
                     binding.InvoiceCusCompanyNameLay.visibility = View.VISIBLE
-                    //   binding.InvoiceCusDisplayNameLay.visibility = View.VISIBLE
                     binding.InvoiceCusTaxIdLay.visibility = View.VISIBLE
                     binding.InvoiceCustomerName.requestFocus()
-                    binding.InvoiceCustomerName.setText("")
-                    binding.InvoiceCusCompanyName.setText("")
-                    binding.InvoiceCusDisplayName.setText("")
-                    binding.InvoiceCusEmail.setText("")
-                    binding.InvoiceCusMobile1.setText("")
-                    binding.InvoiceCusMobile2.setText("")
-                    binding.InvoiceCusBillingAddress.setText("")
-                    binding.checkBox1.isChecked = false
-                    binding.InvoiceCusShippingAddress.setText("")
-                    binding.InvoiceCustomerStateText.setText("")
-                    binding.InvoiceCusTaxId.setText("")
-                    binding.InvoiceRemark.setText("")
-                    selectedStateId = 0
+                    binding.BusinessLay.visibility = View.VISIBLE
+                    binding.IndividualLay.visibility = View.GONE
                 }
 
                 else -> {
@@ -130,6 +111,18 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             }
         }
         binding.InvoiceCustomerStateSpinner.setOnClickListener {
+            if (!InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
+                Toast.makeText(
+                    this@InvoiceNewCustomerFormActivity,
+                    "Check your internet connection",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+            showSearchableDialog<InvoiceGetDataMasterArray.GetStateList>(0, listOfState)
+        }
+
+        binding.InvoiceIndividualCustomerStateSpinner.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
                 Toast.makeText(
                     this@InvoiceNewCustomerFormActivity,
@@ -194,14 +187,11 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         println("invoiceClickId Company == ${listOfClientDetails[i].clientId}")
                         if (invoiceClickId == listOfClientDetails[i].clientId) {
                             selectedBusinesTypeId = listOfClientDetails[i].type!!
-                            if (selectedBusinesTypeId == 1){
-                                if (listOfClientDetails[i].type == 1) {
-                                    binding.InvoiceIndividualChoice.isChecked = true
-                                    binding.InvoiceCusTaxIdLay.visibility = View.GONE
-                                } else {
-                                    binding.InvoiceCusTaxIdLay.visibility = View.VISIBLE
-                                    binding.InvoiceBusinessChoice.isChecked = true
-                                }
+                            println("selectedBusinesTypeId == $selectedBusinesTypeId")
+                            println("selectedBusinesTax == ${listOfClientDetails[i].taxId}")
+                            if (selectedBusinesTypeId == 2){ //business
+                                binding.BusinessLay.visibility = View.VISIBLE
+                                binding.IndividualLay.visibility = View.GONE
                                 binding.InvoiceCustomerName.setText(listOfClientDetails[i].name)
                                 binding.InvoiceCusCompanyName.setText(listOfClientDetails[i].companyName)
                                 binding.InvoiceCusDisplayName.setText(listOfClientDetails[i].displayName)
@@ -218,29 +208,21 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                                 binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
                                 binding.InvoiceRemark.setText(listOfClientDetails[i].remark)
                                 binding.InvoiceCusTaxId.setText(listOfClientDetails[i].taxId)
-                            }else{
-                                binding.InvoiceCustomerName.setText(listOfClientDetails[i].name)
-                                binding.InvoiceCusCompanyName.setText(listOfClientDetails[i].companyName)
-                                binding.InvoiceCusDisplayName.setText(listOfClientDetails[i].displayName)
-                                binding.InvoiceCusEmail.setText(listOfClientDetails[i].email)
-                                binding.InvoiceCusMobile1.setText(listOfClientDetails[i].mobile1)
-                                binding.InvoiceCusMobile2.setText(listOfClientDetails[i].mobile2)
-                                binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].billingAddress)
-                                binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].shippingAddress)
-                                if (listOfClientDetails[i].billingAddress.equals(listOfClientDetails[i].shippingAddress)) {
-                                    binding.checkBox1.isChecked = true
-                                }
-                                binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
-                                selectedStateId = listOfClientDetails[i].stateId!!
-                                binding.InvoiceCustomerStateText.setText(listOfClientDetails[i].state)
-                                binding.InvoiceRemark.setText(listOfClientDetails[i].remark)
-                                binding.InvoiceCusTaxId.setText(listOfClientDetails[i].taxId)
+                            }else{  //individual
+                                binding.InvoiceIndividualChoice.isChecked = true
+                                binding.IndividualLay.visibility = View.VISIBLE
+                                binding.BusinessLay.visibility = View.GONE
+                                selectedIndiInvoiceStateId = listOfClientDetails[i].stateId!!
+                                binding.InvoiceIndividualCustomerName.setText(""+listOfClientDetails[i].name)
+                                binding.InvoiceIndilCusMobile1.setText(""+listOfClientDetails[i].mobile1)
+                                binding.InvoiceIndividualCusBillingAddress.setText(""+listOfClientDetails[i].billingAddress)
+                                binding.InvoiceIndividualCustomerStateText.setText(""+listOfClientDetails[i].state)
+                                binding.InvoiceIndividualCusEmail.setText(""+listOfClientDetails[i].email)
                             }
 
-
-                            binding.InvoiceSaveText.text = "Update"
                         }
                     }
+                    binding.InvoiceSaveText.text = "Update"
                 }
             }
             if (!listOfClientDetails[0].status.equals("failure")) {
@@ -376,16 +358,6 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         ).show()
                         return@setOnClickListener
                     }
-
-                    binding.InvoiceCusMobile2.text.toString().trim().isEmpty() -> {
-                        Toast.makeText(
-                            this@InvoiceNewCustomerFormActivity,
-                            "Enter customer mobile number2",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@setOnClickListener
-                    }
-
                     binding.InvoiceCusBillingAddress.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceNewCustomerFormActivity,
@@ -475,7 +447,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
             } else {
                 when {
-                    binding.InvoiceCustomerName.text.toString().trim().isEmpty() -> {
+                    binding.InvoiceIndividualCustomerName.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceNewCustomerFormActivity,
                             "Enter customer Name",
@@ -493,8 +465,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                          return@setOnClickListener
                      }*/
 
-                    binding.InvoiceCusEmail.text.toString().trim().isNotEmpty() && !isValidEmail(
-                        binding.InvoiceCusEmail.text.toString().trim()
+                    binding.InvoiceIndividualCusEmail.text.toString().trim().isNotEmpty() && !isValidEmail(
+                        binding.InvoiceIndividualCusEmail.text.toString().trim()
                     ) -> {
                         Toast.makeText(
                             this@InvoiceNewCustomerFormActivity,
@@ -504,7 +476,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         return@setOnClickListener
                     }
 
-                    binding.InvoiceCusMobile1.text.toString().trim().isEmpty() -> {
+                    binding.InvoiceIndilCusMobile1.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceNewCustomerFormActivity,
                             "Enter customer mobile number1",
@@ -513,16 +485,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         return@setOnClickListener
                     }
 
-                    binding.InvoiceCusMobile2.text.toString().trim().isEmpty() -> {
-                        Toast.makeText(
-                            this@InvoiceNewCustomerFormActivity,
-                            "Enter customer mobile number2",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@setOnClickListener
-                    }
-
-                    binding.InvoiceCusBillingAddress.text.toString().trim().isEmpty() -> {
+                    binding.InvoiceIndividualCusBillingAddress.text.toString().trim().isEmpty() -> {
                         Toast.makeText(
                             this@InvoiceNewCustomerFormActivity,
                             "Enter customer billing address",
@@ -531,16 +494,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                         return@setOnClickListener
                     }
 
-                    binding.InvoiceCusShippingAddress.text.toString().trim().isEmpty() -> {
-                        Toast.makeText(
-                            this@InvoiceNewCustomerFormActivity,
-                            "Enter customer shipping address",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@setOnClickListener
-                    }
-
-                    selectedStateId == 0 -> {
+                    selectedIndiInvoiceStateId == 0 -> {
                         Toast.makeText(
                             this@InvoiceNewCustomerFormActivity,
                             "Enter customer state",
@@ -557,21 +511,12 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             if (invoiceClickId != 0) {
                                 map["id"] = invoiceClickId
                             }
-                            map["name"] = "" + binding.InvoiceCustomerName.text.toString().trim()
-                            map["company_name"] =
-                                "" + binding.InvoiceCusCompanyName.text.toString().trim()
+                            map["name"] = "" + binding.InvoiceIndividualCustomerName.text.toString().trim()
                             map["type"] = "" + selectedBusinesTypeId
-                            map["display_name"] =
-                                "" + binding.InvoiceCusDisplayName.text.toString().trim()
-                            map["mobile1"] = "" + binding.InvoiceCusMobile1.text.toString().trim()
-                            map["mobile2"] = "" + binding.InvoiceCusMobile2.text.toString().trim()
-                            map["email"] = "" + binding.InvoiceCusEmail.text.toString().trim()
-                            map["billing_address"] =
-                                "" + binding.InvoiceCusBillingAddress.text.toString().trim()
-                            map["shipping_address"] =
-                                "" + binding.InvoiceCusShippingAddress.text.toString().trim()
-                            map["remark"] = "" + binding.InvoiceRemark.text.toString().trim()
-                            map["state"] = "" + selectedStateId
+                            map["mobile1"] = "" + binding.InvoiceIndilCusMobile1.text.toString().trim()
+                            map["email"] = "" + binding.InvoiceIndividualCusEmail.text.toString().trim()
+                            map["billing_address"] = "" + binding.InvoiceIndividualCusBillingAddress.text.toString().trim()
+                            map["state"] = "" + selectedIndiInvoiceStateId
 
                             println("InvoiceRequest - Individual $_TAG == $map")
                             InvoiceUtils.loadingProgress(
@@ -808,8 +753,14 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
     override fun onItemClick(clikName: String, clikId: Int, fromClick: Int, position: Int) {
         stateDialog.dismiss()
         if (fromClick == 0) {
-            selectedStateId = clikId
-            binding.InvoiceCustomerStateText.setText(clikName)
+            if (selectedBusinesTypeId == 1){
+                binding.InvoiceIndividualCustomerStateText.setText(clikName)
+                selectedIndiInvoiceStateId = clikId
+            }else{
+                selectedStateId = clikId
+                binding.InvoiceCustomerStateText.text = clikName
+            }
+
         }
     }
 }

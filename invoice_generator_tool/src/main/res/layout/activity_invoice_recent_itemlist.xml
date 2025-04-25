@@ -57,11 +57,10 @@
                     android:fontFamily="@font/lexend_medium"
                     android:textColor="@color/invoice_black"
                     android:text=""
-                    android:textStyle="bold"
                     android:layout_marginTop="5dp"
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
-                    android:textSize="15dp" />
+                    android:textSize="13dp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/createdDate"

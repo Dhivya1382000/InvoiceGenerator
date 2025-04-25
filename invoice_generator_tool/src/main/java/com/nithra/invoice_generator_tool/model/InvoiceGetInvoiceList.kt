@@ -18,7 +18,7 @@ class InvoiceGetInvoiceList {
 
     @SerializedName("bussiness_name")
     @Expose
-    var bussinessName: String? = null
+    var bussinessName: String? = ""
 
     @SerializedName("bussiness_id")
     @Expose
@@ -26,7 +26,7 @@ class InvoiceGetInvoiceList {
 
     @SerializedName("client_name")
     @Expose
-    var clientName: String? = null
+    var clientName: String? = ""
 
     @SerializedName("client_id")
     @Expose
@@ -83,6 +83,10 @@ class InvoiceGetInvoiceList {
     @SerializedName("status")
     @Expose
     var status: String? = ""
+
+    @SerializedName("auto_entry")
+    @Expose
+    var autoEntry: Int? = 0
 
     @SerializedName("item")
     @Expose
