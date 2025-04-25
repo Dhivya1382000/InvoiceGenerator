@@ -72,11 +72,12 @@ class InvoiceRecentAdapter(
     }
 
     override fun getItemCount(): Int {
-        if (listOfGetInvoicelist.size >= 3) {
+      /*  if (listOfGetInvoicelist.size >= 3) {
             return 3
         } else {
             return listOfGetInvoicelist.size
-        }
+        }*/
+        return listOfGetInvoicelist.size
 
     }
 

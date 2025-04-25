@@ -136,7 +136,7 @@ class InvoiceMasterAdapter<T>(
                     clickDeleteDataAction = "deleteCompanyDetails"
                     holder.binding.listOfNumbers.text = listCount
 
-                    holder.binding.invoiceCustomerName.text = "" + getHighlightedText(item.bussinessName!!, lastQuery)
+                    holder.binding.invoiceCustomerName.text =getHighlightedText(item.bussinessName!!, updatedSearchText)
                     holder.binding.invoiceCustomerState.visibility = View.VISIBLE
                     holder.binding.invoiceCustomerMobile.text = item.bussinessMobile
                     holder.binding.invoiceCustomerState.text = item.state
@@ -163,8 +163,7 @@ class InvoiceMasterAdapter<T>(
                     clikStateName = item.name!!
                     clickDeleteDataAction = "deleteClientDetails"
                     holder.binding.listOfNumbers.text = listCount
-                    holder.binding.invoiceCustomerName.text =
-                        getHighlightedText(item.name!!, lastQuery)
+                    holder.binding.invoiceCustomerName.text = getHighlightedText(item.name!!, updatedSearchText)
                     holder.binding.invoiceCustomerMobile.text = item.mobile1
                     holder.binding.invoiceCustomerState.visibility = View.VISIBLE
                     holder.binding.invoiceCustomerState.text = item.state

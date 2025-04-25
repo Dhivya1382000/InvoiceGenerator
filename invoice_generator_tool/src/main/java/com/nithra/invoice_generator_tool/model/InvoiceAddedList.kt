@@ -73,7 +73,7 @@ class InvoiceAddedList {
 
             @SerializedName("paid_amt")
             @Expose
-            var paidAmt: Int? = null
+            var paidAmt: Double? = null
 
             @SerializedName("due_date")
             @Expose

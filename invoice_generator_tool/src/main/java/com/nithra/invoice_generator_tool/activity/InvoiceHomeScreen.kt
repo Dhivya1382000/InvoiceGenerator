@@ -49,9 +49,10 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 println("activityResultLauncher ${result.data.toString()}")
                 println("activityResultLauncher $result")
 
-                val InvoiceUserName = preference.getString(this@InvoiceHomeScreen,"TC_USER_NAME")
-                val InvoiceUserID = preference.getString(this@InvoiceHomeScreen,"TC_USER_ID")
-                val InvoiceUserMobile = preference.getString(this@InvoiceHomeScreen,"TC_USER_MOBILE")
+                val InvoiceUserName = preference.getString(this@InvoiceHomeScreen, "TC_USER_NAME")
+                val InvoiceUserID = preference.getString(this@InvoiceHomeScreen, "TC_USER_ID")
+                val InvoiceUserMobile =
+                    preference.getString(this@InvoiceHomeScreen, "TC_USER_MOBILE")
 
                 if (InvoiceUserID.isNotEmpty()) {
                     preference.putString(
@@ -72,11 +73,11 @@ class InvoiceHomeScreen : AppCompatActivity() {
 
                     setContentView(binding.root)
 
-                }else{
+                } else {
                     setContentView(binding.root)
                     finish()
                 }
-            }else{
+            } else {
                 finish()
             }
         }
@@ -111,7 +112,8 @@ class InvoiceHomeScreen : AppCompatActivity() {
                             "TC_USER_ID"
                         )
 
-                        val UserMobile = preference.getString(this@InvoiceHomeScreen,"TC_USER_MOBILE")
+                        val UserMobile =
+                            preference.getString(this@InvoiceHomeScreen, "TC_USER_MOBILE")
 
                         preference.putString(
                             this@InvoiceHomeScreen,
@@ -138,21 +140,21 @@ class InvoiceHomeScreen : AppCompatActivity() {
                         activityCommonLoginResultLauncher.launch(i)
 
                     }
-                }else {
+                } else {
                     preference.putString(
                         this@InvoiceHomeScreen,
                         "INVOICE_USER_NAME",
-                        ""
+                        preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_NAME")
                     )
                     preference.putString(
                         this@InvoiceHomeScreen,
                         "INVOICE_USER_ID",
-                        InvoiceUtils.userId
+                        preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_ID")
                     )
                     preference.putString(
                         this@InvoiceHomeScreen,
-                        "TC_USER_MOBILE",
-                       ""
+                        "INVOICE_USER_MOBILE",
+                        preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_MOBILE")
                     )
                     setContentView(binding.root)
                 }
@@ -160,17 +162,17 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 preference.putString(
                     this@InvoiceHomeScreen,
                     "INVOICE_USER_NAME",
-                    ""
+                    preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_NAME")
                 )
                 preference.putString(
                     this@InvoiceHomeScreen,
                     "INVOICE_USER_ID",
-                    InvoiceUtils.userId
+                    preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_ID")
                 )
                 preference.putString(
                     this@InvoiceHomeScreen,
-                    "TC_USER_MOBILE",
-                    ""
+                    "INVOICE_USER_MOBILE",
+                    preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_MOBILE")
                 )
                 setContentView(binding.root)
             }
@@ -193,7 +195,12 @@ class InvoiceHomeScreen : AppCompatActivity() {
         toggle.syncState()
 
         val greetings = "" + getGreetingMessage()
-        binding.InvoiceUserName.setText(" " + greetings + " " + preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_NAME"))
+        binding.InvoiceUserName.setText(
+            " " + greetings + " " + preference.getString(
+                this@InvoiceHomeScreen,
+                "INVOICE_USER_NAME"
+            )
+        )
         val navView = binding.navView  // if you're using ViewBinding for your Activity layout
 
 // Access the header view
@@ -201,32 +208,12 @@ class InvoiceHomeScreen : AppCompatActivity() {
 
         val headerBinding = InvoiceNavHeaderBinding.bind(headerView)
 
-        headerBinding.InvoiceUserNameTxt.text = ""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_NAME")
-        headerBinding.InvoiceMobileTxt.text =""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_MOBILE")
+        headerBinding.InvoiceUserNameTxt.text =
+            "" + preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_NAME")
+        headerBinding.InvoiceMobileTxt.text =
+            "" + preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_MOBILE")
 
-        /*binding.createInvoiceLay.setOnClickListener {
-            if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
-                Toast.makeText(
-                    this@InvoiceHomeScreen,
-                    "" + InvoiceUtils.messageNetCheck,
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-            val intent = Intent(this@InvoiceHomeScreen, InvoiceCreateFormActivity::class.java)
-            startActivity(intent)
-        }*/
         binding.InvoiceCustomerLay.setOnClickListener {
-           /* if (!InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
-                Toast.makeText(
-                    this@InvoiceHomeScreen,
-                    "" + InvoiceUtils.messageNetCheck,
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-            val intent = Intent(this@InvoiceHomeScreen, InvoiceNewCustomerFormActivity::class.java)
-            startActivity(intent)*/
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                 val intent = Intent(
                     this@InvoiceHomeScreen,
@@ -273,6 +260,7 @@ class InvoiceHomeScreen : AppCompatActivity() {
 
 
         }
+
         // Initialize RecyclerView
         invoicerecentadapter = InvoiceRecentAdapter(
             this@InvoiceHomeScreen, listOfGetInvoicelist
@@ -286,7 +274,8 @@ class InvoiceHomeScreen : AppCompatActivity() {
 //            InvoiceUtils.loadingProgress(this@InvoiceHomeScreen,InvoiceUtils.messageLoading,false).show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "homeReport"
-            InputMap["user_id"] = ""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_ID")
+            InputMap["user_id"] =
+                "" + preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_ID")
             InputMap["type"] = "1"
             InputMap["year"] = "2025"
 
@@ -312,7 +301,8 @@ class InvoiceHomeScreen : AppCompatActivity() {
                 .show()
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getInvoiceList"
-            InputMap["user_id"] = ""+preference.getString(this@InvoiceHomeScreen,"INVOICE_USER_ID")
+            InputMap["user_id"] =
+                "" + preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_ID")
             InputMap["type"] = "0"
 
             println("InvoiceRequest - $_TAG == $InputMap")
@@ -329,40 +319,41 @@ class InvoiceHomeScreen : AppCompatActivity() {
             InvoiceUtils.loadingDialog.dismiss()
             println("getinvoice === ${getInvoice.size}")
             println("getinvoice === ${getInvoice[0].status}")
+            listOfGetInvoicelist.clear()
+            refreshRecentList = false
             if (getInvoice.size != 0) {
                 if (getInvoice[0].status.equals("failure")) {
                     binding.RecentInvoice.visibility = View.GONE
-                    listOfGetInvoicelist.addAll(getInvoice)
+                    listOfGetInvoicelist.addAll(getInvoice.takeLast(3))
                 } else {
                     binding.RecentInvoice.visibility = View.VISIBLE
-                    listOfGetInvoicelist.addAll(getInvoice)
+                    listOfGetInvoicelist.addAll(getInvoice.takeLast(3))
                 }
-
             } else {
                 binding.RecentInvoice.visibility = View.GONE
             }
             binding.seeAllText.setOnClickListener {
-                val intent =
-                    Intent(this@InvoiceHomeScreen, InvoiceTypeOfAllListActivity::class.java)
+                val intent = Intent(this@InvoiceHomeScreen, InvoiceTypeOfAllListActivity::class.java)
                 startActivity(intent)
             }
+            invoicerecentadapter.notifyDataSetChanged()
         }
 
         binding.AddBusinesslay.setOnClickListener {
-          /*  if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
-                val intent = Intent(
-                    this@InvoiceHomeScreen,
-                    InvoiceBusinessDetailFormActivity::class.java
-                )
-                intent.putExtra("InvoicefromPage", "Business")
-                startActivity(intent)
-            } else {
-                Toast.makeText(
-                    this@InvoiceHomeScreen,
-                    "" + InvoiceUtils.messageNetCheck,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }*/
+            /*  if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+                  val intent = Intent(
+                      this@InvoiceHomeScreen,
+                      InvoiceBusinessDetailFormActivity::class.java
+                  )
+                  intent.putExtra("InvoicefromPage", "Business")
+                  startActivity(intent)
+              } else {
+                  Toast.makeText(
+                      this@InvoiceHomeScreen,
+                      "" + InvoiceUtils.messageNetCheck,
+                      Toast.LENGTH_SHORT
+                  ).show()
+              }*/
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
                 val intent = Intent(
                     this@InvoiceHomeScreen,
@@ -398,12 +389,12 @@ class InvoiceHomeScreen : AppCompatActivity() {
         // Handle Menu Clicks
         binding.navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-/*
+                /*
 
-                R.id.nav_dash -> {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                }
-*/
+                                R.id.nav_dash -> {
+                                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                                }
+                */
 
                 R.id.nav_business_detail -> {
                     /*   Toast.makeText(this@InvoiceHomeScreen, "clickDashBoard", Toast.LENGTH_SHORT)
@@ -480,24 +471,24 @@ class InvoiceHomeScreen : AppCompatActivity() {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                 }
 
-              /*  R.id.nav_expence -> {
-                    if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
-                        val intent = Intent(
-                            this@InvoiceHomeScreen,
-                            InvoiceBusinessAndCustomerActivity::class.java
-                        )
-                        intent.putExtra("InvoicefromPage", "Expense")
-                        startActivity(intent)
-                    } else {
-                        Toast.makeText(
-                            this@InvoiceHomeScreen,
-                            "" + InvoiceUtils.messageNetCheck,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                /*  R.id.nav_expence -> {
+                      if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+                          val intent = Intent(
+                              this@InvoiceHomeScreen,
+                              InvoiceBusinessAndCustomerActivity::class.java
+                          )
+                          intent.putExtra("InvoicefromPage", "Expense")
+                          startActivity(intent)
+                      } else {
+                          Toast.makeText(
+                              this@InvoiceHomeScreen,
+                              "" + InvoiceUtils.messageNetCheck,
+                              Toast.LENGTH_SHORT
+                          ).show()
+                      }
 
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                }*/
+                      binding.drawerLayout.closeDrawer(GravityCompat.START)
+                  }*/
 
                 R.id.nav_item -> {
                     if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
@@ -574,7 +565,32 @@ class InvoiceHomeScreen : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (refreshRecentList) {
+            if (InvoiceUtils.isNetworkAvailable(this@InvoiceHomeScreen)) {
+                InvoiceUtils.loadingProgress(this@InvoiceHomeScreen, InvoiceUtils.messageLoading, false)
+                    .show()
+                val InputMap = HashMap<String, Any>()
+                InputMap["action"] = "getInvoiceList"
+                InputMap["user_id"] =
+                    "" + preference.getString(this@InvoiceHomeScreen, "INVOICE_USER_ID")
+                InputMap["type"] = "0"
+
+                println("InvoiceRequest - $_TAG == $InputMap")
+                viewModel.getInvoiceList(InputMap)
+            } else {
+                Toast.makeText(
+                    this@InvoiceHomeScreen,
+                    "Check Your Internet Connection",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
     companion object {
         var _TAG = "InvoiceHomeScreen"
+        var refreshRecentList = false
     }
 }

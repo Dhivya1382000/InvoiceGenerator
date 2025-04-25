@@ -46,6 +46,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
     var fromInvoice = 0
     var fromInvoicePage = ""
     var clickPosition = 0
+    var clickTabPosType = 0
     var preference = InvioceSharedPreference()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +68,17 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             fromInvoice = intent.getIntExtra("fromInvoice", 0)
             fromInvoicePage = "" + intent.getStringExtra("fromInvoicePage")
             clickPosition = intent.getIntExtra("clickPosition", 0)
+            clickTabPosType = intent.getIntExtra("clickTabPosType", 0)
         }
         println("invoiceCli == $invoiceClickId")
-      binding.InvoiceBusinessChoice.isChecked = true
-      binding.InvoiceIndividualChoice.isChecked = false
+
+        if (clickTabPosType == 1){
+            binding.InvoiceBusinessChoice.isChecked = true
+            binding.InvoiceIndividualChoice.isChecked = false
+        }else{
+            binding.InvoiceBusinessChoice.isChecked = false
+            binding.InvoiceIndividualChoice.isChecked = true
+        }
 
         if (binding.InvoiceIndividualChoice.isChecked) {
             selectedBusinesTypeId = 1

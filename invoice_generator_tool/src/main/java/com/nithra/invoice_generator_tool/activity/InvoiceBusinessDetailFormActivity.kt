@@ -52,6 +52,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
     var invoiceClickId = 0
     var fromInvoice = 0
     var clickPosition = 0
+    var clickTabPosType = 0
     var preference = InvioceSharedPreference()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +77,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             invoiceClickId = intent.getIntExtra("clickDataId", 0)
             fromInvoice = intent.getIntExtra("fromInvoice", 0)
             clickPosition = intent.getIntExtra("clickPosition", 0)
+            clickTabPosType = intent.getIntExtra("clickTabPosType", 0)
         }
 
         // Step 2: Set an OnCheckedChangeListener to handle checkbox state changes
@@ -102,6 +104,15 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                 Toast.LENGTH_SHORT
             ).show()
         }
+        println("clickTabPost == $clickTabPosType")
+        if (clickTabPosType == 1){
+            binding.InvoiceBusinessChoice.isChecked = true
+            binding.InvoiceIndividualChoice.isChecked = false
+        }else{
+            binding.InvoiceBusinessChoice.isChecked = false
+            binding.InvoiceIndividualChoice.isChecked = true
+        }
+
         if (binding.InvoiceIndividualChoice.isChecked) {
             selectedBusinesChoiceTypeId = 1
             binding.IndividualChoiceLay.visibility = View.VISIBLE

@@ -15,10 +15,12 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.nithra.invoice_generator_tool.R
+import com.nithra.invoice_generator_tool.activity.InvoiceHomeScreen.Companion.refreshRecentList
 import com.nithra.invoice_generator_tool.databinding.InvoiceActivityPdfMainBinding
 import com.nithra.invoice_generator_tool.pdfviewer.InvoicePdfViewer
 import com.nithra.invoice_generator_tool.pdfviewer.interfaces.OnErrorListener
@@ -81,6 +83,15 @@ class InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnErr
         binding.rootView.setOnClickListener {
 
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Custom back press handling
+               // Toast.makeText(this@InvoicePdfViewActivity, "Custom Back Pressed!", Toast.LENGTH_SHORT).show()
+                refreshRecentList = true
+                finish()
+            }
+        })
+
     }
     fun getFileNameFromUrl(url: String): String {
         return url.substringAfterLast("/")

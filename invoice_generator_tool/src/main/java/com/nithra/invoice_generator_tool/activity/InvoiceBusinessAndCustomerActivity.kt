@@ -556,8 +556,6 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 loadMasterData()
             }*/
             loadMasterData()
-
-
         }
 
         binding.IndividualTypeClick.setOnClickListener {
@@ -636,10 +634,10 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         mutableListOf()
                     if (clicktabPos == 1) {
                         listOfCompanyFilter.clear()
-                        listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 0 })
+                        listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 0 }) //business
                     } else {
                         listOfCompanyFilter.clear()
-                        listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 1 })
+                        listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 1 }) //individual
                         println("listOfCompany -== ${listOfCompanyFilter.size}")
                     }
                     if (listOfCompanyFilter.size != 0){
@@ -670,10 +668,10 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         mutableListOf()
                     if (clicktabPos == 1) {
                         listOfClientsFilter.clear()
-                        listOfClientsFilter.addAll(listOfClients.filter { it.type == 2 })
+                        listOfClientsFilter.addAll(listOfClients.filter { it.type == 2 }) //individual
                     } else {
                         listOfClientsFilter.clear()
-                        listOfClientsFilter.addAll(listOfClients.filter { it.type == 1 })
+                        listOfClientsFilter.addAll(listOfClients.filter { it.type == 1 }) //business
                     }
 
                     if (listOfClientsFilter.size != 0){
@@ -1009,6 +1007,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                             "fromInvoicePage",
                             "InvoiceBusinessAndCustomerActivity_Business"
                         )
+                        intent.putExtra("clickTabPosType", clicktabPos)
                         addItemLauncher.launch(intent)
                     } else if (fromPage == "Customers") {
                         val intent = Intent(
@@ -1019,6 +1018,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                             "fromInvoicePage",
                             "InvoiceBusinessAndCustomerActivity_Customers"
                         )
+                        intent.putExtra("clickTabPosType", clicktabPos)
                         addItemLauncher.launch(intent)
                     } else if (fromPage == "Expense") {
                         if (InvoiceUtils.isNetworkAvailable(this@InvoiceBusinessAndCustomerActivity)) {

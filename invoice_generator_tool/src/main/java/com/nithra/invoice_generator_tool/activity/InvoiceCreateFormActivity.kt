@@ -11,7 +11,6 @@ import android.text.Spanned
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -37,6 +36,7 @@ import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceCreateFormBi
 import com.nithra.invoice_generator_tool.databinding.InvoiceBottomSheetBinding
 import com.nithra.invoice_generator_tool.fragment.InvoiceDatePickerDialog
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
+import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
 import com.nithra.invoice_generator_tool.model.InvoiceOfflineDynamicData
 import com.nithra.invoice_generator_tool.pdf_generator.InvoiceHtmlToPdfConvertor
 import com.nithra.invoice_generator_tool.retrofit_interface.InvoicemasterClick
@@ -68,6 +68,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         mutableListOf()
     var listOfItemDetails: MutableList<InvoiceGetDataMasterArray.GetItemList> = mutableListOf()
     var listOfGstList: MutableList<InvoiceGetDataMasterArray.GstList> = mutableListOf()
+    var listOfInvoiceList: MutableList<InvoiceGetInvoiceList> = mutableListOf()
 
     var preference = InvioceSharedPreference()
     var newInvoiceNumber = 1
@@ -434,48 +435,18 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             ).show()
         }
         viewModel.getInvoiceList.observe(this@InvoiceCreateFormActivity) { getInvoice ->
-            //InvoiceUtils.loadingDialog.dismiss()
-            /*if (getInvoice.size != 0) {
-                  if (getInvoice[0].status != "failure") {
-                    //newInvoiceNumber = getInvoice.size + 1
-                    preference.putInt(
-                        this@InvoiceCreateFormActivity,
-                        "GEN_INVOICENUMBER",
-                        1
-                    )
-                    binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
-                } else {
-                    newInvoiceNumber = 1
-                    preference.putInt(
-                        this@InvoiceCreateFormActivity,
-                        "GEN_INVOICENUMBER",
-                        newInvoiceNumber
-                    )
-                    binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
-                }
-            } else {
-                newInvoiceNumber = preference.getInt(
-                    this@InvoiceCreateFormActivity,
-                    "GEN_INVOICENUMBER"
-                ) // Start from 1000
-
-                binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
-            }*/
-                if (getInvoice[0].status != "failure") {
-                    val lastUnselected = getInvoice.lastOrNull { it.autoEntry == 0 }
-                if (lastUnselected != null){
+            if (getInvoice[0].status != "failure") {
+                val lastUnselected = getInvoice.lastOrNull { it.autoEntry == 0 }
+                if (lastUnselected != null) {
                     val lastId = lastUnselected.invoiceNumber
                     val parts = lastId!!.split("-")
                     if (parts.size > 1) {
                         newInvoiceNumber = parts[1].toInt()
                         println("Number part: ${parts[1]}")  // Output: 1
                     }
+                    listOfInvoiceList.addAll(getInvoice)
                     newInvoiceNumber += 1
-                    preference.putInt(this@InvoiceCreateFormActivity,"GEN_INVOICENUMBER",newInvoiceNumber)
-                    binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
-                }
-                } else {
-                    newInvoiceNumber = 1
+                    // Check for duplicate invoice number
                     preference.putInt(
                         this@InvoiceCreateFormActivity,
                         "GEN_INVOICENUMBER",
@@ -483,102 +454,143 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     )
                     binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
                 }
-            }
-
-
-            if (DynamicitemList.isEmpty()) {
-                binding.DynamicItemCard.visibility = View.GONE
             } else {
-                binding.DynamicItemCard.visibility = View.VISIBLE
+                newInvoiceNumber = 1
+                preference.putInt(
+                    this@InvoiceCreateFormActivity,
+                    "GEN_INVOICENUMBER",
+                    newInvoiceNumber
+                )
+                binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
             }
+        }
 
-            binding.InvoiceBusinessTypeSpinner.setOnClickListener {
-                if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
-                    Toast.makeText(
+        if (DynamicitemList.isEmpty()) {
+            binding.DynamicItemCard.visibility = View.GONE
+        } else {
+            binding.DynamicItemCard.visibility = View.VISIBLE
+        }
+
+        binding.InvoiceBusinessTypeSpinner.setOnClickListener {
+            if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
+                Toast.makeText(
+                    this@InvoiceCreateFormActivity,
+                    "Check Internet Connection",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                submitData = "business"
+
+                if (binding.InvoiceBusinessTypeText.text.isEmpty()) {
+                    val intent = Intent(
                         this@InvoiceCreateFormActivity,
-                        "Check Internet Connection",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                        InvoiceBusinessAndCustomerActivity::class.java
+                    )
+                    intent.putExtra("fromInvoice", 1)
+                    intent.putExtra("InvoicefromPage", "Business")
+                    selectItemLauncher.launch(intent)
                 } else {
-                    submitData = "business"
-
-                    if (binding.InvoiceBusinessTypeText.text.isEmpty()) {
-                        val intent = Intent(
-                            this@InvoiceCreateFormActivity,
-                            InvoiceBusinessAndCustomerActivity::class.java
-                        )
-                        intent.putExtra("fromInvoice", 1)
-                        intent.putExtra("InvoicefromPage", "Business")
-                        selectItemLauncher.launch(intent)
-                    } else {
-                        showSearchableDialog<InvoiceGetDataMasterArray.GetCompanyDetailList>(
-                            1,
-                            listOfCompanyDetails
-                        )
-                    }
-
-                }
-            }
-
-            binding.InvoiceCustomerDetails.setOnClickListener {
-                if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
-                    Toast.makeText(
-                        this@InvoiceCreateFormActivity,
-                        "Check Internet Connection",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    submitData = "customer"
-                    /*  if (binding.InvoiceCustomerName.text.isEmpty()) {
-                      val intent = Intent(
-                          this@InvoiceCreateFormActivity,
-                          InvoiceBusinessAndCustomerActivity::class.java
-                      )
-                      intent.putExtra("fromInvoice", 1)
-                      intent.putExtra("InvoicefromPage", "Customers")
-                      selectItemLauncher.launch(intent)
-                  } else {
-
-                  }*/
-                    showSearchableDialog<InvoiceGetDataMasterArray.GetClientDetails>(
-                        1,
-                        listOfClientDetails
+                    showSearchableDialog<InvoiceGetDataMasterArray.GetCompanyDetailList>(
+                        0,
+                        listOfCompanyDetails
                     )
                 }
 
             }
+        }
 
-            binding.AddInvoiceText.setOnClickListener {
-                if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
+        binding.InvoiceCustomerDetails.setOnClickListener {
+            if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
+                Toast.makeText(
+                    this@InvoiceCreateFormActivity,
+                    "Check Internet Connection",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                submitData = "customer"
+                /*  if (binding.InvoiceCustomerName.text.isEmpty()) {
+                  val intent = Intent(
+                      this@InvoiceCreateFormActivity,
+                      InvoiceBusinessAndCustomerActivity::class.java
+                  )
+                  intent.putExtra("fromInvoice", 1)
+                  intent.putExtra("InvoicefromPage", "Customers")
+                  selectItemLauncher.launch(intent)
+              } else {
+
+              }*/
+                showSearchableDialog<InvoiceGetDataMasterArray.GetClientDetails>(
+                    0,
+                    listOfClientDetails
+                )
+            }
+
+        }
+
+        binding.AddInvoiceText.setOnClickListener {
+            if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
+                Toast.makeText(
+                    this@InvoiceCreateFormActivity,
+                    "Check Internet Connection",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                if (binding.InvoiceBusinessTypeText.text.toString().trim()
+                        .isNotEmpty() && binding.InvoiceCustomerName.text.toString().trim()
+                        .isNotEmpty()
+                ) {
+                    submitData = "item"
+                    val intent = Intent(
+                        this@InvoiceCreateFormActivity,
+                        InvoiceBusinessAndCustomerActivity::class.java
+                    )
+                    intent.putExtra("fromInvoice", 1)
+                    intent.putExtra("InvoicefromPage", "Items")
+                    selectItemLauncher.launch(intent)
+                } else {
                     Toast.makeText(
                         this@InvoiceCreateFormActivity,
-                        "Check Internet Connection",
+                        "Please choose your customer detail",
                         Toast.LENGTH_SHORT
                     ).show()
-                } else {
-                    if (binding.InvoiceBusinessTypeText.text.toString().trim()
-                            .isNotEmpty() && binding.InvoiceCustomerName.text.toString().trim()
-                            .isNotEmpty()
-                    ) {
-                        submitData = "item"
+                }
+            }
+        }
+
+        binding.InvoiceGeneratePreview.setOnClickListener {
+            val htmlContent = generateInvoiceHtml(
+                invoiceBillingAddress = invoiceBillingAddress,
+                invoiceCustomerBillingAddress = invoiceCustomerBillingAddress,
+                invoiceCustomerShippingAddress = invoiceCustomerShippingAddress,
+                finalTotalAmount = finalTotalAmount.toString(),
+                invoiceItems = DynamicitemList,
+                binding = binding
+            )
+            runBlocking {
+
+                createPdf(htmlContent) { pdfFile ->
+                    if (pdfFile != null) {
+                        // Step 3: Validate the PDF file before sending
+                        Log.d(
+                            "Upload",
+                            "PDF File Ready: ${pdfFile.path}, Size: ${pdfFile.length()} bytes"
+                        )
                         val intent = Intent(
                             this@InvoiceCreateFormActivity,
-                            InvoiceBusinessAndCustomerActivity::class.java
-                        )
-                        intent.putExtra("fromInvoice", 1)
-                        intent.putExtra("InvoicefromPage", "Items")
-                        selectItemLauncher.launch(intent)
+                            InvoiceFilePdfViewActivity::class.java
+                        ).apply {
+                            putExtra("pdf_path", pdfFile.absolutePath)
+                        }
+                        startActivity(intent)
                     } else {
-                        Toast.makeText(
-                            this@InvoiceCreateFormActivity,
-                            "Please choose your customer detail",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Log.e("Upload Error", "PDF file is not valid, cannot upload!")
                     }
                 }
             }
+        }
+        binding.InvoiceGenerateSaveCard.setOnClickListener {
+            if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
 
-            binding.InvoiceGeneratePreview.setOnClickListener {
                 val htmlContent = generateInvoiceHtml(
                     invoiceBillingAddress = invoiceBillingAddress,
                     invoiceCustomerBillingAddress = invoiceCustomerBillingAddress,
@@ -587,6 +599,86 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     invoiceItems = DynamicitemList,
                     binding = binding
                 )
+
+                when {
+                    binding.InvoiceBusinessTypeText.text.toString().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Select business details",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.InvoiceCustomerName.text.toString().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Select customer details",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.InvoiceIncreNumber.text.toString().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Enter invoice number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    binding.InvoiceDate.text.toString().isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Enter invoice number",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    DynamicitemList.isEmpty() -> {
+                        Toast.makeText(
+                            this@InvoiceCreateFormActivity,
+                            "Add invoice item",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    selectedPaymentType == 1 -> {
+                        if (binding.InvoicePaidAmount.text.toString().isEmpty()) {
+                            Toast.makeText(
+                                this@InvoiceCreateFormActivity,
+                                "Enter paid amount",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@setOnClickListener
+                        }
+                    }
+
+                    selectedPaymentType == 2 -> {
+                        if (binding.InvoicePaidAmount.text.toString().trim().isEmpty()) {
+                            Toast.makeText(
+                                this@InvoiceCreateFormActivity,
+                                "Enter paid amount",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@setOnClickListener
+                        } else if (binding.InvoiceDueDateEdit.text.toString().trim()
+                                .isEmpty()
+                        ) {
+                            Toast.makeText(
+                                this@InvoiceCreateFormActivity,
+                                "Enter due date",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@setOnClickListener
+                        }
+                    }
+
+                }
+
                 runBlocking {
 
                     createPdf(htmlContent) { pdfFile ->
@@ -596,274 +688,130 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                                 "Upload",
                                 "PDF File Ready: ${pdfFile.path}, Size: ${pdfFile.length()} bytes"
                             )
-                            val intent = Intent(
-                                this@InvoiceCreateFormActivity,
-                                InvoiceFilePdfViewActivity::class.java
-                            ).apply {
-                                putExtra("pdf_path", pdfFile.absolutePath)
-                            }
-                            startActivity(intent)
+
+                            val requestBody =
+                                pdfFile.asRequestBody("application/pdf".toMediaTypeOrNull())
+
+                            val pdfPart = MultipartBody.Part.createFormData(
+                                "pdf",
+                                pdfFile.path,
+                                requestBody
+                            )
+                            GenerateInvoice(pdfPart)
 
                         } else {
                             Log.e("Upload Error", "PDF file is not valid, cannot upload!")
                         }
                     }
                 }
-            }
-            binding.InvoiceGenerateSaveCard.setOnClickListener {
-                if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
-
-                    val htmlContent = generateInvoiceHtml(
-                        invoiceBillingAddress = invoiceBillingAddress,
-                        invoiceCustomerBillingAddress = invoiceCustomerBillingAddress,
-                        invoiceCustomerShippingAddress = invoiceCustomerShippingAddress,
-                        finalTotalAmount = finalTotalAmount.toString(),
-                        invoiceItems = DynamicitemList,
-                        binding = binding
-                    )
-
-                    when {
-                        binding.InvoiceBusinessTypeText.text.toString().isEmpty() -> {
-                            Toast.makeText(
-                                this@InvoiceCreateFormActivity,
-                                "Select business details",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        binding.InvoiceCustomerName.text.toString().isEmpty() -> {
-                            Toast.makeText(
-                                this@InvoiceCreateFormActivity,
-                                "Select customer details",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        binding.InvoiceIncreNumber.text.toString().isEmpty() -> {
-                            Toast.makeText(
-                                this@InvoiceCreateFormActivity,
-                                "Enter invoice number",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        binding.InvoiceDate.text.toString().isEmpty() -> {
-                            Toast.makeText(
-                                this@InvoiceCreateFormActivity,
-                                "Enter invoice number",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        DynamicitemList.isEmpty() -> {
-                            Toast.makeText(
-                                this@InvoiceCreateFormActivity,
-                                "Add invoice item",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-
-                        selectedPaymentType == 1 -> {
-                            if (binding.InvoicePaidAmount.text.toString().isEmpty()) {
-                                Toast.makeText(
-                                    this@InvoiceCreateFormActivity,
-                                    "Enter paid amount",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return@setOnClickListener
-                            }
-                        }
-
-                        selectedPaymentType == 2 -> {
-                            if (binding.InvoicePaidAmount.text.toString().trim().isEmpty()) {
-                                Toast.makeText(
-                                    this@InvoiceCreateFormActivity,
-                                    "Enter paid amount",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return@setOnClickListener
-                            } else if (binding.InvoiceDueDateEdit.text.toString().trim()
-                                    .isEmpty()
-                            ) {
-                                Toast.makeText(
-                                    this@InvoiceCreateFormActivity,
-                                    "Enter due date",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return@setOnClickListener
-                            }
-                        }
-
-                    }
-
-                    runBlocking {
-
-                        createPdf(htmlContent) { pdfFile ->
-                            if (pdfFile != null) {
-                                // Step 3: Validate the PDF file before sending
-                                Log.d(
-                                    "Upload",
-                                    "PDF File Ready: ${pdfFile.path}, Size: ${pdfFile.length()} bytes"
-                                )
-
-                                val requestBody =
-                                    pdfFile.asRequestBody("application/pdf".toMediaTypeOrNull())
-
-                                val pdfPart = MultipartBody.Part.createFormData(
-                                    "pdf",
-                                    pdfFile.path,
-                                    requestBody
-                                )
-                                GenerateInvoice(pdfPart)
-
-                            } else {
-                                Log.e("Upload Error", "PDF file is not valid, cannot upload!")
-                            }
-                        }
-                    }
-                } else {
-                    Toast.makeText(
-                        this@InvoiceCreateFormActivity,
-                        "Check Your Internet Connection",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-            }
-
-            viewModel.getAddedInvoiceList.observe(this@InvoiceCreateFormActivity) { getAddeddat ->
-                if (getAddeddat.status.equals("success")) {
-                    val pdfFileUrl = getAddeddat.data?.invoiceDetails!![0].pdf
-                    val bussinessName = getAddeddat.data?.invoiceDetails!![0].bussinessName
-                    /*preference.putInt(
+            } else {
+                Toast.makeText(
                     this@InvoiceCreateFormActivity,
-                    "GEN_INVOICENUMBER",
-                    newInvoiceNumber
-                )*/
+                    "Check Your Internet Connection",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
 
-                    binding.InvoiceIncreNumber.setText("" + getAddeddat.data?.invoiceDetails!![0].invoiceNumber!!)
-                    if (pdfFileUrl!!.isNotEmpty()) {
-                        val intent =
-                            Intent(
-                                this@InvoiceCreateFormActivity,
-                                InvoicePdfViewActivity::class.java
-                            )
-                        intent.putExtra("InvoicePdfLink", pdfFileUrl)
-                        intent.putExtra("InvoicePdfName", bussinessName)
-                        startActivity(intent)
-                    }
-                    Toast.makeText(
-                        this@InvoiceCreateFormActivity,
-                        "" + getAddeddat.msg,
-                        Toast.LENGTH_SHORT
-                    ).show()
+        }
+
+        viewModel.getAddedInvoiceList.observe(this@InvoiceCreateFormActivity) { getAddeddat ->
+            if (getAddeddat.status.equals("success")) {
+                val pdfFileUrl = getAddeddat.data?.invoiceDetails!![0].pdf
+                val bussinessName = getAddeddat.data?.invoiceDetails!![0].bussinessName
+
+                binding.InvoiceIncreNumber.setText("" + getAddeddat.data?.invoiceDetails!![0].invoiceNumber!!)
+                if (pdfFileUrl!!.isNotEmpty()) {
+                    val intent =
+                        Intent(
+                            this@InvoiceCreateFormActivity,
+                            InvoicePdfViewActivity::class.java
+                        )
+                    intent.putExtra("InvoicePdfLink", pdfFileUrl)
+                    intent.putExtra("InvoicePdfName", bussinessName)
+                    startActivity(intent)
+                    finish()
+                }
+                Toast.makeText(
+                    this@InvoiceCreateFormActivity,
+                    "" + getAddeddat.msg,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        binding.ItemsDiscountAmount.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                // Called after text is changed
+                Log.d("TextWatcher", "After: ${s.toString()}")
+                if (s.toString().isNotEmpty()) {
+                    DisountAmount =
+                        binding.ItemsDiscountAmount.text.toString().replace("₹", "").trim()
+                            .toDouble() ?: 0.0
+                    finalTotalAmount = TotalAmount - DisountAmount
+                    binding.ItemsFinalAmount.text = "" + finalTotalAmount
                 }
             }
 
-            binding.ItemsDiscountAmount.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    // Called after text is changed
-                    Log.d("TextWatcher", "After: ${s.toString()}")
-                    if (s.toString().isNotEmpty()) {
-                        DisountAmount =
-                            binding.ItemsDiscountAmount.text.toString().replace("₹", "").trim()
-                                .toDouble() ?: 0.0
-                        finalTotalAmount = TotalAmount - DisountAmount
-                        binding.ItemsFinalAmount.text = "" + finalTotalAmount
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+                // Called before text is changed
+                Log.d("TextWatcher", "Before: ${s.toString()}")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Called while text is changing
+                Log.d("TextWatcher", "OnChange: ${s.toString()}")
+            }
+        })
+
+        adapter =
+            InvoiceAddedItemDataAdapter(
+                DynamicitemList,
+                onItemClick = { listOfDynamic, position ->
+                    DynamicitemList.removeAt(position)
+                    adapter.notifyDataSetChanged()
+                    println("dyanmicList == ${DynamicitemList.size}")
+                    if (DynamicitemList.size != 0) {
+                        TotalAmount -= listOfDynamic.total_amt!!.toDouble()
+                        //  finalTotalAmount = TotalAmount + DisountAmount
+                        val finalTotalAmountNew = (TotalAmount + DisountAmount).toBigDecimal()
+                            .setScale(2, RoundingMode.HALF_UP)
+                        finalTotalAmount = finalTotalAmountNew.toDouble()
+                        val total = String.format("%.2f", finalTotalAmount)
+                        val totalAmt = String.format("%.2f", TotalAmount)
+                        binding.ItemsFinalAmount.text = "₹ " + total
+                        binding.ItemsTotalAmount.text = " ₹ " + totalAmt
+                        binding.ItemsDiscountAmount.setText(" ₹ " + DisountAmount)
+                        binding.DynamicItemCard.visibility = View.VISIBLE
+                    } else {
+                        TotalAmount = 0.0
+                        DisountAmount = 0.0
+                        binding.ItemsDiscountAmount.setText("")
+                        val total = String.format("%.2f", finalTotalAmount)
+                        binding.ItemsTotalAmount.text = " ₹ " + total
+                        binding.DynamicItemCard.visibility = View.GONE
                     }
-                }
+                },
+                onShowItem = { binding, clickItemPOs ->
 
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                    // Called before text is changed
-                    Log.d("TextWatcher", "Before: ${s.toString()}")
-                }
+                    println("selectedBus == $selectedBusinessState")
+                    println("selectedCus == $selectedCustomerState")
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    // Called while text is changing
-                    Log.d("TextWatcher", "OnChange: ${s.toString()}")
-                }
-            })
+                    if (selectedBusinessState == selectedCustomerState) {
+                        for (i in listOfGstList.indices) {
+                            if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
+                                val totalGST = listOfGstList[i].gst
+                                val result = splitGST(totalGST!!)
+                                if (result != null) {
+                                    val (sgstValu, cgstValu) = result
 
-            adapter =
-                InvoiceAddedItemDataAdapter(
-                    DynamicitemList,
-                    onItemClick = { listOfDynamic, position ->
-                        DynamicitemList.removeAt(position)
-                        adapter.notifyDataSetChanged()
-                        println("dyanmicList == ${DynamicitemList.size}")
-                        if (DynamicitemList.size != 0) {
-                            TotalAmount -= listOfDynamic.total_amt!!.toDouble()
-                            //  finalTotalAmount = TotalAmount + DisountAmount
-                            val finalTotalAmountNew = (TotalAmount + DisountAmount).toBigDecimal()
-                                .setScale(2, RoundingMode.HALF_UP)
-                            finalTotalAmount = finalTotalAmountNew.toDouble()
-                            val total = String.format("%.2f", finalTotalAmount)
-                            val totalAmt = String.format("%.2f", TotalAmount)
-                            binding.ItemsFinalAmount.text = "₹ " + total
-                            binding.ItemsTotalAmount.text = " ₹ " + totalAmt
-                            binding.ItemsDiscountAmount.setText(" ₹ " + DisountAmount)
-                            binding.DynamicItemCard.visibility = View.VISIBLE
-                        } else {
-                            TotalAmount = 0.0
-                            DisountAmount = 0.0
-                            binding.ItemsDiscountAmount.setText("")
-                            val total = String.format("%.2f", finalTotalAmount)
-                            binding.ItemsTotalAmount.text = " ₹ " + total
-                            binding.DynamicItemCard.visibility = View.GONE
-                        }
-                    },
-                    onShowItem = { binding, clickItemPOs ->
-
-                        println("selectedBus == $selectedBusinessState")
-                        println("selectedCus == $selectedCustomerState")
-
-                        if (selectedBusinessState == selectedCustomerState) {
-                            for (i in listOfGstList.indices) {
-                                if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
-                                    val totalGST = listOfGstList[i].gst
-                                    val result = splitGST(totalGST!!)
-                                    if (result != null) {
-                                        val (sgstValu, cgstValu) = result
-
-                                        val coloredText =
-                                            SpannableString("SGST : $sgstValu % , CGST : $cgstValu %")
-
-                                        coloredText.setSpan(
-                                            ForegroundColorSpan(Color.RED), // You can use any color
-                                            0,
-                                            6, // "SGST :" length
-                                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                                        )
-
-                                        val cgstStart = coloredText.indexOf("CGST")
-                                        val cgstEnd = cgstStart + 6 // length of "CGST :"
-                                        coloredText.setSpan(
-                                            ForegroundColorSpan(Color.RED),
-                                            cgstStart,
-                                            cgstEnd,
-                                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                                        )
-
-                                        binding.itemCGstSplit.text = coloredText
-                                    }
-                                }
-                            }
-                        } else {
-                            for (i in listOfGstList.indices) {
-                                if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
                                     val coloredText =
-                                        SpannableString("IGST : ${listOfGstList[i].gst}%")
-                                    clickItemPOs.Igst = listOfGstList[i].gst
+                                        SpannableString("SGST : $sgstValu % , CGST : $cgstValu %")
+
                                     coloredText.setSpan(
                                         ForegroundColorSpan(Color.RED), // You can use any color
                                         0,
@@ -871,108 +819,136 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                                     )
 
+                                    val cgstStart = coloredText.indexOf("CGST")
+                                    val cgstEnd = cgstStart + 6 // length of "CGST :"
+                                    coloredText.setSpan(
+                                        ForegroundColorSpan(Color.RED),
+                                        cgstStart,
+                                        cgstEnd,
+                                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                    )
+
                                     binding.itemCGstSplit.text = coloredText
                                 }
                             }
+                        }
+                    } else {
+                        for (i in listOfGstList.indices) {
+                            if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
+                                val coloredText =
+                                    SpannableString("IGST : ${listOfGstList[i].gst}%")
+                                clickItemPOs.Igst = listOfGstList[i].gst
+                                coloredText.setSpan(
+                                    ForegroundColorSpan(Color.RED), // You can use any color
+                                    0,
+                                    6, // "SGST :" length
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
 
+                                binding.itemCGstSplit.text = coloredText
+                            }
                         }
 
-                    },
-                    OnEditClick = { clickId, pos, listOfDynamic ->
-                        val intent = Intent(
-                            this@InvoiceCreateFormActivity,
-                            InvoiceAddItemFormActivity::class.java
-                        )
-                        intent.putExtra("OffLineEdit", 1)
-                        intent.putExtra("clickDataId", clickId.item_id)
-                        positionOfEDit = pos
-                        clickEditId = clickId.item_id!!
-                        println("dynamicList --Sze ${DynamicitemList.size}")
-                        val addedData = Gson().toJson(DynamicitemList)
-                        println("DynamicList == $addedData")
-                        preference.putString(
-                            this@InvoiceCreateFormActivity,
-                            "INVOICE_SET_LIST",
-                            addedData
-                        )
-                        //     intent.putExtra("INVOICE_SET_LIST", addedData)
-                        selectItemEditLauncher.launch(intent)
-                    })
-            val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-            val currentDate = sdf.format(Date())
-            binding.InvoiceDate.text = currentDate
-
-            val sdf1 = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val currentDate1 = sdf1.format(Date())
-            selectedDate = currentDate1
-            binding.InvoicePaymentType.setOnCheckedChangeListener { group, checkedId ->
-
-                when (checkedId) {
-                    R.id.InvoicePaid -> {
-                        selectedPaymentType = 1
-                        binding.InvoicePaidAmountLay.visibility = View.VISIBLE
-                        binding.InvoiceDueDateLay.visibility = View.GONE
-                        binding.InvoiceRemarkLay.visibility = View.VISIBLE
-                        binding.InvoiceDueDateEdit.text = ""
-                        // binding.InvoiceTermsAndCondition.visibility = View.VISIBLE
                     }
 
-                    R.id.InvoiceUnPaid -> {
-                        selectedPaymentType = 3
-                        binding.InvoicePaidAmountLay.visibility = View.GONE
-                        binding.InvoiceDueDateLay.visibility = View.GONE
-                        binding.InvoiceRemarkLay.visibility = View.VISIBLE
-                        binding.InvoiceDueDateEdit.text = ""
-                        //   binding.InvoiceTermsAndCondition.visibility = View.VISIBLE
-                    }
+                },
+                OnEditClick = { clickId, pos, listOfDynamic ->
+                    val intent = Intent(
+                        this@InvoiceCreateFormActivity,
+                        InvoiceAddItemFormActivity::class.java
+                    )
+                    intent.putExtra("OffLineEdit", 1)
+                    intent.putExtra("clickDataId", clickId.item_id)
+                    positionOfEDit = pos
+                    clickEditId = clickId.item_id!!
+                    println("dynamicList --Sze ${DynamicitemList.size}")
+                    val addedData = Gson().toJson(DynamicitemList)
+                    println("DynamicList == $addedData")
+                    preference.putString(
+                        this@InvoiceCreateFormActivity,
+                        "INVOICE_SET_LIST",
+                        addedData
+                    )
+                    //     intent.putExtra("INVOICE_SET_LIST", addedData)
+                    selectItemEditLauncher.launch(intent)
+                })
+        val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        val currentDate = sdf.format(Date())
+        binding.InvoiceDate.text = currentDate
 
-                    R.id.InvoicePartiallyPaid -> {
-                        selectedPaymentType = 2
-                        binding.InvoicePaidAmountLay.visibility = View.VISIBLE
-                        binding.InvoiceDueDateLay.visibility = View.VISIBLE
-                        binding.InvoiceDueDateEdit.text = currentDate
-                        binding.InvoiceRemarkLay.visibility = View.VISIBLE
-                        // binding.InvoiceTermsAndCondition.visibility = View.VISIBLE
-                    }
+        val sdf1 = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val currentDate1 = sdf1.format(Date())
+        selectedDate = currentDate1
+        binding.InvoicePaymentType.setOnCheckedChangeListener { group, checkedId ->
+
+            when (checkedId) {
+                R.id.InvoicePaid -> {
+                    selectedPaymentType = 1
+                    binding.InvoicePaidAmountLay.visibility = View.VISIBLE
+                    binding.InvoiceDueDateLay.visibility = View.GONE
+                    binding.InvoiceRemarkLay.visibility = View.VISIBLE
+                    binding.InvoiceDueDateEdit.text = ""
+                    // binding.InvoiceTermsAndCondition.visibility = View.VISIBLE
                 }
 
+                R.id.InvoiceUnPaid -> {
+                    selectedPaymentType = 3
+                    binding.InvoicePaidAmountLay.visibility = View.GONE
+                    binding.InvoiceDueDateLay.visibility = View.GONE
+                    binding.InvoiceRemarkLay.visibility = View.VISIBLE
+                    binding.InvoiceDueDateEdit.text = ""
+                    //   binding.InvoiceTermsAndCondition.visibility = View.VISIBLE
+                }
+
+                R.id.InvoicePartiallyPaid -> {
+                    selectedPaymentType = 2
+                    binding.InvoicePaidAmountLay.visibility = View.VISIBLE
+                    binding.InvoiceDueDateLay.visibility = View.VISIBLE
+                    binding.InvoiceDueDateEdit.text = currentDate
+                    binding.InvoiceRemarkLay.visibility = View.VISIBLE
+                    // binding.InvoiceTermsAndCondition.visibility = View.VISIBLE
+                }
             }
-
-            /*     binding.InvoiceBusinessTypeText.setOnClickListener {
-                 showBottomSheet()
-             }
-     */
-            /*  binding.InvoiceCustomerName.setOnClickListener {
-              if (!binding.InvoiceCustomerName.text.toString().trim().equals("")) {
-                  showBottomSheet1()
-              }
-          }
-  */
-
-            binding.InvoiceDateLay.setOnClickListener {
-                val datePicker = InvoiceDatePickerDialog({ selectedDatePickerDate ->
-                    showDatePickerFormat(selectedDatePickerDate)
-                }, binding.InvoiceDate.text.toString().trim())
-                datePicker.show(supportFragmentManager, "datePicker")
-            }
-
-            binding.InvoiceDueDateEditLay.setOnClickListener {
-                val datePicker = InvoiceDatePickerDialog({ selectedDatePickerDate ->
-                    showDatePickerFormat(selectedDatePickerDate)
-                }, binding.InvoiceDueDateEdit.text.toString().trim())
-                datePicker.show(supportFragmentManager, "datePicker")
-            }
-            binding.InvoiceIncreNumber.setOnClickListener {
-                showInvoiceDialog()
-            }
-
-
-            binding.dynamicContainer.isNestedScrollingEnabled = true
-
-            binding.dynamicContainer.layoutManager = LinearLayoutManager(this)
-            binding.dynamicContainer.adapter = adapter
 
         }
+
+        /*     binding.InvoiceBusinessTypeText.setOnClickListener {
+             showBottomSheet()
+         }
+ */
+        /*  binding.InvoiceCustomerName.setOnClickListener {
+          if (!binding.InvoiceCustomerName.text.toString().trim().equals("")) {
+              showBottomSheet1()
+          }
+      }
+*/
+
+        binding.InvoiceDateLay.setOnClickListener {
+            val datePicker = InvoiceDatePickerDialog({ selectedDatePickerDate ->
+                showDatePickerFormat(selectedDatePickerDate)
+            }, binding.InvoiceDate.text.toString().trim())
+            datePicker.show(supportFragmentManager, "datePicker")
+        }
+
+        binding.InvoiceDueDateEditLay.setOnClickListener {
+            val datePicker = InvoiceDatePickerDialog({ selectedDatePickerDate ->
+                showDatePickerFormat(selectedDatePickerDate)
+            }, binding.InvoiceDueDateEdit.text.toString().trim())
+            datePicker.show(supportFragmentManager, "datePicker")
+        }
+        binding.InvoiceIncreNumberLay.setOnClickListener {
+            showInvoiceDialog()
+        }
+        binding.InvoiceIncreNumber.setOnClickListener {
+            showInvoiceDialog()
+        }
+
+        binding.dynamicContainer.isNestedScrollingEnabled = true
+
+        binding.dynamicContainer.layoutManager = LinearLayoutManager(this)
+        binding.dynamicContainer.adapter = adapter
+
+    }
 
 
     private fun showInvoiceDialog() {
@@ -990,7 +966,12 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         selectedInvoiceId = 0
 
         etPrefix.setText("INV$currentYear -")
-        etNextNumber.setText(""+ preference.getInt(this@InvoiceCreateFormActivity, "GEN_INVOICENUMBER"))
+        etNextNumber.setText(
+            "" + preference.getInt(
+                this@InvoiceCreateFormActivity,
+                "GEN_INVOICENUMBER"
+            )
+        )
         radioGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.radioAuto -> {
@@ -1016,12 +997,22 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 binding.InvoiceIncreNumber.isCursorVisible = false
                 binding.InvoiceIncreNumber.isFocusableInTouchMode = false
                 binding.InvoiceIncreNumber.isClickable = true
-                if (etNextNumber.text.toString().trim().isEmpty()){
-                    Toast.makeText(this@InvoiceCreateFormActivity, "Enter the invoice number", Toast.LENGTH_SHORT).show()
+                if (etNextNumber.text.toString().trim().isEmpty()) {
+                    Toast.makeText(
+                        this@InvoiceCreateFormActivity,
+                        "Enter the invoice number",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+                newInvoiceNumber = etNextNumber.text.toString().toInt()
+                val duplicateInvoice = listOfInvoiceList.any { it.invoiceNumber!!.contains("INV$currentYear -$newInvoiceNumber") }
+
+                if (duplicateInvoice) {
+                    Toast.makeText(this@InvoiceCreateFormActivity, "This invoice number is already created", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
-                newInvoiceNumber = etNextNumber.text.toString().toInt()
                 preference.putInt(
                     this@InvoiceCreateFormActivity,
                     "GEN_INVOICENUMBER",
@@ -1029,8 +1020,8 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 )
                 binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
             } else {
-                 binding.InvoiceIncreNumber.isFocusable = true
-                 binding.InvoiceIncreNumber.isFocusableInTouchMode = true
+                binding.InvoiceIncreNumber.isFocusable = true
+                binding.InvoiceIncreNumber.isFocusableInTouchMode = true
                 binding.InvoiceIncreNumber.isCursorVisible = true
                 binding.InvoiceIncreNumber.isClickable = true
                 binding.InvoiceIncreNumber.setText("")
@@ -1043,8 +1034,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
     }
 
 
-
-    private fun <T> showSearchableDialog(
+   /* private fun <T> showSearchableDialog(
         fromSpinner: Int,
         listOfState: MutableList<T>,
     ) {
@@ -1177,6 +1167,142 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
 
         }
 
+    }*/
+
+    private fun <T> showSearchableDialog(
+        fromSpinner: Int,
+        listOfState: MutableList<T>,
+    ) {
+        stateDialog =
+            Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+        stateDialog.setContentView(R.layout.invoice_master_search_dia)
+        stateDialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+        // Initialize views
+        val searchBar = stateDialog.findViewById<AppCompatEditText>(R.id.search_bar)
+        val recyclerView = stateDialog.findViewById<RecyclerView>(R.id.recycler_view)
+        val NoDataLay = stateDialog.findViewById<LinearLayout>(R.id.NoDataLay)
+        val AddItemCard = stateDialog.findViewById<CardView>(R.id.AddItemCard)
+        if (fromSpinner == 0) {
+            AddItemCard.visibility = View.GONE
+        }
+
+        val filteredList: MutableList<T> = mutableListOf()
+
+        filteredList.clear()
+        // Initialize adapter
+        filteredList.addAll(listOfState) // Initially show all items
+
+        val adapter = InvoiceMasterAdapter(
+            this@InvoiceCreateFormActivity,
+            filteredList,
+            "",
+            this,
+            2,
+            fromSpinner, onAddItemClick = {
+            },
+            onDeleteItem = { deleteId, pos, actionName ->
+
+            },
+            onSearchResult = {
+
+            }
+        )
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+
+        // Add search functionality
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(
+                searchQuery: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                filterData<T>(
+                    searchQuery,
+                    recyclerView,
+                    fromSpinner,
+                    listOfState,
+                    filteredList,
+                    NoDataLay,
+                    stateDialog,
+                    AddItemCard
+                )
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s!!.isEmpty()) {
+                    recyclerView.visibility = View.VISIBLE
+                    NoDataLay.visibility = View.GONE
+                }
+            }
+        })
+
+        stateDialog.show()
+    }
+
+    private fun <T> filterData(
+        searchQuery: CharSequence?,
+        recyclerView: RecyclerView,
+        fromSpinner: Int,
+        listOfState: MutableList<T>,
+        filteredList: MutableList<T>,
+        NoDataLay: LinearLayout,
+        stateDialog: Dialog,
+        AddItemCard: CardView
+    ) {
+        filteredList.clear()
+        println("query == $searchQuery")
+        if (searchQuery!!.trim().isEmpty() || searchQuery.trim().equals("")) {
+            filteredList.addAll(listOfState) // Show all items if the query is empty
+            println("filterSize == ${filteredList.size}")
+        } else {
+
+            filteredList.addAll(listOfState.filter { item ->
+                // Example: If the item is a State, filter by stateName
+                when (item) {
+                    is InvoiceGetDataMasterArray.GetCompanyDetailList -> item.bussinessName!!.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
+                    is InvoiceGetDataMasterArray.GetClientDetails -> item.name!!.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
+
+                    else -> {
+                        false
+                    }
+                }
+            })
+            if (filteredList.isEmpty()) {
+                // Display a message or take action if no results were found
+                println("filterSize 11  == ${filteredList.size}")
+                NoDataLay.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
+            } else {
+                println("filterSize 12  == ${filteredList.size}")
+                NoDataLay.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+            }
+        }
+        val adapter = InvoiceMasterAdapter(
+            this@InvoiceCreateFormActivity,
+            filteredList,
+            searchQuery.toString(),
+            this,
+            2,
+            fromSpinner, onAddItemClick = {
+
+            }, onDeleteItem = { deleteId, pos,actionName ->
+
+            },
+            onSearchResult = {
+
+            }
+        ) // Pass the query
+        recyclerView.adapter = adapter
     }
 
 
@@ -1352,7 +1478,8 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         )
         map["bussiness_id"] = createPartFromString("" + selectedBusinessId)
         map["client_id"] = createPartFromString("" + selectedCustomerId)
-        map["invoice_number"] = createPartFromString("" + binding.InvoiceIncreNumber.text.toString().trim())
+        map["invoice_number"] =
+            createPartFromString("" + binding.InvoiceIncreNumber.text.toString().trim())
         map["order_no"] = createPartFromString("" + binding.InvoiceOrderId.text.toString().trim())
         map["invoice_date"] = createPartFromString("" + selectedDate)
         map["amt_type"] = createPartFromString("" + selectedPaymentType)
@@ -1536,7 +1663,11 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                         Total Discount
                     </td>
                     <td style="font-size: 22px;">
-                         ${if (binding.ItemsDiscountAmount.text.toString().isEmpty()) "-" else " ₹ " +binding.ItemsDiscountAmount.text}
+                         ${
+                if (binding.ItemsDiscountAmount.text.toString()
+                        .isEmpty()
+                ) "-" else " ₹ " + binding.ItemsDiscountAmount.text
+            }
                     </td>
                 </tr>
 

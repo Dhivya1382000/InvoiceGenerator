@@ -368,7 +368,7 @@
                             android:text="Un Paid"/>
 
                     </LinearLayout>
-                    <LinearLayout
+                <!--    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -391,7 +391,7 @@
                             android:textColor="@color/invoice_black"
                             android:text="Partially Paid"/>
 
-                    </LinearLayout>
+                    </LinearLayout>-->
 
 
                 </LinearLayout>

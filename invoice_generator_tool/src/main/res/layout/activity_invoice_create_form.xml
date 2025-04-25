@@ -255,17 +255,25 @@
 
                   </RelativeLayout>-->
 
-                <RelativeLayout
+       <!--         <RelativeLayout
+                    android:id="@+id/InvoiceIncreNumberLay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingStart="5dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="5dp"
+                        android:paddingBottom="10dp">
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/InvoiceIncreNumber"
@@ -280,9 +288,83 @@
                             android:cursorVisible="false"
                             android:clickable="true"
                             android:inputType="textCapSentences"
-                            android:padding="15dp"
+                            android:paddingStart="5dp"
+                            android:paddingTop="7dp"
+                            android:paddingEnd="5dp"
+                            android:paddingBottom="7dp"
                             android:textColor="@color/invoice_black"
                             android:textSize="15dp" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/InvoiceSettings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/invoice_setting"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="10dp"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:background="@color/invoice_white"
+                        android:fontFamily="@font/lexend_medium"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="Invoice No*"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="#000"
+                        android:textSize="12dp" />
+
+                </RelativeLayout>-->
+
+                <RelativeLayout
+                    android:id="@+id/InvoiceIncreNumberLay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/invoice_textfield_background"
+                        android:gravity="center"
+                        android:paddingStart="5dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="5dp"
+                        android:paddingBottom="10dp">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/InvoiceIncreNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:fontFamily="@font/lexend_medium"
+                            android:paddingStart="5dp"
+                            android:paddingTop="7dp"
+                            android:paddingEnd="5dp"
+                            android:paddingBottom="7dp"
+                            android:hint="Invoice No"
+                            android:focusable="false"
+                            android:cursorVisible="false"
+                            android:clickable="true"
+                            android:textColor="@color/invoice_black"
+                            android:textSize="15dp" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/InvoiceSettings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/invoice_setting"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="10dp"/>
 
                     </LinearLayout>
 
@@ -351,14 +433,21 @@
                     android:id="@+id/InvoiceDateLay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/invoice_textfield_background"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:paddingStart="5dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="5dp"
+                        android:paddingBottom="10dp">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/InvoiceDate"
@@ -368,16 +457,34 @@
                             android:layout_weight="1"
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
-                            android:hint="Invoice Date"
-                            android:inputType="textCapSentences"
-                            android:padding="15dp"
+                            android:hint="Customer"
+                            android:paddingStart="5dp"
+                            android:paddingTop="7dp"
+                            android:paddingEnd="5dp"
+                            android:paddingBottom="7dp"
                             android:textColor="@color/invoice_black"
                             android:textSize="15dp" />
 
-                        <ImageView
+                        <!-- <androidx.appcompat.widget.AppCompatTextView
+                             android:id="@+id/InvoiceCustomerAdd"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:layout_marginStart="10dp"
+                             android:background="@null"
+                             android:fontFamily="@font/lexend_medium"
+                             android:paddingStart="5dp"
+                             android:paddingTop="7dp"
+                             android:paddingEnd="5dp"
+                             android:paddingBottom="7dp"
+                             android:text="Select"
+                             android:textColor="@color/invoice_pink"
+                             android:textSize="12dp" />-->
+
+                        <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="5dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginEnd="15dp"
                             android:src="@drawable/invoice_datepicker_icon" />
 
                     </LinearLayout>
@@ -393,8 +500,7 @@
                         android:text="Invoice Date*"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textColor="#000"
-                        android:textSize="12dp" />
-
+                        android:textSize="12sp" />
 
                 </RelativeLayout>
 
@@ -728,7 +834,7 @@
                             android:background="@null"
                             android:fontFamily="@font/lexend_medium"
                             android:hint="Paid Amount"
-                            android:inputType="number"
+                            android:inputType="numberDecimal"
                             android:padding="15dp"
                             android:textColor="@color/invoice_black"
                             android:textSize="15dp" />
