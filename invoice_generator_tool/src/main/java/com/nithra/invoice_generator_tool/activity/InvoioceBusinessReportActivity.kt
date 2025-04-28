@@ -255,8 +255,10 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         val recyclerView = stateDialog.findViewById<RecyclerView>(R.id.recycler_view)
         val NoDataLay = stateDialog.findViewById<LinearLayout>(R.id.NoDataLay)
         val AddItemCard = stateDialog.findViewById<CardView>(R.id.AddItemCard)
+        if (fromSpinner == 0) {
+            AddItemCard.visibility = View.GONE
+        }
 
-        AddItemCard.visibility = View.GONE
         val filteredList: MutableList<T> = mutableListOf()
 
         filteredList.clear()
@@ -270,7 +272,8 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             this,
             2,
             fromSpinner, onAddItemClick = {
-            }, onDeleteItem = { deleteId, pos, actionName ->
+            },
+            onDeleteItem = { deleteId, pos, actionName ->
 
             },
             onSearchResult = {
@@ -336,31 +339,16 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                         searchQuery,
                         ignoreCase = true
                     )
+                    is InvoiceGetDataMasterArray.GetClientDetails -> item.name!!.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
 
                     else -> {
                         false
                     }
                 }
             })
-
-            val adapter = InvoiceMasterAdapter(
-                this@InvoioceBusinessReportActivity,
-                filteredList,
-                searchQuery.toString(),
-                this,
-                2,
-                fromSpinner, onAddItemClick = {
-
-                },
-                onDeleteItem = { deleteId, pos, actionName ->
-
-                },
-                onSearchResult = {
-
-                }
-            ) // Pass the query
-            recyclerView.adapter = adapter
-
             if (filteredList.isEmpty()) {
                 // Display a message or take action if no results were found
                 println("filterSize 11  == ${filteredList.size}")
@@ -371,10 +359,23 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 NoDataLay.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
             }
-            adapter.notifyDataSetChanged()
-
         }
+        val adapter = InvoiceMasterAdapter(
+            this@InvoioceBusinessReportActivity,
+            filteredList,
+            searchQuery.toString(),
+            this,
+            2,
+            fromSpinner, onAddItemClick = {
 
+            }, onDeleteItem = { deleteId, pos,actionName ->
+
+            },
+            onSearchResult = {
+
+            }
+        ) // Pass the query
+        recyclerView.adapter = adapter
     }
 
     /*@Composable

@@ -651,6 +651,17 @@
                             android:textSize="12dp" />
 
                     </RelativeLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:background="@color/invoice_white"
+                        android:fontFamily="@font/lexend_medium"
+                        android:text="Bank Details : "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="#000"
+                        android:textSize="15dp"
+                        android:layout_marginTop="5dp"/>
 
                     <RelativeLayout
                         android:layout_width="match_parent"
