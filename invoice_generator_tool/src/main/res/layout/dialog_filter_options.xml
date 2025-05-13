@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    app:cardCornerRadius="15dp"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:orientation="vertical">
+        <!-- Title -->
+        <TextView
+            android:id="@+id/dialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Filter Type"
+            android:textSize="18sp"
+            android:textColor="@color/invoice_pink"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+        <!-- Radio Group with 7 options -->
+        <RadioGroup
+            android:id="@+id/radioGroupOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/yesterdayOption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Yesterday" />
+
+            <RadioButton
+                android:id="@+id/todayOption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today" />
+
+            <RadioButton
+                android:id="@+id/lastWeekOption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Last Week" />
+
+            <RadioButton
+                android:id="@+id/thisWeekOption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This Week" />
+
+            <RadioButton
+                android:id="@+id/lastMonthOption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Last Month" />
+
+            <RadioButton
+                android:id="@+id/thisMonthOption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This Month" />
+
+            <!-- <RadioButton
+                 android:id="@+id/CustomOption"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="Custom" />
+     -->
+        </RadioGroup>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,6 +1,8 @@
 package com.nithra.invoice_generator_tool.activity
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Paint
@@ -9,8 +11,14 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
+import android.widget.ListView
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -42,6 +50,9 @@ import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import com.nithra.invoice_generator_tool.viewmodel.InvoiceViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -58,7 +69,6 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
     var preference = InvioceSharedPreference()
     var selectedBusinessId = 0
     var selectedBusinessState = ""
-
 
     private val selectItemLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -81,12 +91,10 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityInvoioceBusinessReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolBarTitle)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.invoice_back_arrow) // Custom Image
 
@@ -95,9 +103,13 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             onBackPressedDispatcher.onBackPressed()
         }
 
+
         listOfGetInvoicePieChart = arrayListOf()
 
         loadMasterData()
+
+        // Automatically load "This Month" data on screen load
+        handleDateFilter("This Month")
 
         viewmodel.errorMessage.observe(this@InvoioceBusinessReportActivity) {
             println("eror ==== $it")
@@ -203,6 +215,124 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
     }
 
+    private fun showFilterDialog() {
+        val dialog = Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_filter_options, null)
+        dialog.setContentView(dialogView)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.radioGroupOptions)
+
+        // Handle radio button click directly
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            val selectedRadioButton = dialogView.findViewById<RadioButton>(checkedId)
+            val selectedOption = selectedRadioButton.text.toString()
+            handleDateFilter(selectedOption)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+
+    private fun handleDateFilter(option: String) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val startDate: String
+        val endDate: String
+
+        when (option) {
+            "Yesterday" -> {
+                calendar.add(Calendar.DAY_OF_YEAR, -1)
+                startDate = dateFormat.format(calendar.time)
+                endDate = startDate
+                println("yesterdaystartDate == $startDate")
+                println("yesterdayendDate == $endDate")
+            }
+            "Today" -> {
+                startDate = dateFormat.format(calendar.time)
+                endDate = startDate
+                println("todaystartDate == $startDate")
+                println("todayendDate == $endDate")
+            }
+            "Last Week" -> {
+                calendar.add(Calendar.WEEK_OF_YEAR, -1)
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                startDate = dateFormat.format(calendar.time)
+                calendar.add(Calendar.DAY_OF_WEEK, 7)
+                endDate = dateFormat.format(calendar.time)
+
+                println("lastWeekstartDate == $startDate")
+                println("lastweekenddate====$endDate")
+
+            }
+            "This Week" -> {
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                startDate = dateFormat.format(calendar.time)
+                calendar.add(Calendar.DAY_OF_WEEK, 6)
+                endDate = dateFormat.format(calendar.time)
+            }
+            "Last 7 Days" -> {
+                calendar.add(Calendar.DAY_OF_YEAR, -6)
+                startDate = dateFormat.format(calendar.time)
+                endDate = dateFormat.format(calendar.time)
+            }
+            "Last Month" -> {
+                calendar.add(Calendar.MONTH, -1)
+                calendar.set(Calendar.DAY_OF_MONTH, 1)
+                startDate = dateFormat.format(calendar.time)
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                endDate = dateFormat.format(calendar.time)
+            }
+            "This Month" -> {
+                calendar.set(Calendar.DAY_OF_MONTH, 1)
+                startDate = dateFormat.format(calendar.time)
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                endDate = dateFormat.format(calendar.time)
+            }
+            "Custom" -> {
+                showCustomDatePicker()
+                return
+            }
+            else -> {
+                // Default to today's date
+                startDate = dateFormat.format(calendar.time)
+                endDate = startDate
+            }
+        }
+
+        // Call your API with the selected date range
+        loadPiechart(startDate, endDate)
+
+    }
+
+    private fun showCustomDatePicker() {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+
+        // Start Date Picker
+        val startDatePicker = DatePickerDialog(this, { _, startYear, startMonth, startDay ->
+            val startCalendar = Calendar.getInstance()
+            startCalendar.set(startYear, startMonth, startDay)
+            val startDate = dateFormat.format(startCalendar.time)
+
+            // End Date Picker
+            val endDatePicker = DatePickerDialog(this, { _, endYear, endMonth, endDay ->
+                val endCalendar = Calendar.getInstance()
+                endCalendar.set(endYear, endMonth, endDay)
+                val endDate = dateFormat.format(endCalendar.time)
+
+                // Call your API with the selected date range
+                loadPiechart(startDate, endDate)
+
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+
+            endDatePicker.show()
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+
+        startDatePicker.show()
+    }
+
     private fun loadMasterData() {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
@@ -220,27 +350,23 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         }
     }
 
-    private fun loadPiechart() {
+    private fun loadPiechart(startDate: String = "", endDate: String = "") {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "picChartReport"
-            InputMap["user_id"] = "" + preference.getString(this@InvoioceBusinessReportActivity,"INVOICE_USER_ID")
-            InputMap["company_id"] = "" + clickDataId
+            InputMap["user_id"] = preference.getString(this, "INVOICE_USER_ID") ?: ""
+            InputMap["company_id"] = "$clickDataId"
+            InputMap["startDate"] = startDate
+            InputMap["endDate"] = endDate
 
-            println("InvoiceRequest - $_TAG == $InputMap")
-            InvoiceUtils.loadingProgress(
-                this@InvoioceBusinessReportActivity,
-                InvoiceUtils.messageLoading, false
-            ).show()
+            println("InvoiceRequesttt - $_TAG == $InputMap")
+            InvoiceUtils.loadingProgress(this, InvoiceUtils.messageLoading, false).show()
             viewmodel.getPieChart(InputMap)
         } else {
-            Toast.makeText(
-                this@InvoioceBusinessReportActivity,
-                "Check Your Internet Connection",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Check Your Internet Connection", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     private fun <T> showSearchableDialog(
         fromSpinner: Int,
@@ -378,254 +504,6 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         recyclerView.adapter = adapter
     }
 
-    /*@Composable
-    fun PieChart(
-        data: MutableList<InvoicePieChart.InvoiceDataList>,
-        totalAmount: Int,
-        status: String,
-        expenseAmount: Double
-    ) {
-        val filteredData = data.filter { it.amtType != null }
-
-        if (filteredData.isEmpty() && totalAmount <= 0) {
-            Log.e("PieChart", "No data to show!")
-            return
-        }
-
-        val totalCount = filteredData.sumOf { it.totalPaid ?: 0 } + totalAmount
-        if (totalCount == 0) {
-            Log.e("PieChart", "Total count is zero!")
-            return
-        }
-        // Prepare Data for Pie Chart
-        val dataWithPercentage = mutableListOf<Double>()
-
-        filteredData.forEach {
-            dataWithPercentage.add((it.totalPaid!!.toDouble() / totalCount) * 100)
-        }
-
-        if (expensesTotal > 0) {
-            dataWithPercentage.add((expensesTotal.toDouble() / totalCount) * 100)
-        }
-
-        val sweepAngles = dataWithPercentage.map { percentage -> (360 * (percentage / 100)).toFloat() }
-        val colors = listOf(colorResource(R.color.invoice_green_mild), colorResource(R.color.invoice_red_mild), colorResource(R.color.invoice_blue))
-
-        Canvas(modifier = Modifier.size(250.dp)) {
-            var startAngle = 0f
-            val radius = size.minDimension / 2
-
-            dataWithPercentage.forEachIndexed { index, percentage ->
-                val colornew = colors[index % colors.size]
-                val sweepAngle = sweepAngles[index]
-
-                // Draw Pie Slice
-                drawArc(
-                    color = colornew,
-                    startAngle = startAngle,
-                    sweepAngle = sweepAngle,
-                    useCenter = true
-                )
-                val typefacenew = Typeface.create("sans-serif", Typeface.BOLD)
-
-                // Calculate Text Position
-                val middleAngle = Math.toRadians((startAngle + sweepAngle / 2).toDouble())
-                val textX = radius + (radius / 1.7f) * cos(middleAngle).toFloat()
-                val textY = radius + (radius / 1.7f) * sin(middleAngle).toFloat()
-
-                // Draw Only Percentage Text
-                drawContext.canvas.nativeCanvas.drawText(
-                    "${percentage.toInt()}%",
-                    textX,
-                    textY,
-                    Paint().apply {
-                        color = Color.White.toArgb()
-                        textSize = 25f
-                        textAlign = Paint.Align.CENTER
-                        isFakeBoldText = true
-                        typeface = typefacenew  // Set the custom font
-                    }
-                )
-
-                startAngle += sweepAngle
-            }
-        }
-    }*/
-    /*    @Composable
-        fun PieChart(data: MutableList<InvoicePieChart.InvoiceDataList>, expensesTotal: Int, status: String) {
-            println("staus == $status")
-            if (status != "success") {
-                Log.e("PieChart", "Status is failure. Hiding chart.")
-                return
-            }
-
-            val filteredData = data.filter { it.amtType != null }
-
-            if (filteredData.isEmpty() && expensesTotal <= 0) {
-                Log.e("PieChart", "No data to show!")
-                return
-            }
-
-            val totalCount = filteredData.sumOf { it.totalPaid ?: 0 } + expensesTotal
-            if (totalCount == 0) {
-                Log.e("PieChart", "Total count is zero!")
-                return
-            }
-            // Prepare Data for Pie Chart
-            val dataWithPercentage = mutableListOf<Double>()
-            filteredData.forEach {
-                dataWithPercentage.add((it.totalPaid!!.toDouble() / totalCount) * 100)
-            }
-
-            if (expensesTotal > 0) {
-                dataWithPercentage.add((expensesTotal.toDouble() / totalCount) * 100)
-            }
-
-            val sweepAngles = dataWithPercentage.map { percentage -> (360 * (percentage / 100)).toFloat() }
-            val colors = listOf(
-                colorResource(R.color.invoice_green_mild),
-                colorResource(R.color.invoice_red_mild),
-                colorResource(R.color.invoice_blue)
-            )
-
-            Canvas(modifier = Modifier.size(250.dp)) {
-                var startAngle = 0f
-                val radius = size.minDimension / 2
-
-                dataWithPercentage.forEachIndexed { index, percentage ->
-                    val colornew = colors[index % colors.size]
-                    val sweepAngle = sweepAngles[index]
-
-                    // Draw Pie Slice
-                    drawArc(
-                        color = colornew,
-                        startAngle = startAngle,
-                        sweepAngle = sweepAngle,
-                        useCenter = true
-                    )
-
-                    // Calculate Text Position
-                    val middleAngle = Math.toRadians((startAngle + sweepAngle / 2).toDouble())
-                    val textX = radius + (radius / 1.7f) * cos(middleAngle).toFloat()
-                    val textY = radius + (radius / 1.7f) * sin(middleAngle).toFloat()
-
-                    // Draw Only Percentage Text
-                    drawContext.canvas.nativeCanvas.drawText(
-                        "${percentage.toInt()}%",
-                        textX,
-                        textY,
-                        Paint().apply {
-                            color = Color.White.toArgb()
-                            textSize = 25f
-                            textAlign = Paint.Align.CENTER
-                            isFakeBoldText = true
-                            typeface = Typeface.create("sans-serif", Typeface.BOLD)
-                        }
-                    )
-
-                    startAngle += sweepAngle
-                }
-            }
-        }*/
-
- /*   @Composable
-    fun PieChart(
-        data: List<InvoicePieChart.InvoiceDataList>,
-        totalAmount: Int,
-        status: String,
-        expenseAmount: Int
-    ) {
-        println("Status == $status")
-
-        if (status != "success") {
-            Log.e("PieChart", "Status is failure. Hiding chart.")
-            return
-        }
-
-        // Filter out data with valid amtType
-        val filteredData = data.filter { it.amtType != null }
-
-        if (filteredData.isEmpty() && totalAmount <= 0) {
-            Log.e("PieChart", "No data to show!")
-            return
-        }
-
-        // Calculate total count
-        val totalCount = filteredData.sumOf { it.totalPaid ?: 0 } + totalAmount
-        if (totalCount == 0) {
-            Log.e("PieChart", "Total count is zero!")
-            return
-        }
-
-        // Prepare Data for Pie Chart
-        val dataWithPercentage = mutableListOf<Double>()
-        val labels = mutableListOf<String>()
-
-        filteredData.forEach { item ->
-            val percentage = (item.totalPaid!!.toDouble() / totalCount) * 100
-            dataWithPercentage.add(percentage)
-            labels.add("Type ${item.amtType}")
-        }
-
-        if (expenseAmount > 0) {
-            dataWithPercentage.add((expenseAmount.toDouble() / totalCount) * 100)
-            labels.add("Expenses")
-        }
-
-        // Ensure we have exactly 4 slices, even if data is missing
-        while (dataWithPercentage.size < 4) {
-            dataWithPercentage.add(0.0)  // Fill missing parts with 0
-            labels.add("N/A")  // Placeholder label
-        }
-
-        val sweepAngles = dataWithPercentage.map { (it / 100) * 360f }
-        val colors = listOf(
-            colorResource(R.color.invoice_green_mild), // Green
-            colorResource(R.color.invoice_peack_green), // Orange
-            colorResource(R.color.invoice_red),  // Pink
-            colorResource(R.color.invoice_blue), // Blue
-        )
-
-        Canvas(modifier = Modifier.size(250.dp)) {
-            var startAngle = 0f
-            val radius = size.minDimension / 2
-
-            dataWithPercentage.forEachIndexed { index, percentage ->
-                val color1 = colors[index % colors.size]
-                val sweepAngle = sweepAngles[index].toFloat()
-
-                if (percentage > 0) { // Only draw if value is greater than 0
-                    drawArc(
-                        color = color1,
-                        startAngle = startAngle,
-                        sweepAngle = sweepAngle,
-                        useCenter = true
-                    )
-
-                    // Calculate Text Position
-                    val middleAngle = Math.toRadians((startAngle + sweepAngle / 2).toDouble())
-                    val textX = radius + (radius / 1.7f) * cos(middleAngle).toFloat()
-                    val textY = radius + (radius / 1.7f) * sin(middleAngle).toFloat()
-
-                    // Draw Percentage Text
-                    drawContext.canvas.nativeCanvas.drawText(
-                        "${percentage.toInt()}%",
-                        textX,
-                        textY,
-                        Paint().apply {
-                            color = Color.White.toArgb()
-                            textSize = 25f
-                            textAlign = Paint.Align.CENTER
-                            isFakeBoldText = true
-                            typeface = Typeface.create("sans-serif", Typeface.BOLD)
-                        }
-                    )
-                }
-                startAngle += sweepAngle
-            }
-        }
-    }*/
-
     @Composable
     fun PieChart(
         data: List<InvoicePieChart.InvoiceDataList>,
@@ -704,6 +582,22 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
                 startAngle += sweepAngle
             }
+        }
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.report_filter_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_filter -> {
+                showFilterDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

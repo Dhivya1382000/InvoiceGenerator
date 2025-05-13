@@ -59,4 +59,7 @@ interface InvoiceApiInterface {
 
     @POST("invoiceData")
     suspend fun homeReport(@Body requestMap: HashMap<String, Any>): InvoiceGetHomeReport
+
+    @POST("invoiceData")
+    suspend fun listdelete(@Body requestMap: HashMap<String, Any>): InvoiceGetHomeReport
 }
