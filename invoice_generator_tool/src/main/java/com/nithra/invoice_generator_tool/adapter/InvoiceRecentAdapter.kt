@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.activity.InvoicePdfViewActivity
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceRecentItemlistBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -17,7 +19,7 @@ class InvoiceRecentAdapter(
     var activity: Context,
     var listOfGetInvoicelist: MutableList<InvoiceGetInvoiceList>
 ) : RecyclerView.Adapter<InvoiceRecentAdapter.ViewHolder>() {
-
+var preference = InvioceSharedPreference()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -31,7 +33,7 @@ class InvoiceRecentAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.apply {
             val reversedPosition =  listOfGetInvoicelist.size - 1 - position // Reverse the order
-            val item = listOfGetInvoicelist[reversedPosition]
+            val item = listOfGetInvoicelist[position]
             //InvoiceCusName.text =item.clientName
             InvoiceNo.text = "" +item.invoiceNumber
             if (item.amtType!! == 1) {
@@ -64,6 +66,12 @@ class InvoiceRecentAdapter(
                     val intent = Intent(activity, InvoicePdfViewActivity::class.java)
                     intent.putExtra("InvoicePdfLink", pdfFileUrl)
                     intent.putExtra("InvoicePdfName", bussinessName)
+                    intent.putExtra("INVOICE_EDIT_ID", item.invoiceId)
+
+                    val invoiceObject = listOfGetInvoicelist[position] // Data class
+                    val jsonString = Gson().toJson(invoiceObject) // Convert to JSON
+                    preference.putString(activity,"INVOICE_PDF_LIST_DATA",jsonString)
+
                     activity.startActivity(intent)
                 }
             }
@@ -72,11 +80,6 @@ class InvoiceRecentAdapter(
     }
 
     override fun getItemCount(): Int {
-      /*  if (listOfGetInvoicelist.size >= 3) {
-            return 3
-        } else {
-            return listOfGetInvoicelist.size
-        }*/
         return listOfGetInvoicelist.size
 
     }

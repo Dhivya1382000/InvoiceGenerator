@@ -8,4 +8,9 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/invoice_download_icon"/>
 
+    <item
+        android:id="@+id/nav_edit"
+        android:title="Edit"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/invoice_edit_icon_menu"/>
 </menu>

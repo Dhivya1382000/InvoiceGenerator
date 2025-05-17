@@ -2,24 +2,29 @@ package com.nithra.invoice_generator_tool.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.activity.InvoicePdfViewActivity
 import com.nithra.invoice_generator_tool.databinding.FragmentInvoiceTabContentBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class InvoiceAllListAdapter(
     var context : Context,
-    private val itemList: MutableList<InvoiceGetInvoiceList>
+    val itemList: MutableList<InvoiceGetInvoiceList>
 ) :
     RecyclerView.Adapter<InvoiceAllListAdapter.InvoiceViewHolder>() {
+
+        var preference = InvioceSharedPreference()
 
     class InvoiceViewHolder(var binding: FragmentInvoiceTabContentBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -78,6 +83,11 @@ class InvoiceAllListAdapter(
                     val intent = Intent(context, InvoicePdfViewActivity::class.java)
                     intent.putExtra("InvoicePdfLink", pdfFileUrl)
                     intent.putExtra("InvoicePdfName", bussinessName)
+                    intent.putExtra("INVOICE_EDIT_ID", item.invoiceId)
+                    val invoiceObject = itemList[position] // Data class
+                    val jsonString = Gson().toJson(invoiceObject) // Convert to JSON
+
+                    preference.putString(context,"INVOICE_PDF_LIST_DATA",jsonString)
                     context.startActivity(intent)
                 }
             }

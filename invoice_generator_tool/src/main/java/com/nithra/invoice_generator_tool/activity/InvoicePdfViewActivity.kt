@@ -26,6 +26,7 @@ import com.nithra.invoice_generator_tool.pdfviewer.InvoicePdfViewer
 import com.nithra.invoice_generator_tool.pdfviewer.interfaces.OnErrorListener
 import com.nithra.invoice_generator_tool.pdfviewer.interfaces.OnPageChangedListener
 import com.nithra.invoice_generator_tool.pdfviewer.utils.PdfPageQuality
+import com.nithra.invoice_generator_tool.support.InvioceSharedPreference
 import com.nithra.invoice_generator_tool.support.InvoiceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,7 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnErrorListener {
+class   InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnErrorListener {
     private val REQUEST_CODE_LOAD = 367
     private lateinit var binding: InvoiceActivityPdfMainBinding
     var jathagam = ""
@@ -45,6 +46,8 @@ class InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnErr
     var PDFjathagamName = ""
     var DataFrom = 0
     var pdfName = ""
+    var InvoiceId = 0
+    var preference = InvioceSharedPreference()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,6 +58,7 @@ class InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnErr
         jathagam = "" + intent.getStringExtra("InvoicePdfLink")
         PDFjathagamName = "" + intent.getStringExtra("InvoicePdfName")
         DataFrom = intent.getIntExtra("DataFrom", 0)
+        InvoiceId = intent.getIntExtra("INVOICE_EDIT_ID", 0)
 
         setSupportActionBar(binding.toolbar)
 
@@ -151,6 +155,12 @@ class InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnErr
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.invoice_pdf_menu, menu)
+        val navEdit = menu!!.findItem(R.id.nav_edit)
+        if (InvoiceId == 0){
+            navEdit.setVisible(false)
+        }else{
+            navEdit.setVisible(true)
+        }
         return true
     }
 
@@ -172,6 +182,11 @@ class InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnErr
             return true
         } else if (item.itemId == android.R.id.home) {
             finish()
+            return true
+        }else if (item.itemId == R.id.nav_edit) {
+            val intent = Intent(this@InvoicePdfViewActivity,InvoiceCreateFormActivity::class.java)
+            intent.putExtra("INVOICE_EDIT_ID",InvoiceId)
+            startActivity(intent)
             return true
         }
 
@@ -298,5 +313,7 @@ class InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnErr
             false // ❌ Return failure
         }
     }
+
+
 
 }

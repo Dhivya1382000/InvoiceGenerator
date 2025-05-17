@@ -108,6 +108,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
     lateinit var htmlToPdfConvertor: InvoiceHtmlToPdfConvertor
     var filePart: File? = null
     var selectedInvoiceId = 0
+    var InvoiceEditId = 0
 
     private val selectItemLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -213,7 +214,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     invoiceBusinesMobile = itemList.mobile1!!
                     invoiceBusinesEmail = itemList.email!!
                     invoiceBusinessMobileNumber = itemList.bussiness_mobile!!
-                    invoiceBusinessState = itemList.state + "(" + itemList.state_id + ")"
+                    invoiceBusinessState = itemList.state + "(" + itemList.s_code + ")"
                     invoiceBankName = itemList.bank_name!!
                     invoiceBankAcc = itemList.bank_acoount_number!!
                     invoiceBankIFSC = itemList.ifsc_code!!
@@ -348,6 +349,11 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        if (intent != null) {
+            InvoiceEditId = intent.getIntExtra("INVOICE_EDIT_ID", 0)
+            println("InvoiceEdit == $InvoiceEditId")
+        }
+
         htmlToPdfConvertor = InvoiceHtmlToPdfConvertor(this@InvoiceCreateFormActivity)
 
 
@@ -375,7 +381,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         viewModel.errorMessage.observe(this@InvoiceCreateFormActivity) {
             binding.mainCusFormLay.visibility = View.VISIBLE
             InvoiceUtils.loadingDialog.dismiss()
-            Toast.makeText(this@InvoiceCreateFormActivity, "" + it, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@InvoiceCreateFormActivity, "Error" + it, Toast.LENGTH_SHORT).show()
         }
 
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
@@ -389,29 +395,125 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 listOfItemDetails.addAll(getMasterArray.itemList!!)
                 listOfGstList.addAll(getMasterArray.gst!!)
 
-                selectedCustomerId = listOfClientDetails[0].clientId!!
-                selectedBusinessId = listOfCompanyDetails[0].companyId!!
-                selectedCustomerState = listOfClientDetails[0].state!!
-                binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
-                invoiceBillingAddress = listOfCompanyDetails[0].billingAddress1!!
+                if (InvoiceEditId != 0) {
+                    val InvoicejsonString = preference.getString(
+                        this@InvoiceCreateFormActivity,
+                        "INVOICE_PDF_LIST_DATA"
+                    )
+                    val listType = object : TypeToken<InvoiceGetInvoiceList>() {}.type
+                    val invoiceList: InvoiceGetInvoiceList =
+                        Gson().fromJson(InvoicejsonString, listType)
 
-                invoiceBillingAddress = listOfCompanyDetails[0].billingAddress1!!
-                selectedBusinessState = listOfCompanyDetails[0].state!!
-                invoiceBusinessGSTId = listOfCompanyDetails[0].taxId!!
-                invoiceBusinessMobileNumber = listOfCompanyDetails[0].bussinessMobile!!
-                invoiceBusinessEmail = listOfCompanyDetails[0].email!!
-                invoiceBusinessState =
-                    listOfCompanyDetails[0].state + "(" + listOfCompanyDetails[0].stateId + ")"
-                invoiceBankName = listOfCompanyDetails[0].bankName!!
-                invoiceBankAcc = listOfCompanyDetails[0].bankAcoountNumber!!
-                invoiceBankIFSC = listOfCompanyDetails[0].ifscCode!!
-                invoiceBankMICR = listOfCompanyDetails[0].micrCode!!
-                invoiceBankAddress = listOfCompanyDetails[0].bankAddress!!
-                selectedBusinessState = listOfCompanyDetails[0].state!!
+                    selectedCustomerId = invoiceList.clientId!!
+                    selectedBusinessId = invoiceList.bussinessId!!
+                    selectedPaymentType = invoiceList.amtType!!
+                    binding.InvoicePaidAmount.setText("" + invoiceList.paidAmt)
+                    binding.InvoiceRemarkEdit.setText("" + invoiceList.remark)
 
+                    if (selectedPaymentType == 1) {
+                        binding.InvoicePaid.isChecked = true
+                        binding.InvoiceUnPaid.isChecked = false
+                        binding.InvoicePaidAmountLay.visibility = View.VISIBLE
+                        binding.InvoiceDueDateLay.visibility = View.GONE
+                        binding.InvoiceRemarkLay.visibility = View.VISIBLE
+                        binding.InvoiceDueDateEdit.text = ""
+                    } else {
+                        binding.InvoicePaid.isChecked = false
+                        binding.InvoiceUnPaid.isChecked = true
+                        binding.InvoicePaidAmountLay.visibility = View.GONE
+                        binding.InvoiceDueDateLay.visibility = View.GONE
+                        binding.InvoiceRemarkLay.visibility = View.VISIBLE
+                        binding.InvoiceDueDateEdit.text = ""
+                    }
+
+                    val client = listOfClientDetails.find { it.clientId == selectedCustomerId }
+                    selectedCustomerState = client!!.state!!
+
+                    binding.InvoiceBusinessTypeText.text = invoiceList.bussinessName
+                    binding.InvoiceCustomerName.text = invoiceList.clientName
+                    binding.InvoiceIncreNumberLay.isClickable = false
+                    binding.InvoiceIncreNumber.isClickable = false
+                    binding.InvoiceIncreNumber.setText(invoiceList.invoiceNumber)
+                    val userFormatText = formatForUser(invoiceList.invoiceDate!!)
+                    binding.InvoiceDate.setText(userFormatText)
+
+
+                    binding.DynamicItemCard.visibility = View.VISIBLE
+
+                    binding.ItemsFinalAmount.text = "₹ " + invoiceList.totalInvoiceAmt
+                    binding.ItemsTotalAmount.text = " ₹ " + invoiceList.totalInvoiceAmt
+                    binding.ItemsDiscountAmount.setText(" ₹ " + invoiceList.discountAmt)
+
+                    invoiceList.item?.forEach { itemList ->
+                        val dynamicList = InvoiceOfflineDynamicData()
+                        dynamicList.user_id = itemList.userId
+                        dynamicList.mobile = itemList.mobile
+                        dynamicList.item_id = itemList.itemId
+                        dynamicList.item_name = itemList.itemName
+                        dynamicList.amount = itemList.amount
+                        dynamicList.qty_type = itemList.qtyType
+                        dynamicList.qty = itemList.qty
+                        dynamicList.tax = itemList.tax
+                        dynamicList.description = itemList.description
+                        dynamicList.discount_type = itemList.discountType
+                        dynamicList.discount = itemList.discount
+                        dynamicList.hsn = itemList.hsn
+                        dynamicList.total_amt = itemList.totalAmt
+                        dynamicList.Igst = itemList.tax
+                        dynamicList.sgst = 0.0
+                        dynamicList.cgst = 0.0
+                        DynamicitemList.add(dynamicList)
+                    }
+
+
+                    val billingBusiness =
+                        listOfCompanyDetails.find { it.bussinessId == selectedBusinessId.toString() }
+                    invoiceBillingAddress = billingBusiness!!.billingAddress1!!
+                    selectedBusinessState = billingBusiness.state!!
+                    invoiceBusinessGSTId = billingBusiness.taxId!!
+                    invoiceBusinessMobileNumber = billingBusiness.bussinessMobile!!
+                    invoiceBusinessEmail = billingBusiness.email!!
+                    invoiceBusinessState =
+                        billingBusiness.state + "(" + billingBusiness.stateId + ")"
+                    invoiceBankName = billingBusiness.bankName!!
+                    invoiceBankAcc = billingBusiness.bankAcoountNumber!!
+                    invoiceBankIFSC = billingBusiness.ifscCode!!
+                    invoiceBankMICR = billingBusiness.micrCode!!
+                    invoiceBankAddress = billingBusiness.bankAddress!!
+
+                    adapter.notifyDataSetChanged()
+
+                } else {
+                    binding.InvoiceIncreNumberLay.isClickable = true
+                    binding.InvoiceIncreNumber.isClickable = true
+                    selectedCustomerId = listOfClientDetails[0].clientId!!
+                    selectedBusinessId = listOfCompanyDetails[0].companyId!!
+                    selectedCustomerState = listOfClientDetails[0].state!!
+                    binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
+                    invoiceBillingAddress = listOfCompanyDetails[0].billingAddress1!!
+                    selectedBusinessState = listOfCompanyDetails[0].state!!
+                    invoiceBusinessGSTId = listOfCompanyDetails[0].taxId!!
+                    invoiceBusinessMobileNumber = listOfCompanyDetails[0].bussinessMobile!!
+                    invoiceBusinessEmail = listOfCompanyDetails[0].email!!
+                    invoiceBusinessState =
+                        listOfCompanyDetails[0].state + "(" + listOfCompanyDetails[0].stateId + ")"
+                    invoiceBankName = listOfCompanyDetails[0].bankName!!
+                    invoiceBankAcc = listOfCompanyDetails[0].bankAcoountNumber!!
+                    invoiceBankIFSC = listOfCompanyDetails[0].ifscCode!!
+                    invoiceBankMICR = listOfCompanyDetails[0].micrCode!!
+                    invoiceBankAddress = listOfCompanyDetails[0].bankAddress!!
+
+
+                }
             }
             val hasStatusKey = listOfItemDetails.any { !it.status.isNullOrEmpty() } ?: false
             println("map === " + hasStatusKey) // Output: true or false
+
+            if (DynamicitemList.isEmpty()) {
+                binding.DynamicItemCard.visibility = View.GONE
+            } else {
+                binding.DynamicItemCard.visibility = View.VISIBLE
+            }
         }
 
         if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
@@ -421,11 +523,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 "" + preference.getString(this@InvoiceCreateFormActivity, "INVOICE_USER_ID")
             InputMap["type"] = "0"
             println("InvoiceRequest - ${InvoiceHomeScreen._TAG} == $InputMap")
-            /*InvoiceUtils.loadingProgress(
-                this@InvoiceCreateFormActivity,
-                "Loading please wait....",
-                false
-            )*/
             viewModel.getInvoiceList(InputMap)
         } else {
             Toast.makeText(
@@ -435,18 +532,28 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             ).show()
         }
         viewModel.getInvoiceList.observe(this@InvoiceCreateFormActivity) { getInvoice ->
-            if (getInvoice[0].status != "failure") {
-                val lastUnselected = getInvoice.lastOrNull { it.autoEntry == 0 }
-                if (lastUnselected != null) {
-                    val lastId = lastUnselected.invoiceNumber
-                    val parts = lastId!!.split("-")
-                    if (parts.size > 1) {
-                        newInvoiceNumber = parts[1].toInt()
-                        println("Number part: ${parts[1]}")  // Output: 1
+            if (InvoiceEditId == 0) {
+                if (getInvoice[0].status != "failure") {
+                    val lastUnselected = getInvoice.lastOrNull { it.autoEntry == 0 }
+                    if (lastUnselected != null) {
+                        val lastId = lastUnselected.invoiceNumber
+                        val parts = lastId!!.split("-")
+                        if (parts.size > 1) {
+                            newInvoiceNumber = parts[1].toInt()
+                            println("Number part: ${parts[1]}")  // Output: 1
+                        }
+                        listOfInvoiceList.addAll(getInvoice)
+                        newInvoiceNumber += 1
+                        // Check for duplicate invoice number
+                        preference.putInt(
+                            this@InvoiceCreateFormActivity,
+                            "GEN_INVOICENUMBER",
+                            newInvoiceNumber
+                        )
+                        binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
                     }
-                    listOfInvoiceList.addAll(getInvoice)
-                    newInvoiceNumber += 1
-                    // Check for duplicate invoice number
+                } else {
+                    newInvoiceNumber = 1
                     preference.putInt(
                         this@InvoiceCreateFormActivity,
                         "GEN_INVOICENUMBER",
@@ -455,21 +562,12 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
                 }
             } else {
-                newInvoiceNumber = 1
-                preference.putInt(
-                    this@InvoiceCreateFormActivity,
-                    "GEN_INVOICENUMBER",
-                    newInvoiceNumber
-                )
-                binding.InvoiceIncreNumber.setText("INV$currentYear -" + newInvoiceNumber)
+
             }
+
         }
 
-        if (DynamicitemList.isEmpty()) {
-            binding.DynamicItemCard.visibility = View.GONE
-        } else {
-            binding.DynamicItemCard.visibility = View.VISIBLE
-        }
+
 
         binding.InvoiceBusinessTypeSpinner.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
@@ -728,12 +826,13 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                         )
                     intent.putExtra("InvoicePdfLink", pdfFileUrl)
                     intent.putExtra("InvoicePdfName", bussinessName)
+                    intent.putExtra("INVOICE_EDIT_ID", 0)
                     startActivity(intent)
                     finish()
                 }
                 Toast.makeText(
                     this@InvoiceCreateFormActivity,
-                    "" + getAddeddat.msg,
+                    "addInvoice" + getAddeddat.msg,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -1006,10 +1105,15 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     return@setOnClickListener
                 }
                 newInvoiceNumber = etNextNumber.text.toString().toInt()
-                val duplicateInvoice = listOfInvoiceList.any { it.invoiceNumber!!.contains("INV$currentYear -$newInvoiceNumber") }
+                val duplicateInvoice =
+                    listOfInvoiceList.any { it.invoiceNumber!!.contains("INV$currentYear -$newInvoiceNumber") }
 
                 if (duplicateInvoice) {
-                    Toast.makeText(this@InvoiceCreateFormActivity, "This invoice number is already created", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@InvoiceCreateFormActivity,
+                        "This invoice number is already created",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
 
@@ -1034,140 +1138,140 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
     }
 
 
-   /* private fun <T> showSearchableDialog(
-        fromSpinner: Int,
-        listOfState: MutableList<T>,
-    ) {
-        stateDialog =
-            Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
-        stateDialog.setContentView(R.layout.invoice_master_search_dia)
-        stateDialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-        // Initialize views
-        val searchBar = stateDialog.findViewById<AppCompatEditText>(R.id.search_bar)
-        val recyclerView = stateDialog.findViewById<RecyclerView>(R.id.recycler_view)
-        val NoDataLay = stateDialog.findViewById<LinearLayout>(R.id.NoDataLay)
-        val AddItemCard = stateDialog.findViewById<CardView>(R.id.AddItemCard)
+    /* private fun <T> showSearchableDialog(
+         fromSpinner: Int,
+         listOfState: MutableList<T>,
+     ) {
+         stateDialog =
+             Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+         stateDialog.setContentView(R.layout.invoice_master_search_dia)
+         stateDialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+         // Initialize views
+         val searchBar = stateDialog.findViewById<AppCompatEditText>(R.id.search_bar)
+         val recyclerView = stateDialog.findViewById<RecyclerView>(R.id.recycler_view)
+         val NoDataLay = stateDialog.findViewById<LinearLayout>(R.id.NoDataLay)
+         val AddItemCard = stateDialog.findViewById<CardView>(R.id.AddItemCard)
 
-        AddItemCard.visibility = View.GONE
-        val filteredList: MutableList<T> = mutableListOf()
+         AddItemCard.visibility = View.GONE
+         val filteredList: MutableList<T> = mutableListOf()
 
-        filteredList.clear()
-        // Initialize adapter
-        filteredList.addAll(listOfState) // Initially show all items
+         filteredList.clear()
+         // Initialize adapter
+         filteredList.addAll(listOfState) // Initially show all items
 
-        val adapter = InvoiceMasterAdapter(
-            this@InvoiceCreateFormActivity,
-            filteredList,
-            "",
-            this,
-            2,
-            fromSpinner, onAddItemClick = {
-            }, onDeleteItem = { deleteId, pos, actionName ->
+         val adapter = InvoiceMasterAdapter(
+             this@InvoiceCreateFormActivity,
+             filteredList,
+             "",
+             this,
+             2,
+             fromSpinner, onAddItemClick = {
+             }, onDeleteItem = { deleteId, pos, actionName ->
 
-            },
-            onSearchResult = {
+             },
+             onSearchResult = {
 
-            }
-        )
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
+             }
+         )
+         recyclerView.layoutManager = LinearLayoutManager(this)
+         recyclerView.adapter = adapter
 
-        // Add search functionality
-        searchBar.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(
-                searchQuery: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
-                filterData<T>(
-                    searchQuery,
-                    recyclerView,
-                    fromSpinner,
-                    listOfState,
-                    filteredList,
-                    NoDataLay,
-                    stateDialog,
-                    AddItemCard
-                )
-            }
+         // Add search functionality
+         searchBar.addTextChangedListener(object : TextWatcher {
+             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+             override fun onTextChanged(
+                 searchQuery: CharSequence?,
+                 start: Int,
+                 before: Int,
+                 count: Int
+             ) {
+                 filterData<T>(
+                     searchQuery,
+                     recyclerView,
+                     fromSpinner,
+                     listOfState,
+                     filteredList,
+                     NoDataLay,
+                     stateDialog,
+                     AddItemCard
+                 )
+             }
 
-            override fun afterTextChanged(s: Editable?) {
-                if (s!!.isEmpty()) {
-                    recyclerView.visibility = View.VISIBLE
-                    NoDataLay.visibility = View.GONE
-                }
-            }
-        })
+             override fun afterTextChanged(s: Editable?) {
+                 if (s!!.isEmpty()) {
+                     recyclerView.visibility = View.VISIBLE
+                     NoDataLay.visibility = View.GONE
+                 }
+             }
+         })
 
-        stateDialog.show()
-    }
+         stateDialog.show()
+     }
 
-    private fun <T> filterData(
-        searchQuery: CharSequence?,
-        recyclerView: RecyclerView,
-        fromSpinner: Int,
-        listOfState: MutableList<T>,
-        filteredList: MutableList<T>,
-        NoDataLay: LinearLayout,
-        stateDialog: Dialog,
-        AddItemCard: CardView
-    ) {
-        filteredList.clear()
-        println("query == $searchQuery")
-        if (searchQuery!!.trim().isEmpty() || searchQuery.trim().equals("")) {
-            filteredList.addAll(listOfState) // Show all items if the query is empty
-            println("filterSize == ${filteredList.size}")
-        } else {
+     private fun <T> filterData(
+         searchQuery: CharSequence?,
+         recyclerView: RecyclerView,
+         fromSpinner: Int,
+         listOfState: MutableList<T>,
+         filteredList: MutableList<T>,
+         NoDataLay: LinearLayout,
+         stateDialog: Dialog,
+         AddItemCard: CardView
+     ) {
+         filteredList.clear()
+         println("query == $searchQuery")
+         if (searchQuery!!.trim().isEmpty() || searchQuery.trim().equals("")) {
+             filteredList.addAll(listOfState) // Show all items if the query is empty
+             println("filterSize == ${filteredList.size}")
+         } else {
 
-            filteredList.addAll(listOfState.filter { item ->
-                // Example: If the item is a State, filter by stateName
-                when (item) {
-                    is InvoiceGetDataMasterArray.GetCompanyDetailList -> item.bussinessName!!.contains(
-                        searchQuery,
-                        ignoreCase = true
-                    )
+             filteredList.addAll(listOfState.filter { item ->
+                 // Example: If the item is a State, filter by stateName
+                 when (item) {
+                     is InvoiceGetDataMasterArray.GetCompanyDetailList -> item.bussinessName!!.contains(
+                         searchQuery,
+                         ignoreCase = true
+                     )
 
-                    else -> {
-                        false
-                    }
-                }
-            })
+                     else -> {
+                         false
+                     }
+                 }
+             })
 
-            val adapter = InvoiceMasterAdapter(
-                this@InvoiceCreateFormActivity,
-                filteredList,
-                searchQuery.toString(),
-                this,
-                2,
-                fromSpinner, onAddItemClick = {
+             val adapter = InvoiceMasterAdapter(
+                 this@InvoiceCreateFormActivity,
+                 filteredList,
+                 searchQuery.toString(),
+                 this,
+                 2,
+                 fromSpinner, onAddItemClick = {
 
-                },
-                onDeleteItem = { deleteId, pos, actionName ->
+                 },
+                 onDeleteItem = { deleteId, pos, actionName ->
 
-                },
-                onSearchResult = {
+                 },
+                 onSearchResult = {
 
-                }
-            ) // Pass the query
-            recyclerView.adapter = adapter
+                 }
+             ) // Pass the query
+             recyclerView.adapter = adapter
 
-            if (filteredList.isEmpty()) {
-                // Display a message or take action if no results were found
-                println("filterSize 11  == ${filteredList.size}")
-                NoDataLay.visibility = View.VISIBLE
-                recyclerView.visibility = View.GONE
-            } else {
-                println("filterSize 12  == ${filteredList.size}")
-                NoDataLay.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
-            }
-            adapter.notifyDataSetChanged()
+             if (filteredList.isEmpty()) {
+                 // Display a message or take action if no results were found
+                 println("filterSize 11  == ${filteredList.size}")
+                 NoDataLay.visibility = View.VISIBLE
+                 recyclerView.visibility = View.GONE
+             } else {
+                 println("filterSize 12  == ${filteredList.size}")
+                 NoDataLay.visibility = View.GONE
+                 recyclerView.visibility = View.VISIBLE
+             }
+             adapter.notifyDataSetChanged()
 
-        }
+         }
 
-    }*/
+     }*/
 
     private fun <T> showSearchableDialog(
         fromSpinner: Int,
@@ -1266,6 +1370,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                         searchQuery,
                         ignoreCase = true
                     )
+
                     is InvoiceGetDataMasterArray.GetClientDetails -> item.name!!.contains(
                         searchQuery,
                         ignoreCase = true
@@ -1295,7 +1400,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             2,
             fromSpinner, onAddItemClick = {
 
-            }, onDeleteItem = { deleteId, pos,actionName ->
+            }, onDeleteItem = { deleteId, pos, actionName ->
 
             },
             onSearchResult = {
@@ -1334,6 +1439,14 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
 
         binding.InvoiceDate.text = displayDate
     }
+
+    fun formatForUser(input: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        val date = inputFormat.parse(input)
+        return outputFormat.format(date!!)
+    }
+
 
     private fun showBottomSheet() {
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -1494,7 +1607,9 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         map["total_invoice_amt"] = createPartFromString("" + total)
         map["discount_amt"] = createPartFromString("" + DisountAmount)
         map["auto_entry"] = createPartFromString("" + selectedInvoiceId)
-
+        if (InvoiceEditId != 0) {
+            map["id"] = createPartFromString("" + InvoiceEditId)
+        }
         for ((pos, i) in DynamicitemList.withIndex()) {
             map["item[$pos][item_id]"] = createPartFromString("" + i.item_id)
             map["item[$pos][amount]"] = createPartFromString("" + i.amount)

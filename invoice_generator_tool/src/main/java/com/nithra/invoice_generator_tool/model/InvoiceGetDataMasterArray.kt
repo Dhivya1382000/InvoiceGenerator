@@ -21,6 +21,14 @@ class InvoiceGetDataMasterArray {
         @SerializedName("english")
         @Expose
         var english: String? = ""
+
+        @SerializedName("status")
+        @Expose
+        var status: String? = ""
+
+        @SerializedName("s_code")
+        @Expose
+        var stateCode: String? = ""
     }
 
     @SerializedName("gst")
@@ -294,6 +302,11 @@ class InvoiceGetDataMasterArray {
         @SerializedName("total_amt")
         @Expose
         var totalAmt: String? = ""
+
+        @SerializedName("qty_type_label")
+        @Expose
+        var qtyTypeLabel: String? = ""
+
     }
 
     @SerializedName("unit_measurement")

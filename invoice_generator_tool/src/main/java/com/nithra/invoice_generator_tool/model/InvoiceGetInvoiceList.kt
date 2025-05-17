@@ -145,6 +145,10 @@ class InvoiceGetInvoiceList {
         @Expose
         var totalAmt: String? = ""
 
+        @SerializedName("hsn")
+        @Expose
+        var hsn: String? = ""
+
 
     }
 }

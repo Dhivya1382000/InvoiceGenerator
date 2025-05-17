@@ -24,6 +24,7 @@ class InvoiceOfflineDynamicData {
 
     //Business Detail list
     var state_id: Int? = 0
+    var s_code: String? = ""
     var state: String? = null
     var company_id: Int? = 0
     var bussiness_name: String? = null
