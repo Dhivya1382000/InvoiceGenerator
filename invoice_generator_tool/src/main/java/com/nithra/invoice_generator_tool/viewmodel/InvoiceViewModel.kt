@@ -336,5 +336,27 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
         }
     }
 
+    fun deleteData(InputMap: HashMap<String, Any>) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getItemdata(InputMap)
+                _getItemDetails.value = response
+                println("InvoiceResponse - $_TAG == ${_getItemDetails.value}")
+            } catch (e: SocketTimeoutException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            } catch (e: IOException) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            } catch (e: Exception) {
+                // Handle errors
+                println("exception == ${e.toString()}")
+                _errorMessage.value = e.message
+            }
+        }
+    }
+
 }
 

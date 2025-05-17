@@ -28,18 +28,15 @@ class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface
     suspend fun getCustomerDetail(requestInputMap: HashMap<String, Any>):InvoiceGetClientDetails {
         return api.getClientDetails(requestInputMap)
     }
-
     suspend fun getIndustries(requestInputMap: HashMap<String, Any>):InvoiceIndustrialAdd {
         return api.getIndustries(requestInputMap)
     }
     suspend fun getItemdata(requestInputMap: HashMap<String, Any>): InvoiceGetItemData {
         return api.getItemdata(requestInputMap)
     }
-
     suspend fun getInvoiceList(requestInputMap: HashMap<String, Any>):  MutableList<InvoiceGetInvoiceList> {
         return api.getInvoiceList(requestInputMap)
     }
-
     suspend fun getAddedList(
         requestInputMap: LinkedHashMap<String, RequestBody>,
         pdfPart: MultipartBody.Part?
@@ -63,5 +60,9 @@ class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface
     }
     suspend fun getHomeReportData(requestInputMap: HashMap<String, Any>): InvoiceGetHomeReport {
         return api.homeReport(requestInputMap)
+    }
+
+    suspend fun getDeletedata(requestInputMap: HashMap<String, Any>): InvoiceGetItemData {
+        return api.getItemdata(requestInputMap)
     }
 }

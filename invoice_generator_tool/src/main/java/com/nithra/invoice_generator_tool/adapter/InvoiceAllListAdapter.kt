@@ -1,5 +1,6 @@
 package com.nithra.invoice_generator_tool.adapter
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -64,6 +65,7 @@ class InvoiceAllListAdapter(
                     tvStatus.setTextColor(ContextCompat.getColor(context, R.color.invoice_peack_green))
                 }
             }
+
             if (item.clientName != ""){
                 tvUserName.text = item.clientName
             }else{
@@ -92,7 +94,7 @@ class InvoiceAllListAdapter(
                 }
             }
             holder.binding.menuIcon.setOnClickListener {
-                showPopupMenu(it)
+                showPopupMenu(it,position)
             }
 
 
@@ -109,7 +111,7 @@ class InvoiceAllListAdapter(
 
     override fun getItemCount(): Int = itemList.size
 
-    private fun showPopupMenu(view: View) {
+    private fun showPopupMenu(view: View,position: Int) {
         val popupMenu = PopupMenu(view.context, view)
         popupMenu.inflate(R.menu.invoice_list_pop)
 
@@ -120,8 +122,19 @@ class InvoiceAllListAdapter(
                 }
 
                 R.id.delete -> {
+                    AlertDialog.Builder(view.context)
+                        .setTitle("Delete Invoice")
+                        .setMessage("Are you sure you want to delete this invoice?")
+                        .setPositiveButton("Yes") { _, _ ->
+                            itemList.removeAt(position)
+                            notifyItemRemoved(position)
+                            notifyItemRangeChanged(position, itemList.size)
+                        }
+                        .setNegativeButton("No", null)
+                        .show()
                     true
                 }
+
 
                 else -> false
             }
