@@ -640,7 +640,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 1 }) //individual
                         println("listOfCompany -== ${listOfCompanyFilter.size}")
                     }
-                    if (listOfCompanyFilter.size != 0){
+                  /*  if (listOfCompanyFilter.size != 0){
                         binding.NoDataLay.visibility = View.GONE
                         binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
@@ -648,7 +648,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         binding.NoDataLay.visibility = View.VISIBLE
                         binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.GONE
-                    }
+                    }*/
                     setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(
                         0,
                         listOfCompanyFilter
