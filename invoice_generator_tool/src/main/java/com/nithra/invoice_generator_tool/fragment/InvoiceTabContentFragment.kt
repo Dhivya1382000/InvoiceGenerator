@@ -3,23 +3,16 @@ package com.nithra.invoice_generator_tool.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.nithra.invoice_generator_tool.R
-import com.nithra.invoice_generator_tool.activity.InvoiceAddExpenseFormActivity
-import com.nithra.invoice_generator_tool.activity.InvoiceAddItemFormActivity
-import com.nithra.invoice_generator_tool.activity.InvoiceBusinessAndCustomerActivity
-import com.nithra.invoice_generator_tool.activity.InvoiceBusinessAndCustomerActivity.Companion
-import com.nithra.invoice_generator_tool.activity.InvoiceBusinessDetailFormActivity
+import com.google.gson.Gson
+import com.nithra.invoice_generator_tool.activity.InvoiceCreateFormActivity
 import com.nithra.invoice_generator_tool.activity.InvoiceHomeScreen.Companion._TAG
-import com.nithra.invoice_generator_tool.activity.InvoiceNewCustomerFormActivity
+import com.nithra.invoice_generator_tool.activity.InvoiceHomeScreen.Companion.refreshRecentList
 import com.nithra.invoice_generator_tool.adapter.InvoiceAllListAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceAllDataBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
@@ -37,9 +30,14 @@ class InvoiceTabContentFragment : Fragment() {
     lateinit var listAdapter: InvoiceAllListAdapter
     var tabId = ""
     var preference = InvioceSharedPreference()
-
+    var listPos = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
     }
 
@@ -57,7 +55,7 @@ class InvoiceTabContentFragment : Fragment() {
             if (InvoiceUtils.isNetworkAvailable(requireContext())) {
                 val InputMap = HashMap<String, Any>()
                 InputMap["action"] = "getInvoiceList"
-                InputMap["user_id"] = ""+preference.getString(requireContext(),"INVOICE_USER_ID")
+                InputMap["user_id"] = "" + preference.getString(requireContext(), "INVOICE_USER_ID")
                 InputMap["type"] = "" + tabId
                 println("InvoiceRequest - $_TAG == $InputMap")
                 InvoiceUtils.loadingProgress(requireContext(), "Loading please wait....", false)
@@ -75,7 +73,7 @@ class InvoiceTabContentFragment : Fragment() {
         if (InvoiceUtils.isNetworkAvailable(requireContext())) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "getInvoiceList"
-            InputMap["user_id"] = ""+preference.getString(requireContext(),"INVOICE_USER_ID")
+            InputMap["user_id"] = "" + preference.getString(requireContext(), "INVOICE_USER_ID")
             InputMap["type"] = "" + tabId
             println("InvoiceRequest - $_TAG == $InputMap")
             InvoiceUtils.loadingProgress(requireContext(), "Loading please wait....", false)
@@ -89,27 +87,77 @@ class InvoiceTabContentFragment : Fragment() {
         }
 
         binding.tabRecycler.layoutManager = LinearLayoutManager(requireContext())
-        listAdapter = InvoiceAllListAdapter(requireContext(), listOfGetInvoicelist)
+        listAdapter =
+            InvoiceAllListAdapter(requireContext(), listOfGetInvoicelist, onDelete = { position ->
+                listPos = position
+                DeleteInvoice(listOfGetInvoicelist[position].invoiceId!!)
+            },onEditClick={clickEditId,pos->
+                val intent = Intent(requireContext(), InvoiceCreateFormActivity::class.java)
+                intent.putExtra("INVOICE_EDIT_ID",clickEditId)
+                val invoiceObject = listOfGetInvoicelist[pos] // Data class
+                val jsonString = Gson().toJson(invoiceObject) // Convert to JSON
+                preference.putString(activity,"INVOICE_PDF_LIST_DATA",jsonString)
+                startActivity(intent)
+            })
         binding.tabRecycler.adapter = listAdapter
 
         viewModel.getInvoiceList.observe(viewLifecycleOwner) { getInvoice ->
             InvoiceUtils.loadingDialog.dismiss()
             binding.SwipeLay.isRefreshing = false
+            refreshRecentList = false
             println("invoiceList == ${getInvoice.size}")
+            println("invoiceList listOfGetInvoicelist == ${listOfGetInvoicelist.size}")
             if (getInvoice.size != 0) {
-                binding.NoDataLay.visibility = View.GONE
-                binding.tabRecycler.visibility = View.VISIBLE
-                listOfGetInvoicelist.addAll(getInvoice)
                 if (getInvoice[0].status.equals("failure")) {
                     binding.NoDataLay.visibility = View.VISIBLE
                     binding.tabRecycler.visibility = View.GONE
+                }else{
+                    binding.NoDataLay.visibility = View.GONE
+                    binding.tabRecycler.visibility = View.VISIBLE
+                    listOfGetInvoicelist.addAll(getInvoice)
                 }
                 listAdapter.notifyDataSetChanged()
             }
         }
 
+        viewModel.deleteInvoiceData.observe(viewLifecycleOwner) { deleteRes ->
+            if (deleteRes["status"] == "success") {
+                Toast.makeText(requireContext(), "" + deleteRes["msg"], Toast.LENGTH_SHORT).show()
+                listAdapter.notifyListData(listPos)
+                println("invoiceListSize == "+listOfGetInvoicelist.size)
+                refreshRecentList = true
+                if (listOfGetInvoicelist.size == 0){
+                    binding.NoDataLay.visibility = View.VISIBLE
+                    binding.tabRecycler.visibility = View.GONE
+                }else{
+                    binding.NoDataLay.visibility = View.GONE
+                    binding.tabRecycler.visibility = View.VISIBLE
+                }
+                listAdapter.notifyDataSetChanged()
+
+            }
+        }
+
         return binding.root
 
+    }
+
+    private fun DeleteInvoice(invoiceId: Int) {
+        if (InvoiceUtils.isNetworkAvailable(requireContext())) {
+            val InputMap = HashMap<String, Any>()
+            InputMap["action"] = "deleteInvoiceDetails"
+            InputMap["id"] = "" + invoiceId
+
+            println("InvoiceRequest - $_TAG == $InputMap")
+            InvoiceUtils.loadingProgress(requireContext(), "Loading please wait....", false)
+            viewModel.deleteInvoiceData(InputMap)
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "Check Your Internet Connection",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
 
@@ -119,6 +167,33 @@ class InvoiceTabContentFragment : Fragment() {
         fun newInstance(tabId: String) = InvoiceTabContentFragment().apply {
             arguments = Bundle().apply {
                 putString("INVOICE_TAB_ID", tabId)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (listOfGetInvoicelist.isNotEmpty()){
+            listOfGetInvoicelist.clear()
+        }
+        if (refreshRecentList) {
+            if (InvoiceUtils.isNetworkAvailable(requireContext())) {
+                InvoiceUtils.loadingProgress(requireContext(), InvoiceUtils.messageLoading, false)
+                    .show()
+                val InputMap = HashMap<String, Any>()
+                InputMap["action"] = "getInvoiceList"
+                InputMap["user_id"] =
+                    "" + preference.getString(requireContext(), "INVOICE_USER_ID")
+                InputMap["type"] ="" + tabId
+
+                println("InvoiceRequest - $_TAG == $InputMap")
+                viewModel.getInvoiceList(InputMap)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Check Your Internet Connection",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

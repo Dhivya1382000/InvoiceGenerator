@@ -63,6 +63,9 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
     private val _getHomeChart= MutableLiveData<InvoiceGetHomeReport>()
     val getHomeChart: LiveData<InvoiceGetHomeReport> get() = _getHomeChart
 
+    private val _deleteInvoiceData = MutableLiveData<Map<String,Any>>()
+    val deleteInvoiceData: LiveData<Map<String,Any>> get() = _deleteInvoiceData
+
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
@@ -336,11 +339,11 @@ class InvoiceViewModel @Inject constructor(private val repository: InvoiceReposi
         }
     }
 
-    fun deleteData(InputMap: HashMap<String, Any>) {
+    fun deleteInvoiceData(InputMap: HashMap<String, Any>) {
         viewModelScope.launch {
             try {
-                val response = repository.getItemdata(InputMap)
-                _getItemDetails.value = response
+                val response = repository.getInvoiceItemDeletedata(InputMap)
+                _deleteInvoiceData.value = response
                 println("InvoiceResponse - $_TAG == ${_getItemDetails.value}")
             } catch (e: SocketTimeoutException) {
                 // Handle errors

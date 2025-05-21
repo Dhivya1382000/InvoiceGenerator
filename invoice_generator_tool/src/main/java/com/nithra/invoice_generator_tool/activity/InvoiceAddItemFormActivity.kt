@@ -469,8 +469,8 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
                             itemFormBinding.InvoiceItemDiscount.text.toString().trim().toIntOrNull()
                                 ?: 0
                         getItemList.totalAmt = "" + finalAmount
-                        getItemList.amount =
-                            "" + itemFormBinding.InvoiceItemRate.text.toString().trim()
+                        getItemList.amount = "" + itemFormBinding.InvoiceItemRate.text.toString().trim()
+                        getItemList.hsn = ""+itemFormBinding.InvoiceItemHSNcode.text.toString().trim()
                         getItemList.status = "success"
                         GetEditListItem.add(getItemList)
                         println("getList === ${GetEditListItem.size}")

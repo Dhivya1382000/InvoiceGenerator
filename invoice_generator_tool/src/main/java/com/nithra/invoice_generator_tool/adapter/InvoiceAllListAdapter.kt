@@ -3,7 +3,6 @@ package com.nithra.invoice_generator_tool.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.nithra.invoice_generator_tool.R
+import com.nithra.invoice_generator_tool.activity.InvoiceCreateFormActivity
 import com.nithra.invoice_generator_tool.activity.InvoicePdfViewActivity
 import com.nithra.invoice_generator_tool.databinding.FragmentInvoiceTabContentBinding
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
@@ -20,8 +20,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class InvoiceAllListAdapter(
-    var context : Context,
-    val itemList: MutableList<InvoiceGetInvoiceList>
+    var context: Context,
+    val itemList: MutableList<InvoiceGetInvoiceList>,
+    var onDelete: (Int)->Unit,
+    var onEditClick: (Int,Int)->Unit
 ) :
     RecyclerView.Adapter<InvoiceAllListAdapter.InvoiceViewHolder>() {
 
@@ -118,6 +120,7 @@ class InvoiceAllListAdapter(
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.edit -> {
+                    onEditClick(itemList[position].invoiceId!!,position)
                     true
                 }
 
@@ -126,9 +129,7 @@ class InvoiceAllListAdapter(
                         .setTitle("Delete Invoice")
                         .setMessage("Are you sure you want to delete this invoice?")
                         .setPositiveButton("Yes") { _, _ ->
-                            itemList.removeAt(position)
-                            notifyItemRemoved(position)
-                            notifyItemRangeChanged(position, itemList.size)
+                            onDelete(position)
                         }
                         .setNegativeButton("No", null)
                         .show()
@@ -141,5 +142,11 @@ class InvoiceAllListAdapter(
         }
         popupMenu.show()
 
+    }
+
+    fun notifyListData(position: Int) {
+        itemList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, itemList.size)
     }
 }

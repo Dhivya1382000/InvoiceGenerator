@@ -153,7 +153,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
 
 
-        if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
+       /* if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
             InvoiceUtils.loadingProgress(
                 this@InvoiceNewCustomerFormActivity,
                 "" + InvoiceUtils.messageLoading,
@@ -171,7 +171,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 Toast.LENGTH_SHORT
             ).show()
         }
-
+*/
 
         viewModel.errorMessage.observe(this@InvoiceNewCustomerFormActivity) {
             binding.mainCusFormLay.visibility = View.VISIBLE
@@ -181,6 +181,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
             binding.mainCusFormLay.visibility = View.VISIBLE
             InvoiceUtils.loadingDialog.dismiss()
+            println("MaseterStatus == ${getMasterArray.status}")
             if (getMasterArray.status.equals("success")) {
                 listOfState.addAll(getMasterArray.state!!)
                 listOfIndustrial.addAll(getMasterArray.industrial!!)

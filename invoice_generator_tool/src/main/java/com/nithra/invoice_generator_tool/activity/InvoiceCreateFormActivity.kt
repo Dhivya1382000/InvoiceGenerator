@@ -26,14 +26,12 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nithra.invoice_generator_tool.R
 import com.nithra.invoice_generator_tool.adapter.InvoiceAddedItemDataAdapter
 import com.nithra.invoice_generator_tool.adapter.InvoiceMasterAdapter
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceCreateFormBinding
-import com.nithra.invoice_generator_tool.databinding.InvoiceBottomSheetBinding
 import com.nithra.invoice_generator_tool.fragment.InvoiceDatePickerDialog
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
 import com.nithra.invoice_generator_tool.model.InvoiceGetInvoiceList
@@ -252,69 +250,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     DynamicitemList[positionOfEDit] = itemList[0] // Replace existing
                 }
 
-                /* if (foundIndex == -1) {
-                     DynamicitemList.add(itemList[0])
-                 }*/
-
-                /*  if (selectedBusinessState == selectedCustomerState) {
-                      println("itemListTax == ${itemList[0].tax}")
-                      for (i in listOfGstList.indices) {
-                          if (itemList[0].tax.toString() == listOfGstList[i].id.toString()) {
-                              val totalGST = listOfGstList[i].gst
-                              val result = splitGST(totalGST!!)
-                              if (result != null) {
-                                  val (sgstValu, cgstValu) = result
-                                  val dynamicList = InvoiceOfflineDynamicData()
-                                  dynamicList.user_id = itemList[0].user_id
-                                  dynamicList.mobile = itemList[0].mobile
-                                  dynamicList.item_id = itemList[0].item_id
-                                  dynamicList.item_name = itemList[0].item_name
-                                  dynamicList.amount = itemList[0].amount
-                                  dynamicList.qty_type = itemList[0].qty_type
-                                  dynamicList.qty = itemList[0].qty
-                                  dynamicList.tax = itemList[0].tax
-                                  dynamicList.description = itemList[0].description
-                                  dynamicList.discount_type = itemList[0].discount_type
-                                  dynamicList.discount = itemList[0].discount
-                                  dynamicList.hsn = itemList[0].hsn
-                                  dynamicList.total_amt = itemList[0].total_amt
-                                  dynamicList.sgst = sgstValu
-                                  dynamicList.cgst = cgstValu
-                                  dynamicList.Igst = ""
-                                  DynamicitemList[foundIndex] = dynamicList
-                              }
-                          }
-
-                      }
-                  }
-                  else {
-                      for (i in listOfGstList.indices) {
-                          if (itemList[0].tax.toString() == listOfGstList[i].id.toString()) {
-                              val totalGST = listOfGstList[i].gst
-                              val dynamicList = InvoiceOfflineDynamicData()
-                              dynamicList.user_id = itemList[0].user_id
-                              dynamicList.mobile = itemList[0].mobile
-                              dynamicList.item_id = itemList[0].item_id
-                              dynamicList.item_name = itemList[0].item_name
-                              dynamicList.amount = itemList[0].amount
-                              dynamicList.qty_type = itemList[0].qty_type
-                              dynamicList.qty = itemList[0].qty
-                              dynamicList.tax = itemList[0].tax
-                              dynamicList.description = itemList[0].description
-                              dynamicList.discount_type = itemList[0].discount_type
-                              dynamicList.discount = itemList[0].discount
-                              dynamicList.total_amt = itemList[0].total_amt
-                              dynamicList.hsn = itemList[0].hsn
-                              dynamicList.sgst = 0.0
-                              dynamicList.cgst = 0.0
-                              dynamicList.Igst = totalGST
-                              DynamicitemList.add(dynamicList)
-                          }
-
-                      }
-                  }*/
-
-
                 TotalAmount = DynamicitemList.sumOf { it.total_amt?.toDouble() ?: 0.0 }
                 finalTotalAmount = TotalAmount - DisountAmount
                 val total = String.format("%.2f", finalTotalAmount)
@@ -378,6 +313,23 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             ).show()
         }
 
+
+        if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
+            val InputMap = HashMap<String, Any>()
+            InputMap["action"] = "getInvoiceList"
+            InputMap["user_id"] =
+                "" + preference.getString(this@InvoiceCreateFormActivity, "INVOICE_USER_ID")
+            InputMap["type"] = "0"
+            println("InvoiceRequest - ${InvoiceHomeScreen._TAG} == $InputMap")
+            viewModel.getInvoiceList(InputMap)
+        } else {
+            Toast.makeText(
+                this@InvoiceCreateFormActivity,
+                "Check Your Internet Connection",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
         viewModel.errorMessage.observe(this@InvoiceCreateFormActivity) {
             binding.mainCusFormLay.visibility = View.VISIBLE
             InvoiceUtils.loadingDialog.dismiss()
@@ -387,6 +339,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         viewModel.getMasterDetail.observe(this) { getMasterArray ->
             binding.mainCusFormLay.visibility = View.VISIBLE
             InvoiceUtils.loadingDialog.dismiss()
+            println("getMaster == ${getMasterArray.status}")
             if (getMasterArray.status.equals("success")) {
                 listOfState.addAll(getMasterArray.state!!)
                 listOfIndustrial.addAll(getMasterArray.industrial!!)
@@ -394,7 +347,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 listOfClientDetails.addAll(getMasterArray.clientDetails!!)
                 listOfItemDetails.addAll(getMasterArray.itemList!!)
                 listOfGstList.addAll(getMasterArray.gst!!)
-
+                println("invoiceEdit == $InvoiceEditId")
                 if (InvoiceEditId != 0) {
                     val InvoicejsonString = preference.getString(
                         this@InvoiceCreateFormActivity,
@@ -428,6 +381,9 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
 
                     val client = listOfClientDetails.find { it.clientId == selectedCustomerId }
                     selectedCustomerState = client!!.state!!
+                    selectedCustomerId = client.clientId!!
+                    invoiceCustomerBillingAddress = client.billingAddress!!
+                    invoiceCustomerShippingAddress = client.shippingAddress!!
 
                     binding.InvoiceBusinessTypeText.text = invoiceList.bussinessName
                     binding.InvoiceCustomerName.text = invoiceList.clientName
@@ -435,14 +391,37 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     binding.InvoiceIncreNumber.isClickable = false
                     binding.InvoiceIncreNumber.setText(invoiceList.invoiceNumber)
                     val userFormatText = formatForUser(invoiceList.invoiceDate!!)
-                    binding.InvoiceDate.setText(userFormatText)
+                    binding.InvoiceDate.text = userFormatText
 
 
                     binding.DynamicItemCard.visibility = View.VISIBLE
 
                     binding.ItemsFinalAmount.text = "₹ " + invoiceList.totalInvoiceAmt
                     binding.ItemsTotalAmount.text = " ₹ " + invoiceList.totalInvoiceAmt
-                    binding.ItemsDiscountAmount.setText(" ₹ " + invoiceList.discountAmt)
+                    TotalAmount = invoiceList.totalInvoiceAmt!!.toDouble()
+                    finalTotalAmount = invoiceList.totalInvoiceAmt!!.toDouble()
+                    selectedInvoiceId = invoiceList.autoEntry!!
+                    DisountAmount = invoiceList.discountAmt!!.toDouble()
+                    if (!invoiceList.discountAmt.equals("0.0")) {
+                        binding.ItemsDiscountAmount.setText("" + invoiceList.discountAmt)
+                    }
+
+
+                    val billingBusiness =
+                        listOfCompanyDetails.find { it.companyId == selectedBusinessId }
+                    invoiceBillingAddress = billingBusiness!!.billingAddress1!!
+                    selectedBusinessState = billingBusiness.state!!
+                    invoiceBusinessGSTId = billingBusiness.taxId!!
+                    invoiceBusinessMobileNumber = billingBusiness.bussinessMobile!!
+                    invoiceBusinessEmail = billingBusiness.email!!
+                    invoiceBusinessState =
+                        billingBusiness.state + "(" + billingBusiness.stateId + ")"
+                    invoiceBankName = billingBusiness.bankName!!
+                    invoiceBankAcc = billingBusiness.bankAcoountNumber!!
+                    invoiceBankIFSC = billingBusiness.ifscCode!!
+                    invoiceBankMICR = billingBusiness.micrCode!!
+                    invoiceBankAddress = billingBusiness.bankAddress!!
+                    binding.InvoiceBusinessTypeText.text = billingBusiness.bussinessName
 
                     invoiceList.item?.forEach { itemList ->
                         val dynamicList = InvoiceOfflineDynamicData()
@@ -459,27 +438,19 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                         dynamicList.discount = itemList.discount
                         dynamicList.hsn = itemList.hsn
                         dynamicList.total_amt = itemList.totalAmt
-                        dynamicList.Igst = itemList.tax
-                        dynamicList.sgst = 0.0
-                        dynamicList.cgst = 0.0
+                        val stateFilter = listOfGstList.find { it.id.toString() == itemList.tax }
+                        val result = splitGST(stateFilter!!.gst!!)
+                        if (selectedCustomerState == selectedBusinessState) {
+                            if (result != null) {
+                                val (sgstValu, cgstValu) = result
+                                dynamicList.sgst = sgstValu
+                                dynamicList.cgst = cgstValu
+                            }
+                        } else {
+                            dynamicList.Igst = stateFilter!!.gst!!
+                        }
                         DynamicitemList.add(dynamicList)
                     }
-
-
-                    val billingBusiness =
-                        listOfCompanyDetails.find { it.bussinessId == selectedBusinessId.toString() }
-                    invoiceBillingAddress = billingBusiness!!.billingAddress1!!
-                    selectedBusinessState = billingBusiness.state!!
-                    invoiceBusinessGSTId = billingBusiness.taxId!!
-                    invoiceBusinessMobileNumber = billingBusiness.bussinessMobile!!
-                    invoiceBusinessEmail = billingBusiness.email!!
-                    invoiceBusinessState =
-                        billingBusiness.state + "(" + billingBusiness.stateId + ")"
-                    invoiceBankName = billingBusiness.bankName!!
-                    invoiceBankAcc = billingBusiness.bankAcoountNumber!!
-                    invoiceBankIFSC = billingBusiness.ifscCode!!
-                    invoiceBankMICR = billingBusiness.micrCode!!
-                    invoiceBankAddress = billingBusiness.bankAddress!!
 
                     adapter.notifyDataSetChanged()
 
@@ -502,8 +473,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     invoiceBankIFSC = listOfCompanyDetails[0].ifscCode!!
                     invoiceBankMICR = listOfCompanyDetails[0].micrCode!!
                     invoiceBankAddress = listOfCompanyDetails[0].bankAddress!!
-
-
                 }
             }
             val hasStatusKey = listOfItemDetails.any { !it.status.isNullOrEmpty() } ?: false
@@ -516,22 +485,9 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             }
         }
 
-        if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
-            val InputMap = HashMap<String, Any>()
-            InputMap["action"] = "getInvoiceList"
-            InputMap["user_id"] =
-                "" + preference.getString(this@InvoiceCreateFormActivity, "INVOICE_USER_ID")
-            InputMap["type"] = "0"
-            println("InvoiceRequest - ${InvoiceHomeScreen._TAG} == $InputMap")
-            viewModel.getInvoiceList(InputMap)
-        } else {
-            Toast.makeText(
-                this@InvoiceCreateFormActivity,
-                "Check Your Internet Connection",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
         viewModel.getInvoiceList.observe(this@InvoiceCreateFormActivity) { getInvoice ->
+            println("InvoiceList == ${getInvoice.size}")
+            println("InvoiceList InvoiceEditId == ${InvoiceEditId}")
             if (InvoiceEditId == 0) {
                 if (getInvoice[0].status != "failure") {
                     val lastUnselected = getInvoice.lastOrNull { it.autoEntry == 0 }
@@ -566,8 +522,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             }
 
         }
-
-
 
         binding.InvoiceBusinessTypeSpinner.setOnClickListener {
             if (!InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
@@ -606,17 +560,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 ).show()
             } else {
                 submitData = "customer"
-                /*  if (binding.InvoiceCustomerName.text.isEmpty()) {
-                  val intent = Intent(
-                      this@InvoiceCreateFormActivity,
-                      InvoiceBusinessAndCustomerActivity::class.java
-                  )
-                  intent.putExtra("fromInvoice", 1)
-                  intent.putExtra("InvoicefromPage", "Customers")
-                  selectItemLauncher.launch(intent)
-              } else {
-
-              }*/
                 showSearchableDialog<InvoiceGetDataMasterArray.GetClientDetails>(
                     0,
                     listOfClientDetails
@@ -755,25 +698,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                         }
                     }
 
-                    selectedPaymentType == 2 -> {
-                        if (binding.InvoicePaidAmount.text.toString().trim().isEmpty()) {
-                            Toast.makeText(
-                                this@InvoiceCreateFormActivity,
-                                "Enter paid amount",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        } else if (binding.InvoiceDueDateEdit.text.toString().trim()
-                                .isEmpty()
-                        ) {
-                            Toast.makeText(
-                                this@InvoiceCreateFormActivity,
-                                "Enter due date",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }
-                    }
 
                 }
 
@@ -843,9 +767,11 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 // Called after text is changed
                 Log.d("TextWatcher", "After: ${s.toString()}")
                 if (s.toString().isNotEmpty()) {
-                    DisountAmount =
-                        binding.ItemsDiscountAmount.text.toString().replace("₹", "").trim()
-                            .toDouble() ?: 0.0
+                    DisountAmount = binding.ItemsDiscountAmount.text.toString().toDouble()
+                    finalTotalAmount = TotalAmount - DisountAmount
+                    binding.ItemsFinalAmount.text = "" + finalTotalAmount
+                } else {
+                    DisountAmount = 0.0
                     finalTotalAmount = TotalAmount - DisountAmount
                     binding.ItemsFinalAmount.text = "" + finalTotalAmount
                 }
@@ -867,76 +793,50 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             }
         })
 
-        adapter =
-            InvoiceAddedItemDataAdapter(
-                DynamicitemList,
-                onItemClick = { listOfDynamic, position ->
-                    DynamicitemList.removeAt(position)
-                    adapter.notifyDataSetChanged()
-                    println("dyanmicList == ${DynamicitemList.size}")
-                    if (DynamicitemList.size != 0) {
-                        TotalAmount -= listOfDynamic.total_amt!!.toDouble()
-                        //  finalTotalAmount = TotalAmount + DisountAmount
-                        val finalTotalAmountNew = (TotalAmount + DisountAmount).toBigDecimal()
-                            .setScale(2, RoundingMode.HALF_UP)
-                        finalTotalAmount = finalTotalAmountNew.toDouble()
-                        val total = String.format("%.2f", finalTotalAmount)
-                        val totalAmt = String.format("%.2f", TotalAmount)
-                        binding.ItemsFinalAmount.text = "₹ " + total
-                        binding.ItemsTotalAmount.text = " ₹ " + totalAmt
-                        binding.ItemsDiscountAmount.setText(" ₹ " + DisountAmount)
-                        binding.DynamicItemCard.visibility = View.VISIBLE
-                    } else {
-                        TotalAmount = 0.0
-                        DisountAmount = 0.0
-                        binding.ItemsDiscountAmount.setText("")
-                        val total = String.format("%.2f", finalTotalAmount)
-                        binding.ItemsTotalAmount.text = " ₹ " + total
-                        binding.DynamicItemCard.visibility = View.GONE
-                    }
-                },
-                onShowItem = { binding, clickItemPOs ->
+        adapter = InvoiceAddedItemDataAdapter(
+            DynamicitemList,
+            onItemClick = { listOfDynamic, position ->
+                DynamicitemList.removeAt(position)
+                adapter.notifyDataSetChanged()
+                println("dyanmicList == ${DynamicitemList.size}")
+                if (DynamicitemList.size != 0) {
+                    TotalAmount -= listOfDynamic.total_amt!!.toDouble()
+                    //  finalTotalAmount = TotalAmount + DisountAmount
+                    val finalTotalAmountNew = (TotalAmount + DisountAmount).toBigDecimal()
+                        .setScale(2, RoundingMode.HALF_UP)
+                    finalTotalAmount = finalTotalAmountNew.toDouble()
+                    val total = String.format("%.2f", finalTotalAmount)
+                    val totalAmt = String.format("%.2f", TotalAmount)
+                    binding.ItemsFinalAmount.text = "₹ " + total
+                    binding.ItemsTotalAmount.text = " ₹ " + totalAmt
+                    binding.ItemsDiscountAmount.setText("" + DisountAmount)
+                    binding.DynamicItemCard.visibility = View.VISIBLE
+                } else {
+                    TotalAmount = 0.0
+                    DisountAmount = 0.0
+                    DisountAmount = 0.0
+                    binding.ItemsDiscountAmount.setText("" + DisountAmount)
+                    val total = String.format("%.2f", finalTotalAmount)
+                    binding.ItemsTotalAmount.text = " ₹ " + total
+                    binding.DynamicItemCard.visibility = View.GONE
+                }
+            },
+            onShowItem = { binding, clickItemPOs ->
 
-                    println("selectedBus == $selectedBusinessState")
-                    println("selectedCus == $selectedCustomerState")
+                println("selectedBus == $selectedBusinessState")
+                println("selectedCus == $selectedCustomerState")
 
-                    if (selectedBusinessState == selectedCustomerState) {
-                        for (i in listOfGstList.indices) {
-                            if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
-                                val totalGST = listOfGstList[i].gst
-                                val result = splitGST(totalGST!!)
-                                if (result != null) {
-                                    val (sgstValu, cgstValu) = result
+                if (selectedBusinessState == selectedCustomerState) {
+                    for (i in listOfGstList.indices) {
+                        if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
+                            val totalGST = listOfGstList[i].gst
+                            val result = splitGST(totalGST!!)
+                            if (result != null) {
+                                val (sgstValu, cgstValu) = result
 
-                                    val coloredText =
-                                        SpannableString("SGST : $sgstValu % , CGST : $cgstValu %")
-
-                                    coloredText.setSpan(
-                                        ForegroundColorSpan(Color.RED), // You can use any color
-                                        0,
-                                        6, // "SGST :" length
-                                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                                    )
-
-                                    val cgstStart = coloredText.indexOf("CGST")
-                                    val cgstEnd = cgstStart + 6 // length of "CGST :"
-                                    coloredText.setSpan(
-                                        ForegroundColorSpan(Color.RED),
-                                        cgstStart,
-                                        cgstEnd,
-                                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                                    )
-
-                                    binding.itemCGstSplit.text = coloredText
-                                }
-                            }
-                        }
-                    } else {
-                        for (i in listOfGstList.indices) {
-                            if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
                                 val coloredText =
-                                    SpannableString("IGST : ${listOfGstList[i].gst}%")
-                                clickItemPOs.Igst = listOfGstList[i].gst
+                                    SpannableString("SGST : $sgstValu % , CGST : $cgstValu %")
+
                                 coloredText.setSpan(
                                     ForegroundColorSpan(Color.RED), // You can use any color
                                     0,
@@ -944,33 +844,59 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                                 )
 
+                                val cgstStart = coloredText.indexOf("CGST")
+                                val cgstEnd = cgstStart + 6 // length of "CGST :"
+                                coloredText.setSpan(
+                                    ForegroundColorSpan(Color.RED),
+                                    cgstStart,
+                                    cgstEnd,
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+
                                 binding.itemCGstSplit.text = coloredText
                             }
                         }
+                    }
+                } else {
+                    for (i in listOfGstList.indices) {
+                        if (clickItemPOs.tax.toString() == listOfGstList[i].id.toString()) {
+                            val coloredText =
+                                SpannableString("IGST : ${listOfGstList[i].gst}%")
+                            clickItemPOs.Igst = listOfGstList[i].gst
+                            coloredText.setSpan(
+                                ForegroundColorSpan(Color.RED), // You can use any color
+                                0,
+                                6, // "SGST :" length
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
 
+                            binding.itemCGstSplit.text = coloredText
+                        }
                     }
 
-                },
-                OnEditClick = { clickId, pos, listOfDynamic ->
-                    val intent = Intent(
-                        this@InvoiceCreateFormActivity,
-                        InvoiceAddItemFormActivity::class.java
-                    )
-                    intent.putExtra("OffLineEdit", 1)
-                    intent.putExtra("clickDataId", clickId.item_id)
-                    positionOfEDit = pos
-                    clickEditId = clickId.item_id!!
-                    println("dynamicList --Sze ${DynamicitemList.size}")
-                    val addedData = Gson().toJson(DynamicitemList)
-                    println("DynamicList == $addedData")
-                    preference.putString(
-                        this@InvoiceCreateFormActivity,
-                        "INVOICE_SET_LIST",
-                        addedData
-                    )
-                    //     intent.putExtra("INVOICE_SET_LIST", addedData)
-                    selectItemEditLauncher.launch(intent)
-                })
+                }
+
+            },
+            OnEditClick = { clickId, pos, listOfDynamic ->
+                val intent = Intent(
+                    this@InvoiceCreateFormActivity,
+                    InvoiceAddItemFormActivity::class.java
+                )
+                intent.putExtra("OffLineEdit", 1)
+                intent.putExtra("clickDataId", clickId.item_id)
+                positionOfEDit = pos
+                clickEditId = clickId.item_id!!
+                println("dynamicList --Sze ${DynamicitemList.size}")
+                val addedData = Gson().toJson(DynamicitemList)
+                println("DynamicList == $addedData")
+                preference.putString(
+                    this@InvoiceCreateFormActivity,
+                    "INVOICE_SET_LIST",
+                    addedData
+                )
+                //     intent.putExtra("INVOICE_SET_LIST", addedData)
+                selectItemEditLauncher.launch(intent)
+            })
         val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         val currentDate = sdf.format(Date())
         binding.InvoiceDate.text = currentDate
@@ -991,7 +917,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 }
 
                 R.id.InvoiceUnPaid -> {
-                    selectedPaymentType = 3
+                    selectedPaymentType = 2
                     binding.InvoicePaidAmountLay.visibility = View.GONE
                     binding.InvoiceDueDateLay.visibility = View.GONE
                     binding.InvoiceRemarkLay.visibility = View.VISIBLE
@@ -1000,7 +926,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 }
 
                 R.id.InvoicePartiallyPaid -> {
-                    selectedPaymentType = 2
+                    selectedPaymentType = 3
                     binding.InvoicePaidAmountLay.visibility = View.VISIBLE
                     binding.InvoiceDueDateLay.visibility = View.VISIBLE
                     binding.InvoiceDueDateEdit.text = currentDate
@@ -1137,141 +1063,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         dialogView.show()
     }
 
-
-    /* private fun <T> showSearchableDialog(
-         fromSpinner: Int,
-         listOfState: MutableList<T>,
-     ) {
-         stateDialog =
-             Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
-         stateDialog.setContentView(R.layout.invoice_master_search_dia)
-         stateDialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-         // Initialize views
-         val searchBar = stateDialog.findViewById<AppCompatEditText>(R.id.search_bar)
-         val recyclerView = stateDialog.findViewById<RecyclerView>(R.id.recycler_view)
-         val NoDataLay = stateDialog.findViewById<LinearLayout>(R.id.NoDataLay)
-         val AddItemCard = stateDialog.findViewById<CardView>(R.id.AddItemCard)
-
-         AddItemCard.visibility = View.GONE
-         val filteredList: MutableList<T> = mutableListOf()
-
-         filteredList.clear()
-         // Initialize adapter
-         filteredList.addAll(listOfState) // Initially show all items
-
-         val adapter = InvoiceMasterAdapter(
-             this@InvoiceCreateFormActivity,
-             filteredList,
-             "",
-             this,
-             2,
-             fromSpinner, onAddItemClick = {
-             }, onDeleteItem = { deleteId, pos, actionName ->
-
-             },
-             onSearchResult = {
-
-             }
-         )
-         recyclerView.layoutManager = LinearLayoutManager(this)
-         recyclerView.adapter = adapter
-
-         // Add search functionality
-         searchBar.addTextChangedListener(object : TextWatcher {
-             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-             override fun onTextChanged(
-                 searchQuery: CharSequence?,
-                 start: Int,
-                 before: Int,
-                 count: Int
-             ) {
-                 filterData<T>(
-                     searchQuery,
-                     recyclerView,
-                     fromSpinner,
-                     listOfState,
-                     filteredList,
-                     NoDataLay,
-                     stateDialog,
-                     AddItemCard
-                 )
-             }
-
-             override fun afterTextChanged(s: Editable?) {
-                 if (s!!.isEmpty()) {
-                     recyclerView.visibility = View.VISIBLE
-                     NoDataLay.visibility = View.GONE
-                 }
-             }
-         })
-
-         stateDialog.show()
-     }
-
-     private fun <T> filterData(
-         searchQuery: CharSequence?,
-         recyclerView: RecyclerView,
-         fromSpinner: Int,
-         listOfState: MutableList<T>,
-         filteredList: MutableList<T>,
-         NoDataLay: LinearLayout,
-         stateDialog: Dialog,
-         AddItemCard: CardView
-     ) {
-         filteredList.clear()
-         println("query == $searchQuery")
-         if (searchQuery!!.trim().isEmpty() || searchQuery.trim().equals("")) {
-             filteredList.addAll(listOfState) // Show all items if the query is empty
-             println("filterSize == ${filteredList.size}")
-         } else {
-
-             filteredList.addAll(listOfState.filter { item ->
-                 // Example: If the item is a State, filter by stateName
-                 when (item) {
-                     is InvoiceGetDataMasterArray.GetCompanyDetailList -> item.bussinessName!!.contains(
-                         searchQuery,
-                         ignoreCase = true
-                     )
-
-                     else -> {
-                         false
-                     }
-                 }
-             })
-
-             val adapter = InvoiceMasterAdapter(
-                 this@InvoiceCreateFormActivity,
-                 filteredList,
-                 searchQuery.toString(),
-                 this,
-                 2,
-                 fromSpinner, onAddItemClick = {
-
-                 },
-                 onDeleteItem = { deleteId, pos, actionName ->
-
-                 },
-                 onSearchResult = {
-
-                 }
-             ) // Pass the query
-             recyclerView.adapter = adapter
-
-             if (filteredList.isEmpty()) {
-                 // Display a message or take action if no results were found
-                 println("filterSize 11  == ${filteredList.size}")
-                 NoDataLay.visibility = View.VISIBLE
-                 recyclerView.visibility = View.GONE
-             } else {
-                 println("filterSize 12  == ${filteredList.size}")
-                 NoDataLay.visibility = View.GONE
-                 recyclerView.visibility = View.VISIBLE
-             }
-             adapter.notifyDataSetChanged()
-
-         }
-
-     }*/
 
     private fun <T> showSearchableDialog(
         fromSpinner: Int,
@@ -1445,138 +1236,6 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         val date = inputFormat.parse(input)
         return outputFormat.format(date!!)
-    }
-
-
-    private fun showBottomSheet() {
-        val bottomSheetDialog = BottomSheetDialog(this)
-        val binding = InvoiceBottomSheetBinding.inflate(layoutInflater)
-        bottomSheetDialog.setContentView(binding.root)
-        binding.InvoiceBusinessLay.visibility = View.VISIBLE
-        binding.InvoiceCustomerLay.visibility = View.GONE
-        for (i in listOfCompanyDetails.indices) {
-            if (selectedBusinessId == listOfCompanyDetails[i].companyId) {
-
-                binding.InvoiceBusinessName.text = listOfCompanyDetails[i].bussinessName
-
-                if (listOfCompanyDetails[i].bussinessId!!.isNotEmpty()) {
-                    binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[i].industrialName
-                } else {
-                    binding.InvoiceBusinessTypeTextLay.visibility = View.GONE
-                }
-                if (listOfCompanyDetails[i].bussinessId!!.isNotEmpty()) {
-                    binding.InvoiceBusinessId.text = listOfCompanyDetails[i].bussinessId
-                } else {
-                    binding.InvoiceBusinessIdLay.visibility = View.GONE
-                }
-                if (listOfCompanyDetails[i].email!!.isNotEmpty()) {
-                    binding.InvoiceBusinessEmail.text = listOfCompanyDetails[i].email
-                } else {
-                    binding.InvoiceBusinessEmailLay.visibility = View.GONE
-                }
-                if (listOfCompanyDetails[i].mobile!!.isNotEmpty()) {
-                    binding.InvoiceMobileNamber1.text = listOfCompanyDetails[i].mobile
-                } else {
-                    binding.InvoiceMobileNamber1Lay.visibility = View.GONE
-                }
-                if (listOfCompanyDetails[i].bussinessMobile!!.isNotEmpty()) {
-                    binding.InvoiceMobileNamber2.text = listOfCompanyDetails[i].bussinessMobile
-                } else {
-                    binding.InvoiceMobileNamber2Lay.visibility = View.GONE
-                }
-                if (listOfCompanyDetails[i].billingAddress1!!.isNotEmpty()) {
-                    binding.InvoiceBillingAddress.text = listOfCompanyDetails[i].billingAddress1
-                    invoiceBillingAddress = "" + listOfCompanyDetails[i].billingAddress1
-                } else {
-                    binding.InvoiceBillingAddressLay.visibility = View.GONE
-                }
-                if (listOfCompanyDetails[i].state!!.isNotEmpty()) {
-                    binding.InvoiceBusinessState.text = listOfCompanyDetails[i].state
-                } else {
-                    binding.InvoiceBusinessStateLay.visibility = View.GONE
-                }
-                if (listOfCompanyDetails[i].website!!.isNotEmpty()) {
-                    binding.InvoiceBusinessWebsite.text = listOfCompanyDetails[i].website
-                } else {
-                    binding.InvoiceBusinessWebsiteLay.visibility = View.GONE
-                }
-                if (listOfCompanyDetails[i].taxId!!.isNotEmpty()) {
-                    binding.InvoiceBusinessGST.text = listOfCompanyDetails[i].taxId
-                } else {
-                    binding.InvoiceBusinessGSTLay.visibility = View.GONE
-                }
-
-            }
-        }
-        bottomSheetDialog.show()
-    }
-
-
-    private fun showBottomSheet1() {
-        val bottomSheetDialog = BottomSheetDialog(this)
-        val binding = InvoiceBottomSheetBinding.inflate(layoutInflater)
-        bottomSheetDialog.setContentView(binding.root)
-        binding.InvoiceBusinessLay.visibility = View.GONE
-        binding.InvoiceCustomerLay.visibility = View.VISIBLE
-
-        for (i in listOfClientDetails.indices) {
-            if (selectedCustomerId == listOfClientDetails[i].clientId) {
-                binding.InvoiceCustomerName.text = listOfClientDetails[i].name
-                if (listOfClientDetails[i].type == 1) {
-                    binding.InvoiceCustomerTypeText.text = "Individual"
-                } else {
-                    binding.InvoiceCustomerTypeText.text = "Business"
-                }
-                if (listOfClientDetails[i].displayName!!.isNotEmpty()) {
-                    binding.InvoiceCustomerDisplay.text = listOfClientDetails[i].displayName
-                } else {
-                    binding.InvoiceCustomerDisplayLay.visibility = View.GONE
-                }
-                if (listOfClientDetails[i].email!!.isNotEmpty()) {
-                    binding.InvoiceCustomerEmail.text = listOfClientDetails[i].email
-                } else {
-                    binding.InvoiceCustomerEmailLay.visibility = View.GONE
-                }
-                if (listOfClientDetails[i].mobile1!!.isNotEmpty()) {
-                    binding.InvoiceCusMobileNamber1.text = listOfClientDetails[i].mobile1
-                } else {
-                    binding.InvoiceCusMobileNamber1Lay.visibility = View.GONE
-                }
-                if (listOfClientDetails[i].mobile2!!.isNotEmpty()) {
-                    binding.InvoiceCusMobileNamber2.text = listOfClientDetails[i].mobile2
-                } else {
-                    binding.InvoiceCusMobileNamber2Lay.visibility = View.GONE
-                }
-                if (listOfClientDetails[i].billingAddress!!.isNotEmpty()) {
-                    binding.InvoiceCusBillingAddress.text = listOfClientDetails[i].billingAddress
-                    invoiceCustomerBillingAddress = "" + listOfClientDetails[i].billingAddress
-                } else {
-                    binding.InvoiceCusBillingAddressLay.visibility = View.GONE
-                }
-                if (listOfClientDetails[i].shippingAddress!!.isNotEmpty()) {
-                    binding.InvoiceCusShippingAddress.text = listOfClientDetails[i].shippingAddress
-                } else {
-                    binding.InvoiceCusShippingAddressLay.visibility = View.GONE
-                }
-                if (listOfClientDetails[i].state!!.isNotEmpty()) {
-                    binding.InvoiceCustomerState.text = listOfClientDetails[i].state
-                } else {
-                    binding.InvoiceCustomerStateLay.visibility = View.GONE
-                }
-                if (listOfClientDetails[i].remark!!.isNotEmpty()) {
-                    binding.InvoiceCustomerRemark.text = listOfClientDetails[i].remark
-                } else {
-                    binding.InvoiceCustomerRemarkLay.visibility = View.GONE
-                }
-                if (listOfClientDetails[i].taxId!!.isNotEmpty()) {
-                    binding.InvoiceCustomerGST.text = listOfClientDetails[i].taxId
-                } else {
-                    binding.InvoiceCustomerGSTLay.visibility = View.GONE
-                }
-            }
-        }
-
-        bottomSheetDialog.show()
     }
 
     private fun GenerateInvoice(pdfPart: MultipartBody.Part) {
@@ -1770,12 +1429,33 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             )
         }
 
+        val bankDetails = buildString {
+            if (binding.InvoiceBusinessTypeText.text.toString()
+                    .isNotEmpty()
+            ) append("Name: ${binding.InvoiceBusinessTypeText.text.toString()}<br/>")
+            if (invoiceBankName.isNotEmpty()) append("Bank: $invoiceBankName<br/>")
+            if (invoiceBankAcc.isNotEmpty()) append("Account No: $invoiceBankAcc<br/>")
+            if (invoiceBankIFSC.isNotEmpty()) append("IFSC Code: $invoiceBankIFSC<br/>")
+            if (invoiceBankAddress.isNotEmpty()) append("Bank Address: $invoiceBankAddress<br/>")
+        }
+
+       /* val totalAmount = buildString {
+            if (binding.InvoiceBusinessTypeText.text.toString()
+                    .isNotEmpty()
+            ) append("Name: ${binding.InvoiceBusinessTypeText.text.toString()}<br/>")
+            if (invoiceBankName.isNotEmpty()) append("Bank: $invoiceBankName<br/>")
+            if (invoiceBankAcc.isNotEmpty()) append("Account No: $invoiceBankAcc<br/>")
+            if (invoiceBankIFSC.isNotEmpty()) append("IFSC Code: $invoiceBankIFSC<br/>")
+            if (invoiceBankAddress.isNotEmpty()) append("Bank Address: $invoiceBankAddress<br/>")
+        }*/
+
         htmlBuilder.append(
             """
                 
                 <tr>
+         
                     <td colspan="8" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
-                        Total Discount
+                        Discount Amount
                     </td>
                     <td style="font-size: 22px;">
                          ${
@@ -1787,13 +1467,29 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                 </tr>
 
        <tr>
+      
     <td colspan="8" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
         Total Amount
     </td>
     <td style="font-size: 22px;">
          ₹ $finalTotalAmount
     </td>
-</tr>
+    </tr>
+    <tr>
+      
+    <td colspan="8" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
+        Paid Amount
+    </td>
+    <td style="font-size: 22px;">
+                ${
+                if (binding.InvoicePaidAmount.text.toString()
+                        .isEmpty()
+                ) "-" else " ₹ " + binding.InvoicePaidAmount.text
+            }
+               
+    </td>
+    
+    </tr>
 
             </table>
         </div>
@@ -1805,15 +1501,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         <div class="section">
                <b style="font-size:25px;">Bank Details:</b><br/>
     <span style="font-size:22px;">
-            Name: ${
-                if (binding.InvoiceBusinessTypeText.text.toString()
-                        .isEmpty()
-                ) "-" else binding.InvoiceBusinessTypeText.text.toString()
-            }<br/>
-            Bank: ${if (invoiceBankName.isEmpty()) "-" else invoiceBankName}<br/>
-            Account No: ${if (invoiceBankAcc.isEmpty()) "-" else invoiceBankAcc}<br/>
-            IFSC Code: ${if (invoiceBankIFSC.isEmpty()) "-" else invoiceBankIFSC}<br/>
-            Bank Address: ${if (invoiceBankAddress.isEmpty()) "-" else invoiceBankAddress}
+             $bankDetails
             </span>
         </div>
 
@@ -1822,6 +1510,10 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
     </html>
     """.trimIndent()
         )
+
+
+
+
         return htmlBuilder.toString()
     }
 

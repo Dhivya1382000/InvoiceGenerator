@@ -62,7 +62,7 @@ class InvoiceRepository @Inject constructor(private val api: InvoiceApiInterface
         return api.homeReport(requestInputMap)
     }
 
-    suspend fun getDeletedata(requestInputMap: HashMap<String, Any>): InvoiceGetItemData {
-        return api.getItemdata(requestInputMap)
+    suspend fun getInvoiceItemDeletedata(requestInputMap: HashMap<String, Any>): Map<String,Any> {
+        return api.deleteRes(requestInputMap)
     }
 }

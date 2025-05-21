@@ -69,7 +69,12 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
     var preference = InvioceSharedPreference()
     var selectedBusinessId = 0
     var selectedBusinessState = ""
-
+    var startDate=""
+    var endDate=""
+    var selectedOption = ""
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private var startDateCalendar: Calendar? = null
+    private var endDateCalendar : Calendar? = null
     private val selectItemLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -103,13 +108,13 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
             onBackPressedDispatcher.onBackPressed()
         }
 
-
         listOfGetInvoicePieChart = arrayListOf()
 
         loadMasterData()
 
         // Automatically load "This Month" data on screen load
-        handleDateFilter("This Month")
+        selectedOption = "This Month"
+        handleDateFilter()
 
         viewmodel.errorMessage.observe(this@InvoioceBusinessReportActivity) {
             println("eror ==== $it")
@@ -117,6 +122,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         }
 
         viewmodel.getMasterDetail.observe(this) { getMasterArray ->
+            InvoiceUtils.loadingDialog.dismiss()
             listOfCompanyDetails.addAll(getMasterArray.companyDetails!!)
             if (listOfCompanyDetails[0].bussinessName!!.isNotEmpty()) {
                 binding.InvoiceBusinessTypeText.text = listOfCompanyDetails[0].bussinessName
@@ -165,7 +171,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 if (!pieChartList.expenses!!.status.equals("failure")) {
                     binding.ExpensesAmount.text = " ₹ " + pieChartList.expenses!!.data!!.totalAmount
                 } else {
-                    binding.ExpensesAmount.text = "NIL"
+                    binding.ExpensesAmount.text = "0"
                 }
                 binding.TotalPaidAmount.text = " ₹ " + pieChartList.total_amount
                 val totalPaidnew = listOfGetInvoicePieChart.filter { it.amtType == 1 }
@@ -174,12 +180,13 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                     .sumOf { it.totalPaid!! } //un paid
                 binding.PaidAmount.text = " ₹ " + totalPaidnew
                 binding.UnPaidAmount.text = " ₹ " + totalUnpaid
-                val composeView = findViewById<ComposeView>(R.id.pieChartComposeView)
+
                 var expenseAmount = 0
                 if (pieChartList.status.equals("success")) {
                     val currentChartData = pieChartList.data?.toMutableList() ?: mutableListOf()
-                    composeView.visibility = View.VISIBLE
-                    composeView.setContent {
+                    binding.pieChartComposeView.visibility = View.VISIBLE
+                    binding.NoDataLay.visibility = View.GONE
+                    binding.pieChartComposeView.setContent {
                         if (!pieChartList.expenses!!.status.equals("failure")) {
                             expenseAmount = pieChartList.expenses!!.data!!.totalAmount!!
                            /* pieChartList.data!![0].amtType = 4
@@ -200,49 +207,228 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                         )
                     }
                 } else {
-                    composeView.visibility = View.GONE
+                    binding.pieChartComposeView.visibility = View.GONE
+                    binding.NoDataLay.visibility = View.VISIBLE
                 }
 
             }else{
                 println("pieChartList == ${pieChartList.status}")
-                binding.PaidAmount.text = "NIL"
-                binding.UnPaidAmount.text = "NIL"
-                binding.TotalPaidAmount.text = "NIL"
-                binding.ExpensesAmount.text = "NIL"
-                findViewById<ComposeView>(R.id.pieChartComposeView).visibility = View.GONE
+                binding.PaidAmount.text = "0"
+                binding.UnPaidAmount.text = "0"
+                binding.TotalPaidAmount.text = "0"
+                binding.ExpensesAmount.text = "0"
+                binding.pieChartComposeView.visibility = View.GONE
+                binding.NoDataLay.visibility = View.VISIBLE
             }
         }
 
+        binding.ReportSubmitCard.setOnClickListener {
+            when{
+                binding.CustomStartDateTxt.text.toString().trim().isEmpty()->{
+                    Toast.makeText(this@InvoioceBusinessReportActivity, "Enter the start date", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                binding.CustomEndDateTxt.text.toString().trim().isEmpty()->{
+                    Toast.makeText(this@InvoioceBusinessReportActivity, "Enter the end date", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                else->{
+                    if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)){
+                        loadPiechart()
+                    }else{
+                        Toast.makeText(this@InvoioceBusinessReportActivity, ""+InvoiceUtils.messageNetCheck, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+        }
+        binding.startLay.setOnClickListener {
+            pickStartDate()
+        }
+        binding.endLay.setOnClickListener {
+            pickEndDate()
+        }
+    }
+
+    private fun pickStartDate() {
+        val calendar = Calendar.getInstance()
+
+        val startDatePicker = DatePickerDialog(this,
+            { _, year, month, dayOfMonth ->
+                startDateCalendar = Calendar.getInstance().apply {
+                    set(year, month, dayOfMonth)
+                }
+
+                val displayFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                val displayDate = displayFormat.format(startDateCalendar!!.time)
+                    binding.CustomStartDateTxt.text = displayDate // show in dd-MM-yyyy
+
+                startDate = dateFormat.format(startDateCalendar!!.time)
+                println("Start Date for server: $startDate")
+
+                // Now show end date picker
+
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+
+        startDatePicker.show()
+    }
+
+    private fun pickEndDate() {
+        val calendar = Calendar.getInstance()
+
+        val endDatePicker = DatePickerDialog(this,
+            { _, year, month, dayOfMonth ->
+                endDateCalendar = Calendar.getInstance().apply {
+                    set(year, month, dayOfMonth)
+                }
+
+                val displayFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                val displayDate = displayFormat.format(endDateCalendar!!.time)
+                binding.CustomEndDateTxt.text = displayDate // show in dd-MM-yyyy
+
+                endDate = dateFormat.format(endDateCalendar!!.time)
+                println("End Date for server: $endDate")
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+
+        // Disable dates before the selected start date
+        startDateCalendar?.let {
+            endDatePicker.datePicker.minDate = it.timeInMillis
+        }
+
+        endDatePicker.show()
     }
 
     private fun showFilterDialog() {
-        val dialog = Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+        val dialog = Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog)
         val dialogView = layoutInflater.inflate(R.layout.dialog_filter_options, null)
         dialog.setContentView(dialogView)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         val radioGroup = dialogView.findViewById<RadioGroup>(R.id.radioGroupOptions)
+        val yesterdayOption = dialogView.findViewById<RadioButton>(R.id.yesterdayOption)
+        val todayOption = dialogView.findViewById<RadioButton>(R.id.todayOption)
+        val lastWeekOption = dialogView.findViewById<RadioButton>(R.id.lastWeekOption)
+        val thisWeekOption = dialogView.findViewById<RadioButton>(R.id.thisWeekOption)
+        val lastMonthOption = dialogView.findViewById<RadioButton>(R.id.lastMonthOption)
+        val thisMonthOption = dialogView.findViewById<RadioButton>(R.id.thisMonthOption)
+        val CustomOption = dialogView.findViewById<RadioButton>(R.id.CustomOption)
+        val filterSubmitCard = dialogView.findViewById<CardView>(R.id.filterSubmitCard)
+
+        val calendar = Calendar.getInstance()
+
+        println("selectedOption== $selectedOption")
+            when (selectedOption) {
+                "Yesterday" -> {
+                    calendar.add(Calendar.DAY_OF_YEAR, -1)
+                    startDate = dateFormat.format(calendar.time)
+                    endDate = startDate
+                    yesterdayOption.isChecked = true
+                    println("yesterdaystartDate == $startDate")
+                    println("yesterdayendDate == $endDate")
+                    binding.customDateLay.visibility = View.GONE
+                }
+                "Today" -> {
+                    startDate = dateFormat.format(calendar.time)
+                    endDate = startDate
+                    todayOption.isChecked = true
+                    println("todaystartDate == $startDate")
+                    println("todayendDate == $endDate")
+                    binding.customDateLay.visibility = View.GONE
+                }
+                "Last Week" -> {
+                    calendar.add(Calendar.WEEK_OF_YEAR, -1)
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                    startDate = dateFormat.format(calendar.time)
+                    calendar.add(Calendar.DAY_OF_WEEK, 7)
+                    endDate = dateFormat.format(calendar.time)
+                    lastWeekOption.isChecked = true
+                    println("lastWeekstartDate == $startDate")
+                    println("lastweekenddate====$endDate")
+                    binding.customDateLay.visibility = View.GONE
+
+                }
+                "This Week" -> {
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                    startDate = dateFormat.format(calendar.time)
+                    calendar.add(Calendar.DAY_OF_WEEK, 6)
+                    endDate = dateFormat.format(calendar.time)
+                    thisWeekOption.isChecked = true
+                    binding.customDateLay.visibility = View.GONE
+                }
+                "Last 7 Days" -> {
+                    calendar.add(Calendar.DAY_OF_YEAR, -6)
+                    startDate = dateFormat.format(calendar.time)
+                    endDate = dateFormat.format(calendar.time)
+                    yesterdayOption.isChecked = true
+                    binding.customDateLay.visibility = View.GONE
+                }
+                "Last Month" -> {
+                    calendar.add(Calendar.MONTH, -1)
+                    calendar.set(Calendar.DAY_OF_MONTH, 1)
+                    startDate = dateFormat.format(calendar.time)
+                    calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                    endDate = dateFormat.format(calendar.time)
+                    lastMonthOption.isChecked = true
+                    binding.customDateLay.visibility = View.GONE
+                }
+                "This Month" -> {
+                    calendar.set(Calendar.DAY_OF_MONTH, 1)
+                    startDate = dateFormat.format(calendar.time)
+                    calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                    endDate = dateFormat.format(calendar.time)
+                    thisMonthOption.isChecked = true
+                    binding.customDateLay.visibility = View.GONE
+                }
+                "Custom" -> {
+                    CustomOption.isChecked = true
+                    binding.customDateLay.visibility = View.VISIBLE
+                  //  showCustomDatePicker()
+                }
+                else -> {
+                    // Default to today's date
+                    binding.customDateLay.visibility = View.GONE
+                    startDate = dateFormat.format(calendar.time)
+                    endDate = startDate
+                }
+            }
 
         // Handle radio button click directly
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             val selectedRadioButton = dialogView.findViewById<RadioButton>(checkedId)
-            val selectedOption = selectedRadioButton.text.toString()
-            handleDateFilter(selectedOption)
-            dialog.dismiss()
+             selectedOption = selectedRadioButton.text.toString()
         }
+
+        filterSubmitCard.setOnClickListener {
+            if (selectedOption == "Custom"){
+                binding.customDateLay.visibility = View.VISIBLE
+                dialog.dismiss()
+            }else{
+                handleDateFilter()
+                dialog.dismiss()
+            }
+
+        }
+
+
 
         dialog.show()
     }
 
 
-    private fun handleDateFilter(option: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private fun handleDateFilter() {
         val calendar = Calendar.getInstance()
-        val startDate: String
-        val endDate: String
 
-        when (option) {
+        when (selectedOption) {
             "Yesterday" -> {
+                binding.customDateLay.visibility = View.GONE
                 calendar.add(Calendar.DAY_OF_YEAR, -1)
                 startDate = dateFormat.format(calendar.time)
                 endDate = startDate
@@ -250,12 +436,14 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 println("yesterdayendDate == $endDate")
             }
             "Today" -> {
+                binding.customDateLay.visibility = View.GONE
                 startDate = dateFormat.format(calendar.time)
                 endDate = startDate
                 println("todaystartDate == $startDate")
                 println("todayendDate == $endDate")
             }
             "Last Week" -> {
+                binding.customDateLay.visibility = View.GONE
                 calendar.add(Calendar.WEEK_OF_YEAR, -1)
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
                 startDate = dateFormat.format(calendar.time)
@@ -267,17 +455,20 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
 
             }
             "This Week" -> {
+                binding.customDateLay.visibility = View.GONE
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
                 startDate = dateFormat.format(calendar.time)
                 calendar.add(Calendar.DAY_OF_WEEK, 6)
                 endDate = dateFormat.format(calendar.time)
             }
             "Last 7 Days" -> {
+                binding.customDateLay.visibility = View.GONE
                 calendar.add(Calendar.DAY_OF_YEAR, -6)
                 startDate = dateFormat.format(calendar.time)
                 endDate = dateFormat.format(calendar.time)
             }
             "Last Month" -> {
+                binding.customDateLay.visibility = View.GONE
                 calendar.add(Calendar.MONTH, -1)
                 calendar.set(Calendar.DAY_OF_MONTH, 1)
                 startDate = dateFormat.format(calendar.time)
@@ -285,14 +476,15 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
                 endDate = dateFormat.format(calendar.time)
             }
             "This Month" -> {
+                binding.customDateLay.visibility = View.GONE
                 calendar.set(Calendar.DAY_OF_MONTH, 1)
                 startDate = dateFormat.format(calendar.time)
                 calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
                 endDate = dateFormat.format(calendar.time)
             }
             "Custom" -> {
-                showCustomDatePicker()
-                return
+                binding.customDateLay.visibility = View.VISIBLE
+           //     showCustomDatePicker()
             }
             else -> {
                 // Default to today's date
@@ -302,36 +494,15 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         }
 
         // Call your API with the selected date range
-        loadPiechart(startDate, endDate)
+        if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)){
+            loadPiechart()
+        }else{
+            Toast.makeText(this@InvoioceBusinessReportActivity, ""+InvoiceUtils.messageNetCheck, Toast.LENGTH_SHORT).show()
+        }
+
 
     }
 
-    private fun showCustomDatePicker() {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-
-        // Start Date Picker
-        val startDatePicker = DatePickerDialog(this, { _, startYear, startMonth, startDay ->
-            val startCalendar = Calendar.getInstance()
-            startCalendar.set(startYear, startMonth, startDay)
-            val startDate = dateFormat.format(startCalendar.time)
-
-            // End Date Picker
-            val endDatePicker = DatePickerDialog(this, { _, endYear, endMonth, endDay ->
-                val endCalendar = Calendar.getInstance()
-                endCalendar.set(endYear, endMonth, endDay)
-                val endDate = dateFormat.format(endCalendar.time)
-
-                // Call your API with the selected date range
-                loadPiechart(startDate, endDate)
-
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-
-            endDatePicker.show()
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-
-        startDatePicker.show()
-    }
 
     private fun loadMasterData() {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
@@ -350,7 +521,7 @@ class InvoioceBusinessReportActivity : AppCompatActivity(), InvoicemasterClick {
         }
     }
 
-    private fun loadPiechart(startDate: String = "", endDate: String = "") {
+    private fun loadPiechart() {
         if (InvoiceUtils.isNetworkAvailable(this@InvoioceBusinessReportActivity)) {
             val InputMap = HashMap<String, Any>()
             InputMap["action"] = "picChartReport"

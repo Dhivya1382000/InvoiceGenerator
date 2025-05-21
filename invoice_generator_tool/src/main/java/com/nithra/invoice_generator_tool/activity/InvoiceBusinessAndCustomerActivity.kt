@@ -618,6 +618,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 listOfClients.addAll(getMasterArray.clientDetails!!)
                 listOfItems.addAll(getMasterArray.itemList!!)
                 println("fromPage == $fromPage")
+
                 if (fromPage == "Business") {
                     println("companyDet111 == ${getMasterArray.companyDetails!![0].status}")
                     if (getMasterArray.companyDetails!![0].status.equals("failure")) {
@@ -630,8 +631,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
                     }
-                    val listOfCompanyFilter: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> =
-                        mutableListOf()
+                    val listOfCompanyFilter: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> = mutableListOf()
                     if (clicktabPos == 1) {
                         listOfCompanyFilter.clear()
                         listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 0 }) //business
@@ -640,7 +640,9 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         listOfCompanyFilter.addAll(listOfCompany.filter { it.type == 1 }) //individual
                         println("listOfCompany -== ${listOfCompanyFilter.size}")
                     }
-                  /*  if (listOfCompanyFilter.size != 0){
+                    println("listCompanySize == ${listOfCompanyFilter.size}")
+
+                    if (listOfCompanyFilter.size != 0){
                         binding.NoDataLay.visibility = View.GONE
                         binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.VISIBLE
@@ -648,7 +650,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         binding.NoDataLay.visibility = View.VISIBLE
                         binding.searchLay.visibility = View.GONE
                         binding.recyclerCustomers.visibility = View.GONE
-                    }*/
+                    }
                     setAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(
                         0,
                         listOfCompanyFilter
@@ -673,7 +675,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                         listOfClientsFilter.clear()
                         listOfClientsFilter.addAll(listOfClients.filter { it.type == 1 }) //business
                     }
-
+                    println("listClientSize == ${listOfClientsFilter.size}")
                     if (listOfClientsFilter.size != 0){
                         binding.NoDataLay.visibility = View.GONE
                         binding.searchLay.visibility = View.GONE

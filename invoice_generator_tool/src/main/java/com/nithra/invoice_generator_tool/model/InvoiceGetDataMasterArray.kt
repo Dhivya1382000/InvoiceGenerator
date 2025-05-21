@@ -155,7 +155,7 @@ class InvoiceGetDataMasterArray {
 
         @SerializedName("type")
         @Expose
-        var type: Int? = 0
+        var type: Int? = -1
 
         @SerializedName("status")
         @Expose

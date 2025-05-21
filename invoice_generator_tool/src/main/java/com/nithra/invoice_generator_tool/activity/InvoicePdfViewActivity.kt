@@ -187,6 +187,7 @@ class   InvoicePdfViewActivity : AppCompatActivity(), OnPageChangedListener, OnE
             val intent = Intent(this@InvoicePdfViewActivity,InvoiceCreateFormActivity::class.java)
             intent.putExtra("INVOICE_EDIT_ID",InvoiceId)
             startActivity(intent)
+            finish()
             return true
         }
 

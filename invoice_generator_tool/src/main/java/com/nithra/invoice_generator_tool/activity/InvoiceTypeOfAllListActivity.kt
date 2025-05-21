@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -14,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.nithra.invoice_generator_tool.R
+import com.nithra.invoice_generator_tool.activity.InvoiceHomeScreen.Companion.refreshRecentList
 import com.nithra.invoice_generator_tool.databinding.ActivityInvoiceTypeOfAllListBinding
 import com.nithra.invoice_generator_tool.fragment.InvoiceTabContentFragment
 import com.nithra.invoice_generator_tool.model.InvoiceGetDataMasterArray
@@ -60,7 +62,7 @@ class InvoiceTypeOfAllListActivity : AppCompatActivity() {
 
         viewModel.getMasterDetail.observe(this@InvoiceTypeOfAllListActivity) { getMasterDetail ->
             InvoiceUtils.loadingDialog.dismiss()
-            tabList.addAll(getMasterDetail.paymentStatus!!)
+            tabList.addAll(getMasterDetail.paymentStatus!!.filter { it.id != 3 })
             adapter.notifyDataSetChanged()
         }
 
@@ -102,6 +104,16 @@ class InvoiceTypeOfAllListActivity : AppCompatActivity() {
 
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Custom back press handling
+                // Toast.makeText(this@InvoicePdfViewActivity, "Custom Back Pressed!", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        })
+
+
 
     }
 
