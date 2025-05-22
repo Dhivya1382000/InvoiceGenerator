@@ -119,11 +119,6 @@ class InvoiceAddItemFormActivity : AppCompatActivity() {
 
                     itemFormBinding.itemDiscountSpinner.setSelection(i)
 
-                    /* if ( itemList[i].discount_type == 1) {
-                         itemFormBinding.itemDiscountSpinner.setSelection(1)
-                     } else {
-                         itemFormBinding.itemDiscountSpinner.setSelection(2)
-                     }*/
 
                     finalAmount = itemList[i].total_amt.toString()
                     itemFormBinding.InvoiceTotalItemAmount.setText("Total Amount : " + itemList[i].total_amt)

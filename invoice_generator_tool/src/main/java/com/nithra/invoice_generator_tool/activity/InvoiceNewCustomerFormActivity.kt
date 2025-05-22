@@ -153,7 +153,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
 
 
 
-       /* if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
+        if (InvoiceUtils.isNetworkAvailable(this@InvoiceNewCustomerFormActivity)) {
             InvoiceUtils.loadingProgress(
                 this@InvoiceNewCustomerFormActivity,
                 "" + InvoiceUtils.messageLoading,
@@ -171,7 +171,6 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                 Toast.LENGTH_SHORT
             ).show()
         }
-*/
 
         viewModel.errorMessage.observe(this@InvoiceNewCustomerFormActivity) {
             binding.mainCusFormLay.visibility = View.VISIBLE
