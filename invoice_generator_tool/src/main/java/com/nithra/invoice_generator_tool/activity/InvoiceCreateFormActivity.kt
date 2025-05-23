@@ -1475,33 +1475,44 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             ""
         }
 
+        val discountAmt = if (binding.ItemsDiscountAmount.text.toString().isNotEmpty()) {
+            "     \n" +
+                    "                <tr>\n" +
+                    "         \n" +
+                    "                    <td colspan=\"5\" style=\"text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;\">\n" +
+                    "                        Discount Amount\n" +
+                    "                    </td>\n" +
+                    "                    <td colspan=\"4\" style=\"text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;\">\n" +
+                    "                         ${
+                        if (binding.ItemsDiscountAmount.text.toString()
+                                .isEmpty()
+                        ) "-" else " ₹ " + binding.ItemsDiscountAmount.text
+                    }\n" +
+                    "                    </td>\n" +
+                    "                </tr>\n" +
+                    "\n" +
+                    "       <tr>"
+        }else{
+            ""
+        }
+
         htmlBuilder.append(
             """
-                
-                <tr>
-         
-                    <td colspan="5" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
-                        Discount Amount
-                    </td>
-                    <td colspan="4" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
-                         ${
-                if (binding.ItemsDiscountAmount.text.toString()
-                        .isEmpty()
-                ) "-" else " ₹ " + binding.ItemsDiscountAmount.text
-            }
-                    </td>
-                </tr>
-
-       <tr>
-      
-    <td colspan="5" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
+            <td colspan="5" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
         Total Amount
     </td>
     <td colspan="4" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
-         ₹ $finalTotalAmount
+         ₹ ${binding.ItemsTotalAmount.text.toString()}
     </td>
     </tr>
- 
+      $discountAmt
+    <td colspan="5" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
+        Total Amount
+    </td>
+    <td colspan="4" style="text-align: right; font-weight: bold; font-size: 24px; white-space: nowrap;">
+         ₹ $finalTotalAmount
+    </td>
+    </tr>  
     
      $paidAmount
 
