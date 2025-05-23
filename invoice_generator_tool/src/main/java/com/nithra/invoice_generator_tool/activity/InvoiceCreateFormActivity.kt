@@ -407,9 +407,10 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                         binding.ItemsDiscountAmount.setText("" + invoiceList.discountAmt)
                     }
 
-                    val billingBusiness = listOfCompanyDetails.find { it.companyId == selectedBusinessId }
-                   val state = listOfState.find {billingBusiness!!.stateId== it.id  }
-                 val state_code = state!!.stateCode
+                    val billingBusiness =
+                        listOfCompanyDetails.find { it.companyId == selectedBusinessId }
+                    val state = listOfState.find { billingBusiness!!.stateId == it.id }
+                    val state_code = state!!.stateCode
                     invoiceBillingAddress = billingBusiness!!.billingAddress1!!
                     selectedBusinessState = billingBusiness.state!!
                     invoiceBusinessGSTId = billingBusiness.taxId!!
@@ -456,7 +457,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     adapter.notifyDataSetChanged()
 
                 } else {
-                    val state = listOfState.find {listOfCompanyDetails[0].stateId== it.id  }
+                    val state = listOfState.find { listOfCompanyDetails[0].stateId == it.id }
                     val state_code = state!!.stateCode
                     binding.InvoiceIncreNumberLay.isClickable = true
                     binding.InvoiceIncreNumber.isClickable = true
@@ -601,7 +602,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         }
 
         binding.InvoiceGeneratePreview.setOnClickListener {
-            if (invoiceCustomerShippingAddress.isEmpty()){
+            if (invoiceCustomerShippingAddress.isEmpty()) {
                 invoiceCustomerShippingAddress = invoiceCustomerBillingAddress
             }
             val htmlContent = generateInvoiceHtml(
@@ -636,7 +637,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         }
         binding.InvoiceGenerateSaveCard.setOnClickListener {
             if (InvoiceUtils.isNetworkAvailable(this@InvoiceCreateFormActivity)) {
-                if (invoiceCustomerShippingAddress.isEmpty()){
+                if (invoiceCustomerShippingAddress.isEmpty()) {
                     invoiceCustomerShippingAddress = invoiceCustomerBillingAddress
                 }
                 val htmlContent = generateInvoiceHtml(
@@ -1455,7 +1456,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
         } else {
             "" // empty string if no bank details
         }
-        val paidAmount = if (binding.InvoicePaidAmount.text.toString().isNotEmpty()){
+        val paidAmount = if (binding.InvoicePaidAmount.text.toString().isNotEmpty()) {
             "   <tr>\n" +
                     "          \n" +
                     "        <td colspan=\"5\" style=\"text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;\">\n" +
@@ -1471,7 +1472,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     "        </td>\n" +
                     "        \n" +
                     "        </tr>"
-        }else{
+        } else {
             ""
         }
 
@@ -1492,17 +1493,17 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
                     "                </tr>\n" +
                     "\n" +
                     "       <tr>"
-        }else{
+        } else {
             ""
         }
 
         htmlBuilder.append(
             """
             <td colspan="5" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
-        Total Amount
+        Amount
     </td>
     <td colspan="4" style="text-align: right; font-weight: bold; font-size: 22px; white-space: nowrap;">
-         ₹ ${binding.ItemsTotalAmount.text.toString()}
+          ${binding.ItemsTotalAmount.text.toString()}
     </td>
     </tr>
       $discountAmt
@@ -1627,7 +1628,7 @@ class InvoiceCreateFormActivity : AppCompatActivity(), InvoicemasterClick {
             selectedCustomerState = listOfClientDetails[position].state!!
             selectedCustomerId = clikStateId
         } else {
-            val state = listOfState.find { listOfCompanyDetails[position].stateId == it.id  }
+            val state = listOfState.find { listOfCompanyDetails[position].stateId == it.id }
             val state_code = state!!.stateCode
             binding.InvoiceBusinessTypeText.text = "" + item
             invoiceBillingAddress = listOfCompanyDetails[position].billingAddress1!!
