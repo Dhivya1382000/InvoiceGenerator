@@ -182,7 +182,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                                 binding.InvoiceBusinessId.setText("" + listOfCompanyDetails[i].bussinessId)
                                 binding.InvoiceBusinessName.setText("" + listOfCompanyDetails[i].bussinessName)
                                 binding.InvoiceBusinessEmail.setText("" + listOfCompanyDetails[i].email)
-                                binding.InvoiceBusinessMobile.setText("" + listOfCompanyDetails[i].mobile)
+                                binding.InvoiceBusinessMobile.setText("" + listOfCompanyDetails[i].bussinessMobile)
                                 binding.InvoiceBusinessMobile1.setText("" + listOfCompanyDetails[i].bussinessMobile)
                                 binding.InvoiceBillingAddress1.setText("" + listOfCompanyDetails[i].billingAddress1)
                                 selectedStateId = listOfCompanyDetails[i].stateId!!
@@ -333,12 +333,29 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
             println("selectState === $selectedStateId")
             println("selectState individual === $selectedInvoiceStateId")
             println("selectState individual type=== $selectedBusinesChoiceTypeId")
-            val isAnyBankFieldFilled = binding.InvoiceBankNameEdit.text.toString().trim()
-                .isNotEmpty() || binding.InvoiceBankIFSCEdit.text.toString().trim()
-                .isNotEmpty() ||
-                    binding.InvoiceBankAddressEdit.text.toString().trim()
-                        .isNotEmpty() || binding.InvoiceBankAccountEdit.text.toString()
-                .trim().isNotEmpty()
+            var isAnyBankFieldFilled = 0
+            isAnyBankFieldFilled = when{
+                binding.InvoiceBankNameEdit.text.toString().trim().isNotEmpty()  && binding.InvoiceBankIFSCEdit.text.toString().trim().isNotEmpty() && binding.InvoiceBankAddressEdit.text.toString().trim().isNotEmpty() && binding.InvoiceBankAccountEdit.text.toString().trim().isNotEmpty() ->{
+                    0
+                }
+                binding.InvoiceBankNameEdit.text.toString().trim().isNotEmpty()->{
+                    1
+                }
+                binding.InvoiceBankIFSCEdit.text.toString().trim().isNotEmpty() ->{
+                    1
+                }
+                binding.InvoiceBankAddressEdit.text.toString().trim().isNotEmpty()->{
+                    1
+                }
+                binding.InvoiceBankAccountEdit.text.toString().trim().isNotEmpty()->{
+                    1
+                }
+
+                else->{
+                    0
+                }
+            }
+
 
             if (selectedBusinesChoiceTypeId == 0) {
                 when {
@@ -397,7 +414,7 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                     }
 
                     !isValidGST(binding.InvoiceTaxId.text.toString().trim()) -> {
-                        Toast.makeText(
+                        Toast.makeText( 
                             this@InvoiceBusinessDetailFormActivity,
                             "Enter valid GST number",
                             Toast.LENGTH_SHORT
@@ -405,46 +422,13 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         return@setOnClickListener
                     }
 
-                 binding.InvoiceBankNameEdit.text.toString().trim().isEmpty()-> {
-                     if (isAnyBankFieldFilled){
-                         Toast.makeText(
-                             this@InvoiceBusinessDetailFormActivity,
-                             "Enter the bank name",
-                             Toast.LENGTH_SHORT
-                         ).show()
-                     }
-                    }
-
-                     binding.InvoiceBankAccountEdit.text.toString().trim().isEmpty()-> {
-                         if (isAnyBankFieldFilled){
-                             Toast.makeText(
-                                 this@InvoiceBusinessDetailFormActivity,
-                                 "Enter the bank account number",
-                                 Toast.LENGTH_SHORT
-                             ).show()
-                         }
-
-                        }
-
-                     binding.InvoiceBankIFSCEdit.text.toString().trim().isEmpty()-> {
-                         if (isAnyBankFieldFilled){
-                             Toast.makeText(
-                                 this@InvoiceBusinessDetailFormActivity,
-                                 "Enter the ifsc code",
-                                 Toast.LENGTH_SHORT
-                             ).show()
-                         }
-
-                    }
-
-                 binding.InvoiceBankAddressEdit.text.toString().trim().isEmpty()-> {
-                     if (isAnyBankFieldFilled){
-                         Toast.makeText(
-                             this@InvoiceBusinessDetailFormActivity,
-                             "Enter the bank address",
-                             Toast.LENGTH_SHORT
-                         ).show()
-                     }
+                    isAnyBankFieldFilled == 1 ->{
+                        Toast.makeText(
+                            this@InvoiceBusinessDetailFormActivity,
+                            "Enter the bank details",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
                     }
 
                     else -> {
@@ -532,14 +516,6 @@ class InvoiceBusinessDetailFormActivity : AppCompatActivity(), InvoicemasterClic
                         return@setOnClickListener
                     }
 
-                    /*    binding.IndividualEmail.text.toString().trim().isEmpty() -> {
-                            Toast.makeText(
-                                this@InvoiceBusinessDetailFormActivity,
-                                "Enter your email",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@setOnClickListener
-                        }*/
 
                     binding.IndividualStateText.text.toString().trim().isEmpty() -> {
                         Toast.makeText(

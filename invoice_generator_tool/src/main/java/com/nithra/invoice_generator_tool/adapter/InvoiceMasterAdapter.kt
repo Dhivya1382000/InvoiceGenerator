@@ -136,7 +136,8 @@ class InvoiceMasterAdapter<T>(
                     clickDeleteDataAction = "deleteCompanyDetails"
                     holder.binding.listOfNumbers.text = listCount
 
-                    holder.binding.invoiceCustomerName.text =getHighlightedText(item.bussinessName!!, updatedSearchText)
+                    holder.binding.invoiceCustomerName.text =
+                        getHighlightedText(item.bussinessName!!, updatedSearchText)
                     holder.binding.invoiceCustomerState.visibility = View.VISIBLE
                     holder.binding.invoiceCustomerMobile.text = item.bussinessMobile
                     holder.binding.invoiceCustomerState.text = item.state
@@ -163,7 +164,8 @@ class InvoiceMasterAdapter<T>(
                     clikStateName = item.name!!
                     clickDeleteDataAction = "deleteClientDetails"
                     holder.binding.listOfNumbers.text = listCount
-                    holder.binding.invoiceCustomerName.text = getHighlightedText(item.name!!, updatedSearchText)
+                    holder.binding.invoiceCustomerName.text =
+                        getHighlightedText(item.name!!, updatedSearchText)
                     holder.binding.invoiceCustomerMobile.text = item.mobile1
                     holder.binding.invoiceCustomerState.visibility = View.VISIBLE
                     holder.binding.invoiceCustomerState.text = item.state
@@ -204,8 +206,6 @@ class InvoiceMasterAdapter<T>(
                     }
                 }
             }
-
-
             holder.binding.AddInvoice.setOnClickListener {
                 onAddItemClick(item)
             }
@@ -264,7 +264,7 @@ class InvoiceMasterAdapter<T>(
                 R.id.delete -> {
                     // Toast.makeText(view.context, "Delete item $position", Toast.LENGTH_SHORT).show()
                     println("dele === $clickDataId")
-                    onDeleteItem(clickDataId, position, clickDeleteDataAction)
+                    onDeleteItem(clickDataId, position, clickDeleteDataAction,)
                     true
                 }
 
@@ -280,7 +280,10 @@ class InvoiceMasterAdapter<T>(
         notifyItemRemoved(position) // Notify adapter
         notifyDataSetChanged()
     }
-
+    fun updateList(newList: MutableList<T>) {
+        filteredList = newList
+        notifyDataSetChanged()
+    }
     override fun getItemCount(): Int {
         return filteredList.size
     }

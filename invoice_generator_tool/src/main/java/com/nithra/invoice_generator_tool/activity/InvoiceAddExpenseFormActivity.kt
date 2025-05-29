@@ -351,7 +351,7 @@ class InvoiceAddExpenseFormActivity : AppCompatActivity(), InvoicemasterClick {
                 fromSpinner, onAddItemClick = {
 
                 },
-                onDeleteItem ={deleteId ,pos,actionName->
+                onDeleteItem ={deleteId ,pos,actionName,->
 
                 },
                 onSearchResult = {

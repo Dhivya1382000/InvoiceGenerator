@@ -44,6 +44,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
     var listOfClients: MutableList<InvoiceGetDataMasterArray.GetClientDetails> = mutableListOf()
     var listOfItems: MutableList<InvoiceGetDataMasterArray.GetItemList> = mutableListOf()
     var listOfExpenses: MutableList<InvoiceGetExpenseDataList.DataList> = mutableListOf()
+    var fromListName  = ""
     var preference = InvioceSharedPreference()
     var fromInvoice = 0
     var businessClickId = 0
@@ -68,10 +69,8 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                             if (listOfCompany[0].status.equals("failure")) {
                                 listOfCompany.clear()
                             }
-                            val type = object :
-                                TypeToken<List<InvoiceGetDataMasterArray.GetCompanyDetailList>>() {}.type
-                            val itemList: List<InvoiceGetDataMasterArray.GetCompanyDetailList> =
-                                Gson().fromJson(it, type)
+                            val type = object : TypeToken<List<InvoiceGetDataMasterArray.GetCompanyDetailList>>() {}.type
+                            val itemList: List<InvoiceGetDataMasterArray.GetCompanyDetailList> = Gson().fromJson(it, type)
                             println("typeclic--- ${itemList[0].type}")
                             listOfCompany.addAll(0, itemList.filter { it.type == itemList[0].type })
                             if (itemList[0].type == 0) {
@@ -139,7 +138,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                                 binding.recyclerCustomers.visibility = View.GONE
                             }
                             if (::adapter.isInitialized) {
-                                //    adapter.notifyItemInserted(0)
+                                 adapter.notifyItemInserted(0)
                                 val listOfCompanyFilter: MutableList<InvoiceGetDataMasterArray.GetCompanyDetailList> =
                                     mutableListOf()
                                 listOfCompanyFilter.addAll(listOfCompany.filter { it.type == itemList[0].type })
@@ -370,6 +369,14 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
     ) {
         val adapt = adapter as InvoiceMasterAdapter<T>
         adapt.Updatelist(dataClicpos,EditlistOfCompany)
+    }
+
+    private fun <T> DeleteUpdateAdapter(
+        DeleteReminlistOfCompany: MutableList<T>
+    ) {
+
+        val adapt = adapter as InvoiceMasterAdapter<T>
+        adapt.updateList(DeleteReminlistOfCompany)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -718,6 +725,12 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                     actionName = ""
                     println("listOfPo=== $ListPosition")
                     adapter.DeleteNotify(ListPosition)
+                    when(fromListName){
+                        "GetCompany" ->{
+                            DeleteUpdateAdapter<InvoiceGetDataMasterArray.GetCompanyDetailList>(listOfCompany)
+                        }
+                    }
+
                     println("list Data delete size == ${adapter.itemCount}")
                     if (adapter.itemCount == 0) {
                         loadMasterData()
@@ -879,6 +892,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
 
     }
 
+
     private fun ShowDialogUsedBusiness(confirmTxt: String, deleteId: Int, actionName: String) {
         val builder = AlertDialog.Builder(this@InvoiceBusinessAndCustomerActivity)
 
@@ -936,6 +950,7 @@ class InvoiceBusinessAndCustomerActivity : AppCompatActivity(), InvoicemasterCli
                 ).show()
                 return@setOnClickListener
             }
+            println("actionName=== $actionName")
             if (actionName.isNotEmpty()) {
                 deleteFun(deleteId, actionName)
             }

@@ -70,7 +70,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
             clickPosition = intent.getIntExtra("clickPosition", 0)
             clickTabPosType = intent.getIntExtra("clickTabPosType", 0)
         }
-        println("invoiceCli == $invoiceClickId")
+        println("invoiceClick == $invoiceClickId")
 
         if (clickTabPosType == 1){
             binding.InvoiceBusinessChoice.isChecked = true
@@ -198,6 +198,8 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                             println("selectedBusinesTypeId == $selectedBusinesTypeId")
                             println("selectedBusinesTax == ${listOfClientDetails[i].taxId}")
                             if (selectedBusinesTypeId == 2){ //business
+                                binding.InvoiceBusinessChoice.isChecked = true
+                                binding.InvoiceIndividualChoice.isChecked = false
                                 binding.BusinessLay.visibility = View.VISIBLE
                                 binding.IndividualLay.visibility = View.GONE
                                 binding.InvoiceCustomerName.setText(listOfClientDetails[i].name)
@@ -207,7 +209,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                                 binding.InvoiceCusMobile1.setText(listOfClientDetails[i].mobile1)
                                 binding.InvoiceCusMobile2.setText(listOfClientDetails[i].mobile2)
                                 binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].billingAddress)
-                                binding.InvoiceCusBillingAddress.setText(listOfClientDetails[i].shippingAddress)
+                                binding.InvoiceCusShippingAddress.setText(listOfClientDetails[i].shippingAddress)
                                 if (listOfClientDetails[i].billingAddress.equals(listOfClientDetails[i].shippingAddress)) {
                                     binding.checkBox1.isChecked = true
                                 }
@@ -218,6 +220,7 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                                 binding.InvoiceCusTaxId.setText(listOfClientDetails[i].taxId)
                             }else{  //individual
                                 binding.InvoiceIndividualChoice.isChecked = true
+                                binding.InvoiceBusinessChoice.isChecked = false
                                 binding.IndividualLay.visibility = View.VISIBLE
                                 binding.BusinessLay.visibility = View.GONE
                                 selectedIndiInvoiceStateId = listOfClientDetails[i].stateId!!
@@ -246,7 +249,6 @@ class InvoiceNewCustomerFormActivity : AppCompatActivity(), InvoicemasterClick {
                     android.R.layout.simple_dropdown_item_1line,
                     SuggestionsBusinessName.toList()
                 )
-                // Set the adapter to the AutoCompleteTextView
                 binding.InvoiceCustomerName.setAdapter(adapterBusinessName)
                 binding.InvoiceCusCompanyName.threshold =
                     1 // Start showing suggestions after 1 character
